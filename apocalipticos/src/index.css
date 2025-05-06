@@ -33,19 +33,16 @@ body {
   @media (min-width: 768px) {
     background-size: cover;
   }
-  
+  justify-content: center;
   margin: 0;
   display: flex;
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+h4{
+  padding: 15%;
 }
-
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -53,12 +50,15 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  
+  background-color: rgba(251, 116, 5, 0.568);
   cursor: pointer;
   transition: border-color 0.25s;
+  margin: 0 10px; 
+ 
 }
 button:hover {
-  border-color: #646cff;
+  border-color: rgb(174, 81, 0); 
+
 }
 button:focus,
 button:focus-visible {
