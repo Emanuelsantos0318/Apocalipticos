@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 
 :root {
@@ -28,7 +26,14 @@ a:hover {
 }
 
 body {
-  @apply bg-gray-900 text-white;
+  background-image: url(/banner6.jpg);
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  @media (min-width: 768px) {
+    background-size: cover;
+  }
+  
   margin: 0;
   display: flex;
   place-items: center;
@@ -48,7 +53,7 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  
   cursor: pointer;
   transition: border-color 0.25s;
 }

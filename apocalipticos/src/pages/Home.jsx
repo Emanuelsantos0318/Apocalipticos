@@ -1,15 +1,17 @@
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { criarSala } from '../firebase/rooms';
 
-export default function Home() {
-  const [code, setCode] = useState("");
+export default function Home({ uid }) {
   const navigate = useNavigate();
+  const [modo, setModo] = useState('casual');
+  const [code, setCode] = useState("");
 
-  const handleCreateRoom = () => {
-    // Lógica para criar sala (Firebase)
-    // Por enquanto vamos simular:
-    const generatedCode = "ZUMBI"; // depois será aleatório
-    navigate(`/lobby/${generatedCode}`);
+  const handleCriarSala = async () => {
+    if (!uid) return;
+    const codigo = await criarSala(uid, modo);
+    navigate(`/lobby/${codigo}`);
   };
 
   const handleJoinRoom = () => {
@@ -18,30 +20,43 @@ export default function Home() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-black text-lime-400 flex flex-col items-center justify-center px-4">
-      <h1 className="text-5xl font-bold text-center mb-4">💀 APOCALÍPTICOS 💥</h1>
-      <p className="text-lg mb-8 text-center max-w-md">
-        Sobreviva aos desafios mais absurdos com seus amigos. Ou beba tentando.
-      </p>
+  // Exibe tela de carregamento até o UID estar disponível
+  if (!uid) {
+    return <div className="text-whidte text-center  mt-20">Carregando...</div>;
+  }
 
+  return (
+    <div className="text-center mt-10 text-white">
+      <h1 className="text-3xl font-bold mb-4">Apocalípticos!</h1>
+
+      <select
+        value={modo}
+        onChange={(e) => setModo(e.target.value)}
+        className="text-black px-4 py-2 rounded mb-4"
+      >
+        <option value="casual">Casual</option>
+        <option value="hardcore">Hardcore</option>
+      </select>
+
+      <br />
       <button
-        onClick={handleCreateRoom}
-        className="bg-lime-500 text-black font-bold px-6 py-3 rounded-xl mb-6 hover:scale-105 transition"
+        onClick={handleCriarSala}
+        className="bg-orange-600 hover:bg-orange-800 px-6 py-2 rounded text-white font-bold"
       >
         Criar Sala
       </button>
 
-      <div className="flex gap-2">
+      <div className="mt-6">
         <input
+          type="text"
           value={code}
           onChange={(e) => setCode(e.target.value)}
           placeholder="Digite o código da sala"
-          className="p-2 rounded text-black"
+          className="text-black px-4 py-2 rounded"
         />
         <button
           onClick={handleJoinRoom}
-          className="bg-yellow-400 px-4 rounded font-bold text-black"
+          className="ml-2 bg-green-600 hover:bg-green-800 px-4 py-2 rounded text-white font-bold"
         >
           Entrar
         </button>
