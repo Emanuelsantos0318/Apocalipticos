@@ -1,28 +1,21 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { criarSala } from '../firebase/rooms';
-import CreateRoomModal from '../components/CreateRoomModal'; // Você vai criar esse modal
+import CreateRoomModal from "./CreateRoomModal";
 
-export default function Home({ uid }) {
+export default function Home() {
   const navigate = useNavigate();
   const [code, setCode] = useState("");
   const [showModal, setShowModal] = useState(false);
 
   const handleJoinRoom = () => {
-    if (code.trim()) {
-      navigate(`/lobby/${code.trim().toUpperCase()}`);
-    }
+    if (code.trim()) navigate(`/lobby/${code.trim().toUpperCase()}`);
   };
 
-  const handleCreateRoom = async (roomData) => {
-    if (!uid) return;
-    const codigo = await criarSala(uid, roomData);
-    navigate(`/lobby/${codigo}`);
+  const handleCreateRoom = (roomData) => {
+    // Aqui você enviaria `roomData` para o Firebase
+    console.log("Criar Sala:", roomData);
+    navigate(`/lobby/${roomData.roomCode}`);
   };
-
-  if (!uid) {
-    return <div className="text-white text-center mt-10">Carregando...</div>;
-  }
 
   return (
     <div className="min-h-screen bg-black text-lime-400 flex flex-col items-center justify-center px-4">
@@ -33,7 +26,7 @@ export default function Home({ uid }) {
 
       <button
         onClick={() => setShowModal(true)}
-        className="bg-orange-600 hover:bg-orange-800 px-6 py-3 rounded-xl font-bold mb-6"
+        className="bg-lime-500 text-black font-bold px-6 py-3 rounded-xl mb-6 hover:scale-105 transition"
       >
         Criar Sala
       </button>
@@ -43,11 +36,11 @@ export default function Home({ uid }) {
           value={code}
           onChange={(e) => setCode(e.target.value)}
           placeholder="Digite o código da sala"
-          className="text-black px-4 py-2 rounded"
+          className="p-2 rounded text-black"
         />
         <button
           onClick={handleJoinRoom}
-          className="bg-green-600 hover:bg-green-800 px-4 py-2 rounded text-white font-bold"
+          className="bg-yellow-400 px-4 rounded font-bold text-black"
         >
           Entrar
         </button>
