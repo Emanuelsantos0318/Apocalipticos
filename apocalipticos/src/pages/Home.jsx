@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import CreateRoomModal from "../components/CreateRoomModal";
 import JoinRoomModal from "../components/JoinRoomModal";
 import { criarSala } from "../firebase/rooms";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "../firebase/config"; // ajuste o caminho se necessário
 
 export default function Home({ uid }) {
   const navigate = useNavigate();
@@ -20,11 +22,32 @@ export default function Home({ uid }) {
     }
   };
   
-  const handleJoinRoomModal = ({ nome, nascimento, chave }) => {
-    // salvar no localStorage
-    localStorage.setItem("playerName", nome);
-    localStorage.setItem("birthDate", nascimento);
-    navigate(`/lobby/${chave}`);
+  const handleJoinRoomModal = async ({ nome, nascimento, avatar, chave }) => {
+    const uid = crypto.randomUUID(); // ou use uid do Firebase Auth, se quiser login futuro
+  
+    const idade = calcularIdade(nascimento);
+    const jogador = {
+      nome,
+      avatar,
+      idade,
+      uid,
+      timestamp: serverTimestamp(),
+    };
+  
+    try {
+      await setDoc(doc(db, "salas", chave, "jogadores", uid), jogador);
+  
+      // salvar no localStorage para uso no Lobby
+      localStorage.setItem("uid", uid);
+      localStorage.setItem("playerName", nome);
+      localStorage.setItem("birthDate", nascimento);
+      localStorage.setItem("avatar", avatar);
+  
+      navigate(`/lobby/${chave}`);
+    } catch (err) {
+      console.error("Erro ao entrar na sala:", err);
+      alert("Erro ao entrar na sala.");
+    }
   };
   
 

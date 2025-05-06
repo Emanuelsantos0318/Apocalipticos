@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../firebase/config";
 import { doc, onSnapshot, collection } from "firebase/firestore";
+import { iniciarJogo } from "../firebase/rooms";
+
 
 export default function Lobby({ uid }) {
   const { codigo } = useParams();
+  const navigate = useNavigate();
   const [sala, setSala] = useState(null);
   const [jogadores, setJogadores] = useState([]);
 
@@ -13,15 +16,33 @@ export default function Lobby({ uid }) {
   // Ouve dados da sala
   useEffect(() => {
     const salaRef = doc(db, "salas", codigo);
-    const unsubscribeSala = onSnapshot(salaRef, (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        setSala(data);
-        setIsHost(data.hostId === uid);
-      } else {
-        console.warn("Sala não encontrada.");
-      }
-    });
+
+    let unsubscribeSala;
+  
+    try {
+      unsubscribeSala = onSnapshot(salaRef, (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setSala(data);
+  
+          if (data.hostUid === uid) {
+            setIsHost(true);
+          }
+  
+          if (data.estado === "emAndamento") {
+            navigate(`/jogo/${codigo}`);
+          }
+        } else {
+          console.warn("Sala não encontrada.");
+          alert("Sala não encontrada. Verifique o código e tente novamente.");
+          navigate("/");
+        }
+      });
+    } catch (error) {
+      console.error("Erro ao acessar a sala:", error);
+      alert("Ocorreu um erro ao acessar a sala.");
+      navigate("/");
+    }
 
     // Ouve lista de jogadores
     const jogadoresRef = collection(db, "salas", codigo, "jogadores");
@@ -31,14 +52,25 @@ export default function Lobby({ uid }) {
     });
 
     return () => {
-      unsubscribeSala();
+      if (unsubscribeSala) unsubscribeSala();
       unsubscribeJogadores();
     };
-  }, [codigo, uid]);
+  }, [codigo, uid, navigate]);
+
+  const isAdmin = sala?.hostUid === uid;
+
+const handleIniciarJogo = async () => {
+    try {
+      await iniciarJogo(codigo);
+    } catch (err) {
+      console.error("Erro ao iniciar o jogo:", err);
+    }
+  };
+
 
   return (
-    <div className="text-white p-6 max-w-2xl mx-auto mt-20 text-center">
-      <h1 className="text-4xl font-bold mb-6">Lobby da Sala</h1>
+    <div className="text-white p- max-w-2xl mx-auto mt-30 text-center">
+      <h1 className=" font-bold mb-6">Lobby da Sala</h1>
 
       {!sala ? (
         <p className="text-gray-400">Carregando informações da sala...</p>
@@ -71,9 +103,9 @@ export default function Lobby({ uid }) {
         )}
       </div>
 
-      {isHost && (
+     {isAdmin && (
         <button
-          className="bg-orange-600 hover:bg-orange-800 text-white font-bold py-2 px-6 rounded disabled:opacity-50"
+          className="bg-orange-600 hover:bg-orange-800 text-white font-bold py-2 px-6 rounded disabled:"
           disabled={jogadores.length < 2}
           onClick={() => alert("Jogo iniciado!")}
         >

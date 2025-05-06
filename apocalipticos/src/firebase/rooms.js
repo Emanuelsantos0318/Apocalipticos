@@ -1,7 +1,7 @@
 // firebase/rooms.js
 
 import { db } from "./config";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, updateDoc } from "firebase/firestore";
 
 export async function criarSala(uid, roomData) {
   const salaRef = doc(db, "salas", roomData.roomCode);
@@ -28,4 +28,10 @@ export async function criarSala(uid, roomData) {
 
   await setDoc(salaRef, sala);
   return roomData.roomCode;
+}
+export async function iniciarJogo(roomCode) {
+  const salaRef = doc(db, "salas", roomCode);
+  await updateDoc(salaRef, {
+    estado: "emAndamento",
+  });
 }
