@@ -1,28 +1,29 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { criarSala } from '../firebase/rooms';
+import CreateRoomModal from "../components/CreateRoomModal";
+import JoinRoomModal from "../components/JoinRoomModal";
+import { criarSala } from "../firebase/rooms";
 
 export default function Home({ uid }) {
   const navigate = useNavigate();
-  const [modo, setModo] = useState('casual');
-  const [code, setCode] = useState("");
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showJoinModal, setShowJoinModal] = useState(false);
 
-  const handleCriarSala = async () => {
+  const handleCreateRoom = async (roomData) => {
     if (!uid) return;
-    const codigo = await criarSala(uid, modo);
+    const codigo = await criarSala(uid, roomData);
     navigate(`/lobby/${codigo}`);
   };
-
-  const handleJoinRoom = () => {
-    if (code.trim()) {
-      navigate(`/lobby/${code.trim().toUpperCase()}`);
-    }
+  const handleJoinRoomModal = ({ nome, nascimento, chave }) => {
+    // Exemplo: salvar no localStorage
+    localStorage.setItem("playerName", nome);
+    localStorage.setItem("birthDate", nascimento);
+    navigate(`/lobby/${chave}`);
   };
+  
 
-  // Exibe tela de carregamento até o UID estar disponível
   if (!uid) {
-    return <div className="text-whidte text-center  mt-20">Carregando...</div>;
+    return <div className="text-white text-center mt-20">Carregando...</div>;
   }
 
   return (

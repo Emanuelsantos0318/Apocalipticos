@@ -2,7 +2,6 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { db } from "../firebase/config";
 import { doc, onSnapshot, collection } from "firebase/firestore";
-
 export default function Lobby() {
   const { codigo } = useParams(); // Recebe código da sala da URL
   const [sala, setSala] = useState(null);
