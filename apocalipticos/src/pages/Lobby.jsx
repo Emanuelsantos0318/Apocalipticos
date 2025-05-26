@@ -1,116 +1,198 @@
-import React, { useEffect, useState } from "react";
+import React from "react"; // Adicione esta linha
+import { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../firebase/config";
-import { doc, onSnapshot, collection } from "firebase/firestore";
+import {
+  doc,
+  onSnapshot,
+  collection,
+  updateDoc,
+  deleteDoc,
+} from "firebase/firestore";
+import { AuthContext } from "../context/AuthContext";
+import { GAME_MODES, GAME_STATES } from "../constants/constants";
 import { iniciarJogo } from "../firebase/rooms";
+import PlayerList from "../components/lobby/PlayerList";
+import RoomHeader from "../components/lobby/RoomHeader";
+import ActionButton from "../components/buttons/ActionButton";
+import ImagemLogo from "../components/imagemLogo";
+import ConfirmModal from "../components/modals/ConfirmModal";
 
-
-export default function Lobby({ uid }) {
+export default function Lobby() {
   const { codigo } = useParams();
   const navigate = useNavigate();
+  const { currentUser: user } = useContext(AuthContext);
   const [sala, setSala] = useState(null);
   const [jogadores, setJogadores] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [mostrarConfirmacaoSaida, setMostrarConfirmacaoSaida] = useState(false);
 
-  const [isHost, setIsHost] = useState(false);
-
-  // Ouve dados da sala
+  // Monitorar estado da sala
   useEffect(() => {
     const salaRef = doc(db, "salas", codigo);
+    const unsubscribeSala = onSnapshot(salaRef, (docSnap) => {
+      if (!docSnap.exists()) {
+        navigate("/", { state: { error: "Sala não encontrada" } });
+        return;
+      }
 
-    let unsubscribeSala;
-  
-    try {
-      unsubscribeSala = onSnapshot(salaRef, (docSnap) => {
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          setSala(data);
-  
-          if (data.hostUid === uid) {
-            setIsHost(true);
-          }
-  
-          if (data.estado === "emAndamento") {
-            navigate(`/jogo/${codigo}`);
-          }
-        } else {
-          console.warn("Sala não encontrada.");
-          alert("Sala não encontrada. Verifique o código e tente novamente.");
-          navigate("/");
-        }
-      });
-    } catch (error) {
-      console.error("Erro ao acessar a sala:", error);
-      alert("Ocorreu um erro ao acessar a sala.");
-      navigate("/");
-    }
+      const data = docSnap.data();
+      setSala(data);
 
-    // Ouve lista de jogadores
-    const jogadoresRef = collection(db, "salas", codigo, "jogadores");
-    const unsubscribeJogadores = onSnapshot(jogadoresRef, (snapshot) => {
-      const lista = snapshot.docs.map((doc) => doc.data());
-      setJogadores(lista);
+      if (data.estado === GAME_STATES.EM_ANDAMENTO) {
+        navigate(`/jogo/${codigo}`);
+      }
     });
 
+    // Monitorar jogadores
+    const jogadoresRef = collection(db, "salas", codigo, "jogadores");
+    const unsubscribeJogadores = onSnapshot(jogadoresRef, (snapshot) => {
+      setJogadores(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+      setLoading(false);
+    });
+
+    // Atualizar lastActive periodicamente
+    const interval = setInterval(async () => {
+      if (!user) return;
+      const jogadorRef = doc(db, "salas", codigo, "jogadores", user.uid);
+      try {
+        await updateDoc(jogadorRef, {
+          lastActive: Date.now(),
+        });
+      } catch (err) {
+        console.error("Erro ao atualizar lastActive:", err);
+      }
+    }, 5000);
+
     return () => {
-      if (unsubscribeSala) unsubscribeSala();
+      unsubscribeSala();
       unsubscribeJogadores();
+      clearInterval(interval);
     };
-  }, [codigo, uid, navigate]);
+  }, [codigo, navigate]);
 
-  const isAdmin = sala?.hostUid === uid;
+  const handleIniciarJogo = async () => {
+    if (jogadores.length < 2) {
+      alert("Mínimo de 2 jogadores para começar!");
+      return;
+    }
 
-const handleIniciarJogo = async () => {
     try {
       await iniciarJogo(codigo);
     } catch (err) {
-      console.error("Erro ao iniciar o jogo:", err);
+      console.error("Erro ao iniciar jogo:", err);
+      alert("Falha ao iniciar o jogo.");
     }
   };
 
+  const handleTogglePronto = async () => {
+    if (!user) return;
+
+    const jogador = jogadores.find((j) => j.id === user.uid);
+    console.log("Jogador encontrado:", jogador);
+
+    if (!jogador) {
+      console.error("Jogador não encontrado com UID:", user.uid);
+      return;
+    }
+
+    const jogadorRef = doc(db, "salas", codigo, "jogadores", user.uid);
+    try {
+      await updateDoc(jogadorRef, {
+        pronto: !jogador.pronto,
+      });
+      console.log("Status de pronto atualizado!");
+    } catch (err) {
+      console.error("Erro ao atualizar status de pronto:", err);
+    }
+  };
+
+const handleSairDaSala = async () => {
+  if (!user) return;
+
+  try {
+    await deleteDoc(doc(db, "salas", codigo, "jogadores", user.uid));
+    navigate("/"); // volta pra home
+  } catch (error) {
+    console.error("Erro ao sair da sala:", error);
+  }
+};
+
+
+  const handleRemoverJogador = async (uid) => {
+    if (!user || !isHost) return;
+
+    const confirmacao = window.confirm("Deseja remover este jogador?");
+    if (!confirmacao) return;
+
+    try {
+      await deleteDoc(doc(db, "salas", codigo, "jogadores", uid));
+    } catch (error) {
+      console.error("Erro ao remover jogador:", error);
+    }
+  };
+
+  if (loading || !sala) {
+    return <div className="text-white text-center p-8">Carregando sala...</div>;
+  }
+
+  const isHost = user && sala.host?.uid === user.uid;
+  const jogadorAtual = jogadores.find((j) => j.id === user?.uid);
+
+  // Ignora host na checagem de prontos
+  const jogadoresSemHost = jogadores.filter((j) => j.uid !== sala.host?.uid);
+  const todosProntos =
+    jogadoresSemHost.length > 0 &&
+    jogadoresSemHost.every((j) => j.pronto === true);
 
   return (
-    <div className="text-white p- max-w-2xl mx-auto mt-30 text-center">
-      <h1 className=" font-bold mb-6">Lobby da Sala</h1>
+    <div className="min-h-screen  text-white p-4">
+      <div className="max-w-2xl mx-auto">
+        <ImagemLogo className="rounded-lg shadow-lg" />
 
-      {!sala ? (
-        <p className="text-gray-400">Carregando informações da sala...</p>
-      ) : (
-        <div className="bg-gray-800 p-4 rounded-lg shadow-md mb-6">
-          <p className="text-lg">Código da Sala:</p>
-          <p className="text-3xl font-mono font-bold text-orange-400">{codigo}</p>
-          <p className="mt-2">
-            Modo: <strong>{sala.modo}</strong>
-          </p>
+        <RoomHeader codigo={codigo} modo={sala.modo} isHost={isHost} />
+
+        <PlayerList
+          jogadores={jogadores}
+          currentUser={user}
+          onTogglePronto={handleTogglePronto}
+          isHost={isHost}
+          onRemoverJogador={handleRemoverJogador}
+        />
+
+        <div className="mt-8 space-y-4">
+          {isHost ? (
+            <ActionButton
+              onClick={handleIniciarJogo}
+              disabled={!todosProntos}
+              theme={todosProntos ? "primary" : "disabled"}
+            >
+              {todosProntos ? "Iniciar Jogo" : "Aguardando jogadores..."}
+            </ActionButton>
+          ) : (
+            <ActionButton
+              onClick={handleTogglePronto}
+              theme={jogadorAtual?.pronto ? "ready" : "not-ready"}
+            >
+              {jogadorAtual?.pronto ? "Pronto!" : "Marcar como Pronto"}
+            </ActionButton>
+          )}
+          {!isHost && (
+            <ActionButton
+              onClick={() => setMostrarConfirmacaoSaida(true)}
+              theme="danger"
+            >
+              Sair da Sala
+            </ActionButton>
+          )}
         </div>
-      )}
-
-      <div className="bg-gray-700 p-4 rounded-lg shadow-md mb-6">
-        <h2 className="text-xl font-semibold mb-2">Jogadores conectados:</h2>
-        {jogadores.length > 0 ? (
-          <ul className="space-y-2">
-            {jogadores.map((jogador, i) => (
-              <li
-                key={i}
-                className="flex items-center gap-2 bg-gray-900 px-3 py-2 rounded text-left"
-              >
-                <span className="text-2xl">{jogador.avatar || "👤"}</span>
-                <span>{jogador.nome || `Anônimo ${i + 1}`}</span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-400">Aguardando jogadores...</p>
-        )}
       </div>
-
-     {isAdmin && (
-        <button
-        className="mt-6 bg-orange-600 hover:bg-orange-800 text-white font-bold py-2 px-6 rounded disabled"
-        disabled={jogadores.length < 2}
-        onClick={handleIniciarJogo}
-        >
-          Iniciar Jogo
-        </button>
+      {mostrarConfirmacaoSaida && (
+        <ConfirmModal
+          mensagem="Deseja realmente sair da sala?"
+          onConfirm={handleSairDaSala}
+          onCancel={() => setMostrarConfirmacaoSaida(false)}
+        />
       )}
     </div>
   );
