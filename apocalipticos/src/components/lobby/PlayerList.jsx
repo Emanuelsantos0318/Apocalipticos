@@ -1,10 +1,16 @@
 import React, { useState } from "react";
 import { FiXCircle } from "react-icons/fi"; // Ícone mais bonito
 import ConfirmModal from "../modals/ConfirmModal"; // ajuste o caminho conforme sua estrutura
+import toast from "react-hot-toast";
 
-
-export default function PlayerList({ jogadores, currentUser, isHost, onRemoverJogador }) {
-    const [jogadorSelecionado, setJogadorSelecionado] = useState(null);
+export default function PlayerList({
+  jogadores,
+  currentUser,
+  isHost,
+  sala,
+  onRemoverJogador,
+}) {
+  const [jogadorSelecionado, setJogadorSelecionado] = useState(null);
 
   const confirmarRemocao = (uid) => {
     setJogadorSelecionado(uid);
@@ -14,12 +20,19 @@ export default function PlayerList({ jogadores, currentUser, isHost, onRemoverJo
     setJogadorSelecionado(null);
   };
 
-  const removerJogador = () => {
-    if (jogadorSelecionado) {
-      onRemoverJogador(jogadorSelecionado);
-      setJogadorSelecionado(null);
-    }
-  };
+const removerJogador = () => {
+  if (!jogadorSelecionado) return;
+
+  // ❌ Se o jogo já começou, bloqueia remoção
+  if (sala?.estado === "em_andamento") {
+    toast.error("Não é possível remover jogadores após o início do jogo.");
+    setJogadorSelecionado(null);
+    return;
+  }
+
+  onRemoverJogador(jogadorSelecionado);
+  setJogadorSelecionado(null);
+};
   return (
     <div className="bg-gray-800 p-4 rounded-lg">
       <h2 className="text-xl font-semibold mb-4">
@@ -38,8 +51,12 @@ export default function PlayerList({ jogadores, currentUser, isHost, onRemoverJo
               <span>
                 {jogador.nome}
                 {jogador.uid === currentUser?.uid && " (Você)"}
-                {jogador.uid === currentUser?.uid && jogador.isHost && " (Host)"}
-                {jogador.uid !== currentUser?.uid && jogador.isHost && " (Host)"}
+                {jogador.uid === currentUser?.uid &&
+                  jogador.isHost &&
+                  " (Host)"}
+                {jogador.uid !== currentUser?.uid &&
+                  jogador.isHost &&
+                  " (Host)"}
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -52,7 +69,7 @@ export default function PlayerList({ jogadores, currentUser, isHost, onRemoverJo
               </span>
 
               {/* Botão de remover (só visível para o host e não para ele mesmo) */}
-             {isHost && jogador.uid !== currentUser?.uid && (
+              {isHost && jogador.uid !== currentUser?.uid && (
                 <button
                   onClick={() => confirmarRemocao(jogador.uid)}
                   className="text-red-400 hover:text-red-600 text-xl"
@@ -65,16 +82,15 @@ export default function PlayerList({ jogadores, currentUser, isHost, onRemoverJo
           </li>
         ))}
       </ul>
-      
+
       {/* Modal simples de confirmação */}
       {jogadorSelecionado && (
-  <ConfirmModal
-    mensagem="Deseja realmente remover este jogador?"
-    onConfirm={removerJogador}
-    onCancel={cancelarRemocao}
-  />
-)}
-
+        <ConfirmModal
+          mensagem="Deseja realmente remover este jogador?"
+          onConfirm={removerJogador}
+          onCancel={cancelarRemocao}
+        />
+      )}
     </div>
   );
 }

@@ -17,6 +17,8 @@ import RoomHeader from "../components/lobby/RoomHeader";
 import ActionButton from "../components/buttons/ActionButton";
 import ImagemLogo from "../components/imagemLogo";
 import ConfirmModal from "../components/modals/ConfirmModal";
+import toast from "react-hot-toast"; // adicione no topo
+import { useSounds } from "../hooks/useSounds"; // ajuste o caminho conforme necessário
 
 export default function Lobby() {
   const { codigo } = useParams();
@@ -26,6 +28,7 @@ export default function Lobby() {
   const [jogadores, setJogadores] = useState([]);
   const [loading, setLoading] = useState(true);
   const [mostrarConfirmacaoSaida, setMostrarConfirmacaoSaida] = useState(false);
+  const { playMarcarPronto, playDesmarcarPronto, playRemover } = useSounds();
 
   // Monitorar estado da sala
   useEffect(() => {
@@ -69,7 +72,7 @@ export default function Lobby() {
       unsubscribeJogadores();
       clearInterval(interval);
     };
-  }, [codigo, navigate]);
+  }, [user, codigo, navigate]); //Caso dê algum erro é o "user"!
 
   const handleIniciarJogo = async () => {
     if (jogadores.length < 2) {
@@ -89,8 +92,8 @@ export default function Lobby() {
     if (!user) return;
 
     const jogador = jogadores.find((j) => j.id === user.uid);
-    console.log("Jogador encontrado:", jogador);
 
+    const novoStatus = !jogador.pronto;
     if (!jogador) {
       console.error("Jogador não encontrado com UID:", user.uid);
       return;
@@ -99,36 +102,45 @@ export default function Lobby() {
     const jogadorRef = doc(db, "salas", codigo, "jogadores", user.uid);
     try {
       await updateDoc(jogadorRef, {
-        pronto: !jogador.pronto,
+        pronto: novoStatus,
       });
-      console.log("Status de pronto atualizado!");
+
+      if (novoStatus) {
+        playMarcarPronto();
+      } else {
+        playDesmarcarPronto();
+      }
     } catch (err) {
       console.error("Erro ao atualizar status de pronto:", err);
     }
   };
 
-const handleSairDaSala = async () => {
-  if (!user) return;
+  const handleSairDaSala = async () => {
+    if (!user) return;
 
-  try {
-    await deleteDoc(doc(db, "salas", codigo, "jogadores", user.uid));
-    navigate("/"); // volta pra home
-  } catch (error) {
-    console.error("Erro ao sair da sala:", error);
-  }
-};
-
+    try {
+      await deleteDoc(doc(db, "salas", codigo, "jogadores", user.uid));
+      navigate("/"); // volta pra home
+    } catch (error) {
+      console.error("Erro ao sair da sala:", error);
+    }
+  };
 
   const handleRemoverJogador = async (uid) => {
     if (!user || !isHost) return;
 
-    const confirmacao = window.confirm("Deseja remover este jogador?");
-    if (!confirmacao) return;
+    if (sala?.estado === "em_andamento") {
+      toast.error("Não é possível remover jogadores após o início do jogo.");
+      return;
+    }
 
     try {
       await deleteDoc(doc(db, "salas", codigo, "jogadores", uid));
+      playRemover(); // 🔊 toca som ao remover
+      toast.success("Jogador removido com sucesso.");
     } catch (error) {
       console.error("Erro ao remover jogador:", error);
+      toast.error("Erro ao remover jogador.");
     }
   };
 
@@ -157,6 +169,7 @@ const handleSairDaSala = async () => {
           currentUser={user}
           onTogglePronto={handleTogglePronto}
           isHost={isHost}
+          sala={sala}
           onRemoverJogador={handleRemoverJogador}
         />
 
