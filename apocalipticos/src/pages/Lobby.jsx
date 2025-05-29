@@ -17,7 +17,6 @@ import RoomHeader from "../components/lobby/RoomHeader";
 import ActionButton from "../components/buttons/ActionButton";
 import ImagemLogo from "../components/imagemLogo";
 import ConfirmModal from "../components/modals/ConfirmModal";
-import toast from "react-hot-toast"; // adicione no topo
 import { useSounds } from "../hooks/useSounds"; // ajuste o caminho conforme necessário
 
 export default function Lobby() {
@@ -31,48 +30,53 @@ export default function Lobby() {
   const { playMarcarPronto, playDesmarcarPronto, playRemover } = useSounds();
 
   // Monitorar estado da sala
-  useEffect(() => {
-    const salaRef = doc(db, "salas", codigo);
-    const unsubscribeSala = onSnapshot(salaRef, (docSnap) => {
-      if (!docSnap.exists()) {
-        navigate("/", { state: { error: "Sala não encontrada" } });
-        return;
-      }
+useEffect(() => {
+  const salaRef = doc(db, "salas", codigo);
+  const unsubscribeSala = onSnapshot(salaRef, (docSnap) => {
+    if (!docSnap.exists()) {
+      navigate("/", { state: { error: "Sala não encontrada" } });
+      return;
+    }
 
-      const data = docSnap.data();
-      setSala(data);
+    const data = docSnap.data();
+    setSala(data); // ✅ Só atualiza o estado, sem redirecionar aqui
+  });
 
-      if (data.estado === GAME_STATES.EM_ANDAMENTO) {
-        navigate(`/jogo/${codigo}`);
-      }
-    });
+  // Monitorar jogadores
+  const jogadoresRef = collection(db, "salas", codigo, "jogadores");
+  const unsubscribeJogadores = onSnapshot(jogadoresRef, (snapshot) => {
+    setJogadores(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+    setLoading(false);
+  });
 
-    // Monitorar jogadores
-    const jogadoresRef = collection(db, "salas", codigo, "jogadores");
-    const unsubscribeJogadores = onSnapshot(jogadoresRef, (snapshot) => {
-      setJogadores(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-      setLoading(false);
-    });
+  // Atualizar lastActive periodicamente
+  const interval = setInterval(async () => {
+    if (!user) return;
+    const jogadorRef = doc(db, "salas", codigo, "jogadores", user.uid);
+    try {
+      await updateDoc(jogadorRef, {
+        lastActive: Date.now(),
+      });
+    } catch (err) {
+      console.error("Erro ao atualizar lastActive:", err);
+    }
+  }, 5000);
 
-    // Atualizar lastActive periodicamente
-    const interval = setInterval(async () => {
-      if (!user) return;
-      const jogadorRef = doc(db, "salas", codigo, "jogadores", user.uid);
-      try {
-        await updateDoc(jogadorRef, {
-          lastActive: Date.now(),
-        });
-      } catch (err) {
-        console.error("Erro ao atualizar lastActive:", err);
-      }
-    }, 5000);
+  return () => {
+    unsubscribeSala();
+    unsubscribeJogadores();
+    clearInterval(interval);
+  };
+}, [codigo, navigate]);
+ //Caso dê algum erro é o "user"!
 
-    return () => {
-      unsubscribeSala();
-      unsubscribeJogadores();
-      clearInterval(interval);
-    };
-  }, [user, codigo, navigate]); //Caso dê algum erro é o "user"!
+  // 🔁 Redirecionar quando o jogo começar
+useEffect(() => {
+  if (sala?.estado === GAME_STATES.EM_ANDAMENTO) {
+    console.log("Jogo começou, redirecionando...");
+    navigate(`/jogo/${codigo}`);
+  }
+}, [sala?.estado, navigate]);
 
   const handleIniciarJogo = async () => {
     if (jogadores.length < 2) {
@@ -88,32 +92,29 @@ export default function Lobby() {
     }
   };
 
-  const handleTogglePronto = async () => {
-    if (!user) return;
+const handleTogglePronto = async () => {
+  if (!user) return;
 
-    const jogador = jogadores.find((j) => j.id === user.uid);
+  const jogador = jogadores.find((j) => j.id === user.uid);
+  if (!jogador) return;
 
-    const novoStatus = !jogador.pronto;
-    if (!jogador) {
-      console.error("Jogador não encontrado com UID:", user.uid);
-      return;
-    }
+  const novoStatus = !jogador.pronto;
 
+  try {
     const jogadorRef = doc(db, "salas", codigo, "jogadores", user.uid);
-    try {
-      await updateDoc(jogadorRef, {
-        pronto: novoStatus,
-      });
+    await updateDoc(jogadorRef, {
+      pronto: novoStatus,
+    });
 
-      if (novoStatus) {
-        playMarcarPronto();
-      } else {
-        playDesmarcarPronto();
-      }
-    } catch (err) {
-      console.error("Erro ao atualizar status de pronto:", err);
+    if (novoStatus) {
+      playMarcarPronto();
+    } else {
+      playDesmarcarPronto();
     }
-  };
+  } catch (err) {
+    console.error("Erro ao atualizar status de pronto:", err);
+  }
+};
 
   const handleSairDaSala = async () => {
     if (!user) return;
@@ -129,18 +130,11 @@ export default function Lobby() {
   const handleRemoverJogador = async (uid) => {
     if (!user || !isHost) return;
 
-    if (sala?.estado === "em_andamento") {
-      toast.error("Não é possível remover jogadores após o início do jogo.");
-      return;
-    }
-
     try {
       await deleteDoc(doc(db, "salas", codigo, "jogadores", uid));
-      playRemover(); // 🔊 toca som ao remover
-      toast.success("Jogador removido com sucesso.");
+      playRemover();
     } catch (error) {
       console.error("Erro ao remover jogador:", error);
-      toast.error("Erro ao remover jogador.");
     }
   };
 
@@ -169,7 +163,6 @@ export default function Lobby() {
           currentUser={user}
           onTogglePronto={handleTogglePronto}
           isHost={isHost}
-          sala={sala}
           onRemoverJogador={handleRemoverJogador}
         />
 
