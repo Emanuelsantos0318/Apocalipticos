@@ -1,13 +1,21 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../firebase/config";
-import { doc, onSnapshot, updateDoc, increment, serverTimestamp } from "firebase/firestore";
+import {
+  doc,
+  onSnapshot,
+  updateDoc,
+  increment,
+  serverTimestamp,
+  collection,
+} from "firebase/firestore";
 import { AuthContext } from "../context/AuthContext";
 import { sortearCarta } from "../firebase/game";
 import { GameHeader } from "../components/game/GameHeader";
 import CardDisplay from "../components/game/CardDisplay";
 import PlayerActions from "../components/game/PlayerActions";
 import Timer from "../components/game/Timer";
+import RankingJogadores from "../components/ranking/RankingJogadores";
 
 export default function Jogo() {
   const { codigo } = useParams();
@@ -17,6 +25,8 @@ export default function Jogo() {
   const [currentPlayer, setCurrentPlayer] = useState(null);
   const [timeLeft, setTimeLeft] = useState(30);
   const [actionTaken, setActionTaken] = useState(false);
+  const [jogadores, setJogadores] = useState([]);
+  const [meuUid, setMeuUid] = useState(null);
 
   // Monitorar estado do jogo
   useEffect(() => {
@@ -59,6 +69,31 @@ export default function Jogo() {
   const isCurrentPlayer = currentPlayer && currentPlayer === user?.uid;
   const showActions = isCurrentPlayer && sala?.cartaAtual && !actionTaken;
 
+  useEffect(() => {
+    const localData = JSON.parse(localStorage.getItem("playerData"));
+    setMeuUid(localData?.uid);
+
+    const unsubscribe = onSnapshot(
+      collection(db, "salas", codigo, "jogadores"),
+      (snapshot) => {
+        const lista = snapshot.docs.map((doc) => ({
+          ...doc.data(),
+          uid: doc.id,
+        }));
+
+        // Ordenar por pontuação decrescente
+        lista.sort((a, b) => (b.pontuacao || 0) - (a.pontuacao || 0));
+
+        setJogadores(lista);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [codigo]);
+
+  
+  
+
   const handleSortearCarta = async () => {
     if (!isCurrentPlayer || !sala) return;
 
@@ -67,7 +102,7 @@ export default function Jogo() {
       await updateDoc(doc(db, "salas", codigo), {
         cartaAtual: carta,
         jogadorAtual: user.uid,
-        timeLeft: 30
+        timeLeft: 30,
       });
       setTimeLeft(30);
       setActionTaken(false);
@@ -92,7 +127,7 @@ export default function Jogo() {
       const playerRef = doc(db, "salas", codigo, "jogadores", user.uid);
       await updateDoc(playerRef, {
         [`stats.${action}`]: increment(1),
-        ultimaAcao: serverTimestamp()
+        ultimaAcao: serverTimestamp(),
       });
     } catch (error) {
       console.error("Erro ao atualizar stats do jogador:", error);
@@ -106,7 +141,7 @@ export default function Jogo() {
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4">
       <div className="max-w-2xl mx-auto">
-        <GameHeader 
+        <GameHeader
           codigo={codigo}
           modo={sala.modo}
           currentPlayer={currentPlayer}
@@ -115,10 +150,7 @@ export default function Jogo() {
 
         {sala.cartaAtual ? (
           <>
-            <CardDisplay 
-              carta={sala.cartaAtual}
-              timeLeft={timeLeft}
-            />
+            <CardDisplay carta={sala.cartaAtual} timeLeft={timeLeft} />
 
             {showActions && (
               <PlayerActions
@@ -128,10 +160,7 @@ export default function Jogo() {
               />
             )}
 
-            <Timer 
-              timeLeft={timeLeft}
-              totalTime={30}
-            />
+            <Timer timeLeft={timeLeft} totalTime={30} />
           </>
         ) : (
           <div className="text-center py-12">
@@ -148,6 +177,11 @@ export default function Jogo() {
           </div>
         )}
       </div>
+      {/* DIREITA - RANKING FIXO NO TOPO */}
+    <div className="w-[300px] p-1 absolute top-4 right-4 bg-opacity-10 backdrop-blur-md rounded-2xl shadow-lg">
+      <h1 className="titulo text-xl font-bold mb-2 text-center ">Ranking de Jogadores</h1>
+      <RankingJogadores jogadores={jogadores} meuUid={meuUid} />
+    </div>
     </div>
   );
 }
