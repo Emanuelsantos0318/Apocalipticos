@@ -2,6 +2,14 @@
 
 **Apocalípticos** é um jogo interativo e insano para grupos de amigos (presencial ou remoto), inspirado em jogos como *Amigos de Merda*, *Verdade ou Desafio* e *Eu Nunca*. Com foco em desafios, perguntas e decisões bizarras em tempo real, tudo embrulhado em uma estética "apocalíptica zoada". Ideal para animar qualquer rolê!
 
+### 📸 Telas do Jogo
+
+| Tela Inicial | Criando uma Sala | Entrando em uma Sala | Lobby |
+| :---: | :---: | :---: | :---: |
+| ![Tela inicial do jogo Apocalípticos](docs/images/home.png) | ![Modal para criar uma sala de jogo](docs/images/modal-criar-sala.png) | ![Modal para entrar em uma sala com código](docs/images/modal-entrar-sala.png) | ![Tela de lobby aguardando o início do jogo](docs/images/lobby.png) |
+
+---
+
 ## 🚀 Tecnologias Utilizadas
 
 - React + Vite
