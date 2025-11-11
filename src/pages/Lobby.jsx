@@ -18,6 +18,7 @@ import ActionButton from "../components/buttons/ActionButton";
 import ImagemLogo from "../components/imagemLogo";
 import ConfirmModal from "../components/modals/ConfirmModal";
 import { useSounds } from "../hooks/useSounds"; // ajuste o caminho conforme necessário
+import PageLayout from "../components/PageLayout";
 
 export default function Lobby() {
   const { codigo } = useParams();
@@ -152,6 +153,7 @@ const handleTogglePronto = async () => {
     jogadoresSemHost.every((j) => j.pronto === true);
 
   return (
+    <PageLayout>
 <div className="min-h-screen text-white p-4">
       <div className="max-w-2xl mx-auto">
       
@@ -213,5 +215,6 @@ const handleTogglePronto = async () => {
         />
       )}
     </div>
+    </PageLayout>
   );
 }

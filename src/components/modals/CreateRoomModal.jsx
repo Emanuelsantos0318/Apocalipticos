@@ -35,6 +35,8 @@ export default function CreateRoomModal({ isOpen, onClose, onCreate }) {
   const [nome, setNome] = useState("");
   const [dataNascimento, setDataNascimento] = useState("");
   const [copied, setCopied] = useState(false); // novo estado para feedback de cópia
+  const discordLink = "https://discord.gg/PRSGFM86";
+
   useEffect(() => {
     if (isOpen) {
       setRoomCode(gerarCodigoSala());
@@ -42,6 +44,7 @@ export default function CreateRoomModal({ isOpen, onClose, onCreate }) {
       setModo("normal");
       setNome("");
       setDataNascimento("");
+      
     }
   }, [isOpen]);
 
@@ -81,8 +84,8 @@ export default function CreateRoomModal({ isOpen, onClose, onCreate }) {
       nomeAdmin: nome,
       dataNascimento,
       estado: "esperando",
+      discordLink: discordLink// 
     };
-
     onCreate(roomData);
   };
 
@@ -91,7 +94,9 @@ export default function CreateRoomModal({ isOpen, onClose, onCreate }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="bg-apocal-laranjaEscuro p-6 rounded-xl w-full max-w-md shadow-lg">
-        <h2 className=" col text-2xl font-bold mb-4 text-center">Criar Nova Sala</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">
+          Criar Nova Sala
+        </h2>
 
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Seu nome:</label>
@@ -129,6 +134,27 @@ export default function CreateRoomModal({ isOpen, onClose, onCreate }) {
               <Check size={20} className="text-green-600" />
             ) : (
               <ClipboardCopy size={20} className="text-gray-700" />
+            )}
+          </div>
+        </div>
+
+     {/*SEÇÃO PARA O DISCORD */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">
+            Chat de Voz (Discord):
+          </label>
+          <div className="bg-gray-100 p-2 rounded text-center">
+            {discordLink ? (
+              <a 
+                href={discordLink}
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline"
+              >
+                Entrar no Chat de Voz
+              </a>
+            ) : (
+              <span className="text-gray-500">Gerando link...</span>
             )}
           </div>
         </div>

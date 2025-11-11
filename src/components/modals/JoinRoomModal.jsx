@@ -68,7 +68,7 @@ const handleJoin = () => {
 
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">
-            Data de dataNascimento:
+            Data de nascimento:
           </label>
           <input
             type="date"

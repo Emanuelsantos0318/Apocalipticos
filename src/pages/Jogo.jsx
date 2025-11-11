@@ -17,6 +17,7 @@ import PlayerActions from "../components/game/PlayerActions";
 import Timer from "../components/game/Timer";
 import RankingJogadores from "../components/ranking/RankingJogadores";
 import { atualizarPontuacao } from "../firebase/jogadores";
+import PageLayout from "../components/PageLayout";
 
 export default function Jogo() {
   const { codigo } = useParams();
@@ -139,6 +140,7 @@ export default function Jogo() {
   }
 
   return (
+     <PageLayout>
     <div className="min-h-screen bg-gray-900 text-white p-4 ">
       <div className="max-w-2xl mx-auto">
         <GameHeader
@@ -191,5 +193,6 @@ export default function Jogo() {
       </button>
     </div>
     </div>
+    </PageLayout>
   );
 }
