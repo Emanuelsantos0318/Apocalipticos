@@ -29,7 +29,11 @@ export default function Jogo() {
   const [actionTaken, setActionTaken] = useState(false);
   const [jogadores, setJogadores] = useState([]);
   const [meuUid, setMeuUid] = useState(null);
-  const somarPonto = () => {
+   const somarPonto = () => {
+    if (!meuUid) {
+      console.warn("UID do jogador não encontrado");
+      return;
+    }
     atualizarPontuacao(codigo, meuUid, 10); // +10 pontos
   };
   // Monitorar estado do jogo

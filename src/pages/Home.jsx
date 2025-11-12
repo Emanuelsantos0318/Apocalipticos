@@ -56,6 +56,20 @@ export default function Home() {
         categorias: roomData.categorias || [],
         criador: currentUser.displayName || currentUser.email,
       });
+
+   // Salvar dados do administrador no localStorage (compatível com campos do modal)
+      const adminData = {
+        uid: currentUser.uid,
+        nome:
+          roomData.nomeAdmin ||
+          roomData.nome ||
+          currentUser.displayName ||
+          currentUser.email,
+        avatar: roomData.avatar || roomData.avatarSelecionado || "👤",
+        email: currentUser.email,
+      };
+      localStorage.setItem("playerData", JSON.stringify(adminData));
+
       playComecar();
       stopHome();
       navigate(`/lobby/${codigo}`);

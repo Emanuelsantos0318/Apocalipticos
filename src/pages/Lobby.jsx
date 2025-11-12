@@ -1,4 +1,5 @@
 import React from "react"; // Adicione esta linha
+import { FaDiscord } from "react-icons/fa";
 import { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../firebase/config";
@@ -31,53 +32,53 @@ export default function Lobby() {
   const { playMarcarPronto, playDesmarcarPronto, playRemover } = useSounds();
 
   // Monitorar estado da sala
-useEffect(() => {
-  const salaRef = doc(db, "salas", codigo);
-  const unsubscribeSala = onSnapshot(salaRef, (docSnap) => {
-    if (!docSnap.exists()) {
-      navigate("/", { state: { error: "Sala não encontrada" } });
-      return;
-    }
+  useEffect(() => {
+    const salaRef = doc(db, "salas", codigo);
+    const unsubscribeSala = onSnapshot(salaRef, (docSnap) => {
+      if (!docSnap.exists()) {
+        navigate("/", { state: { error: "Sala não encontrada" } });
+        return;
+      }
 
-    const data = docSnap.data();
-    setSala(data); // ✅ Só atualiza o estado, sem redirecionar aqui
-  });
+      const data = docSnap.data();
+      setSala(data); // ✅ Só atualiza o estado, sem redirecionar aqui
+    });
 
-  // Monitorar jogadores
-  const jogadoresRef = collection(db, "salas", codigo, "jogadores");
-  const unsubscribeJogadores = onSnapshot(jogadoresRef, (snapshot) => {
-    setJogadores(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-    setLoading(false);
-  });
+    // Monitorar jogadores
+    const jogadoresRef = collection(db, "salas", codigo, "jogadores");
+    const unsubscribeJogadores = onSnapshot(jogadoresRef, (snapshot) => {
+      setJogadores(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+      setLoading(false);
+    });
 
-  // Atualizar lastActive periodicamente
-  const interval = setInterval(async () => {
-    if (!user) return;
-    const jogadorRef = doc(db, "salas", codigo, "jogadores", user.uid);
-    try {
-      await updateDoc(jogadorRef, {
-        lastActive: Date.now(),
-      });
-    } catch (err) {
-      console.error("Erro ao atualizar lastActive:", err);
-    }
-  }, 5000);
+    // Atualizar lastActive periodicamente
+    const interval = setInterval(async () => {
+      if (!user) return;
+      const jogadorRef = doc(db, "salas", codigo, "jogadores", user.uid);
+      try {
+        await updateDoc(jogadorRef, {
+          lastActive: Date.now(),
+        });
+      } catch (err) {
+        console.error("Erro ao atualizar lastActive:", err);
+      }
+    }, 5000);
 
-  return () => {
-    unsubscribeSala();
-    unsubscribeJogadores();
-    clearInterval(interval);
-  };
-}, [codigo, navigate]);
- //Caso dê algum erro é o "user"!
+    return () => {
+      unsubscribeSala();
+      unsubscribeJogadores();
+      clearInterval(interval);
+    };
+  }, [codigo, navigate]);
+  //Caso dê algum erro é o "user"!
 
   // 🔁 Redirecionar quando o jogo começar
-useEffect(() => {
-  if (sala?.estado === GAME_STATES.ONGOING) {
-    console.log("Jogo começou, redirecionando...");
-    navigate(`/jogo/${codigo}`);
-  }
-}, [sala?.estado, navigate]);
+  useEffect(() => {
+    if (sala?.estado === GAME_STATES.ONGOING) {
+      console.log("Jogo começou, redirecionando...");
+      navigate(`/jogo/${codigo}`);
+    }
+  }, [sala?.estado, navigate]);
 
   const handleIniciarJogo = async () => {
     if (jogadores.length < 2) {
@@ -93,29 +94,29 @@ useEffect(() => {
     }
   };
 
-const handleTogglePronto = async () => {
-  if (!user) return;
+  const handleTogglePronto = async () => {
+    if (!user) return;
 
-  const jogador = jogadores.find((j) => j.id === user.uid);
-  if (!jogador) return;
+    const jogador = jogadores.find((j) => j.id === user.uid);
+    if (!jogador) return;
 
-  const novoStatus = !jogador.pronto;
+    const novoStatus = !jogador.pronto;
 
-  try {
-    const jogadorRef = doc(db, "salas", codigo, "jogadores", user.uid);
-    await updateDoc(jogadorRef, {
-      pronto: novoStatus,
-    });
+    try {
+      const jogadorRef = doc(db, "salas", codigo, "jogadores", user.uid);
+      await updateDoc(jogadorRef, {
+        pronto: novoStatus,
+      });
 
-    if (novoStatus) {
-      playMarcarPronto();
-    } else {
-      playDesmarcarPronto();
+      if (novoStatus) {
+        playMarcarPronto();
+      } else {
+        playDesmarcarPronto();
+      }
+    } catch (err) {
+      console.error("Erro ao atualizar status de pronto:", err);
     }
-  } catch (err) {
-    console.error("Erro ao atualizar status de pronto:", err);
-  }
-};
+  };
 
   const handleSairDaSala = async () => {
     if (!user) return;
@@ -154,67 +155,67 @@ const handleTogglePronto = async () => {
 
   return (
     <PageLayout>
-<div className="min-h-screen text-white p-4">
-      <div className="max-w-2xl mx-auto">
-      
-        <div className="mb-6 text-center">
-          <p className="text-lg font-semibold mb-2">Chat de Voz</p>
-          <a 
-            href={sala.discordLink} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-colors"
-          >
-            🎤 Abrir Discord
-          </a>
+      <div className="min-h-screen text-white p-4">
+        <div className="max-w-2xl mx-auto">
+          <div className="mb-6 text-center">
+            
+            <a
+              href={sala.discordLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 hover:bg-[#b2b4c7] px-4 py-2 rounded-lg transition-colors"
+            >
+              <FaDiscord size={20} />
+              Abrir Discord
+            </a>
+          </div>
+          <ImagemLogo className="rounded-lg shadow-lg" />
+
+          <RoomHeader codigo={codigo} modo={sala.modo} isHost={isHost} />
+
+          <PlayerList
+            jogadores={jogadores}
+            currentUser={user}
+            onTogglePronto={handleTogglePronto}
+            isHost={isHost}
+            onRemoverJogador={handleRemoverJogador}
+          />
+
+          <div className="mt-8 space-y-4">
+            {isHost ? (
+              <ActionButton
+                onClick={handleIniciarJogo}
+                disabled={!todosProntos}
+                theme={todosProntos ? "primary" : "disabled"}
+              >
+                {todosProntos ? "Iniciar Jogo" : "Aguardando jogadores..."}
+              </ActionButton>
+            ) : (
+              <ActionButton
+                onClick={handleTogglePronto}
+                theme={jogadorAtual?.pronto ? "ready" : "not-ready"}
+              >
+                {jogadorAtual?.pronto ? "Pronto!" : "Marcar como Pronto"}
+              </ActionButton>
+            )}
+            {!isHost && (
+              <ActionButton
+                onClick={() => setMostrarConfirmacaoSaida(true)}
+                theme="danger"
+              >
+                Sair da Sala
+              </ActionButton>
+            )}
+          </div>
         </div>
-        <ImagemLogo className="rounded-lg shadow-lg" />
-
-        <RoomHeader codigo={codigo} modo={sala.modo} isHost={isHost} />
-
-        <PlayerList
-          jogadores={jogadores}
-          currentUser={user}
-          onTogglePronto={handleTogglePronto}
-          isHost={isHost}
-          onRemoverJogador={handleRemoverJogador}
-        />
-
-        <div className="mt-8 space-y-4">
-          {isHost ? (
-            <ActionButton
-              onClick={handleIniciarJogo}
-              disabled={!todosProntos}
-              theme={todosProntos ? "primary" : "disabled"}
-            >
-              {todosProntos ? "Iniciar Jogo" : "Aguardando jogadores..."}
-            </ActionButton>
-          ) : (
-            <ActionButton
-              onClick={handleTogglePronto}
-              theme={jogadorAtual?.pronto ? "ready" : "not-ready"}
-            >
-              {jogadorAtual?.pronto ? "Pronto!" : "Marcar como Pronto"}
-            </ActionButton>
-          )}
-          {!isHost && (
-            <ActionButton
-              onClick={() => setMostrarConfirmacaoSaida(true)}
-              theme="danger"
-            >
-              Sair da Sala
-            </ActionButton>
-          )}
-        </div>
+        {mostrarConfirmacaoSaida && (
+          <ConfirmModal
+            mensagem="Deseja realmente sair da sala?"
+            onConfirm={handleSairDaSala}
+            onCancel={() => setMostrarConfirmacaoSaida(false)}
+          />
+        )}
       </div>
-      {mostrarConfirmacaoSaida && (
-        <ConfirmModal
-          mensagem="Deseja realmente sair da sala?"
-          onConfirm={handleSairDaSala}
-          onCancel={() => setMostrarConfirmacaoSaida(false)}
-        />
-      )}
-    </div>
     </PageLayout>
   );
 }
