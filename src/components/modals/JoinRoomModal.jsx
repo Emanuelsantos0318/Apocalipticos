@@ -48,7 +48,7 @@ const handleJoin = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-      <div className="bg-apocal-azulClaro p-6 rounded-xl w-full max-w-md shadow-lg">
+      <div className="bg-apocal-cinzaEmer p-6 rounded-xl w-full max-w-md shadow-lg border border-apocal-laranjaClaro/30 ">
         <h2 className="text-2xl font-bold mb-4 text-center">Entrar na Sala</h2>
 
         {erro && (
@@ -61,7 +61,7 @@ const handleJoin = () => {
             type="text"
             value={nome}
             onChange={(e) => setNome(e.target.value)}
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border border-apocal-azulClaro/70 rounded"
             placeholder="Ex: João"
           />
         </div>
@@ -74,7 +74,7 @@ const handleJoin = () => {
             type="date"
             value={dataNascimento}
             onChange={(e) => setNascimento(e.target.value)}
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border border-apocal-azulClaro/70 rounded"
           />
         </div>
 
@@ -83,13 +83,13 @@ const handleJoin = () => {
             Avatar (Emoji):
           </label>
           <div className="grid grid-cols-5 gap-2">
-            {emojis.map((e) => (
+                 {emojis.map((e) => (
               <button
                 key={e}
                 onClick={() => setAvatar(e)}
-                className={`text-2xl p-2 rounded border ${
+                className={`text-2xl p-2 rounded border border-apocal-azulClaro/70 focus-visible:ring-2 focus-visible:ring-apocal-laranjaClaro/50 ${
                   avatar === e
-                    ? "bg-green-200 border-green-500"
+                    ? "bg-apocal-laranjaClaro/50 border-2 border-apocal-laranjaEscuro"
                     : "hover:bg-gray-400"
                 }`}
               >
@@ -107,7 +107,7 @@ const handleJoin = () => {
             type="text"
             value={chave}
             onChange={(e) => setChave(e.target.value)}
-            className="w-full p-2 border rounded uppercase"
+            className="w-full p-2 border border-apocal-azulClaro/70 rounded uppercase"
             placeholder="Ex: ABCDE"
           />
         </div>

@@ -44,7 +44,6 @@ export default function CreateRoomModal({ isOpen, onClose, onCreate }) {
       setModo("normal");
       setNome("");
       setDataNascimento("");
-      
     }
   }, [isOpen]);
 
@@ -84,7 +83,7 @@ export default function CreateRoomModal({ isOpen, onClose, onCreate }) {
       nomeAdmin: nome,
       dataNascimento,
       estado: "esperando",
-      discordLink: discordLink// 
+      discordLink: discordLink, //
     };
     onCreate(roomData);
   };
@@ -93,10 +92,8 @@ export default function CreateRoomModal({ isOpen, onClose, onCreate }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="bg-apocal-laranjaEscuro p-6 rounded-xl w-full max-w-md shadow-lg">
-        <h2 className="text-2xl font-bold mb-4 text-center">
-          Criar Nova Sala
-        </h2>
+      <div className="bg-apocal-cinzaEmer p-6 rounded-xl w-full max-w-md shadow-lg border border-apocal-laranjaClaro/30">
+        <h2 className="text-2xl font-bold mb-4 text-center">Criar Nova Sala</h2>
 
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Seu nome:</label>
@@ -104,7 +101,8 @@ export default function CreateRoomModal({ isOpen, onClose, onCreate }) {
             type="text"
             value={nome}
             onChange={(e) => setNome(e.target.value)}
-            className="w-full p-2 rounded border text-white"
+            className="w-full p-2 rounded border text-white border-apocal-azulClaro/70"
+            placeholder="Ex: Quenga Banguela"
           />
         </div>
 
@@ -116,7 +114,7 @@ export default function CreateRoomModal({ isOpen, onClose, onCreate }) {
             type="date"
             value={dataNascimento}
             onChange={(e) => setDataNascimento(e.target.value)}
-            className="w-full p-2 rounded border text-white"
+            className="w-full p-2 rounded border border-apocal-azulClaro/70 text-neutral-400"
           />
         </div>
 
@@ -138,16 +136,16 @@ export default function CreateRoomModal({ isOpen, onClose, onCreate }) {
           </div>
         </div>
 
-     {/*SEÇÃO PARA O DISCORD */}
+        {/*SEÇÃO PARA O DISCORD */}
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">
             Chat de Voz (Discord):
           </label>
           <div className="bg-gray-100 p-2 rounded text-center">
             {discordLink ? (
-              <a 
+              <a
                 href={discordLink}
-                target="_blank" 
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:underline"
               >
