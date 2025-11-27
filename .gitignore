@@ -12,6 +12,8 @@ dist
 dist-ssr
 *.local
 .env
+.FuncionalidadesPlanejadas.md
+.Clonograma.md
 
 # Editor directories and files
 .vscode/*
