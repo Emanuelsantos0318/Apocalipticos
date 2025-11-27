@@ -17,7 +17,12 @@ function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Cadastro
+  /**
+   * Cria um novo usuário no Firebase Auth e salva dados adicionais no Firestore.
+   * @param {string} email 
+   * @param {string} password 
+   * @param {Object} additionalData - Dados extras como nome, data de nascimento.
+   */
   const signup = async (email, password, additionalData) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 
@@ -31,17 +36,27 @@ function AuthProvider({ children }) {
     return userCredential;
   };
 
-  // Login
+  /**
+   * Realiza login com email e senha.
+   * @param {string} email 
+   * @param {string} password 
+   */
   const login = async (email, password) => {
     return await signInWithEmailAndPassword(auth, email, password);
   };
 
-  // Logout
+  /**
+   * Desloga o usuário atual.
+   */
   const logout = async () => {
     return await signOut(auth);
   };
 
-  // Dados adicionais
+  /**
+   * Busca dados do perfil do usuário no Firestore.
+   * @param {string} uid 
+   * @returns {Promise<Object|null>} Dados do usuário ou null.
+   */
   const fetchUserData = async (uid) => {
     try {
       const docRef = doc(db, 'users', uid);

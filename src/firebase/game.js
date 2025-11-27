@@ -1,7 +1,15 @@
+
 import { db } from "./config";
 import { collection, query, where, getDocs, doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { CARD_TYPES } from "../constants/constants";
 
+/**
+ * Sorteia uma carta aleatória do banco de dados baseada no modo e categorias.
+ * @param {string} modo - O modo de jogo (ex: 'normal', 'mais18').
+ * @param {string[]} categorias - Lista de categorias ativas.
+ * @returns {Promise<Object>} A carta sorteada com ID e dados.
+ * @throws {Error} Se nenhuma carta for encontrada.
+ */
 export async function sortearCarta(modo, categorias) {
   const cartasRef = collection(db, "cartas");
   const q = query(
@@ -20,6 +28,13 @@ export async function sortearCarta(modo, categorias) {
   return cartas[Math.floor(Math.random() * cartas.length)];
 }
 
+/**
+ * Determina o próximo jogador da rodada.
+ * Evita repetir o mesmo jogador imediatamente, se possível.
+ * @param {string} salaId - ID da sala.
+ * @param {string} jogadorAtualUid - UID do jogador que acabou de jogar.
+ * @returns {Promise<string>} UID do próximo jogador.
+ */
 export async function proximoJogador(salaId, jogadorAtualUid) {
   const jogadoresRef = collection(db, "salas", salaId, "jogadores");
   const snapshot = await getDocs(jogadoresRef);
@@ -38,6 +53,12 @@ export async function proximoJogador(salaId, jogadorAtualUid) {
   return proximo;
 }
 
+/**
+ * Registra o voto de um jogador na rodada de "Amigos de Merda".
+ * @param {string} salaId - ID da sala.
+ * @param {string} voterUid - UID de quem está votando.
+ * @param {string} targetUid - UID de quem recebeu o voto.
+ */
 export async function submitVote(salaId, voterUid, targetUid) {
   const voteRef = doc(db, "salas", salaId, "votos", voterUid);
   await setDoc(voteRef, {
