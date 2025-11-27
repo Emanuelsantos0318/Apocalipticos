@@ -1,4 +1,4 @@
-import React from 'react'; // Adicione esta linha
+import React from 'react';
 import { useRouteError, Link } from 'react-router-dom';
 import MainButton from '../components/buttons/MainButton';
 

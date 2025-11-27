@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { db } from "../firebase/config";
 import {
   doc,
@@ -10,22 +11,23 @@ import {
   collection,
   query,
   getDocs,
+  getDoc,
   deleteDoc
 } from "firebase/firestore";
 import { AuthContext } from "../context/AuthContext";
 import { sortearCarta, proximoJogador, submitVote } from "../firebase/game";
 import PageLayout from "../components/PageLayout";
-import GameHeader from "../components/game/GameHeader";
-import CardDisplay from "../components/card";
+import { GameHeader } from "../components/game/GameHeader";
+import CardDisplay from "../components/game/CardDisplay";
 import PlayerActions from "../components/game/PlayerActions";
 import Timer from "../components/game/Timer";
 import RankingJogadores from "../components/ranking/RankingJogadores";
 import VotingArea from "../components/game/VotingArea";
-import { CARD_TYPES } from "../constants/constants";
+import { CARD_TYPES, CATEGORIES } from "../constants/constants";
 
 export default function Jogo() {
   const { codigo } = useParams();
-  const { user } = useContext(AuthContext);
+  const { currentUser: user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [sala, setSala] = useState(null);
@@ -109,14 +111,19 @@ export default function Jogo() {
   // O código original tinha setTimeLeft(30) mas não vi o useEffect do timer decrementando.
   // Vou assumir que o componente Timer ou outra lógica cuida disso, ou adicionar um simples aqui.
   useEffect(() => {
-    if (timeLeft > 0 && sala?.cartaAtual && !resultadoVotacao) {
+    if (timeLeft > 0 && sala?.cartaAtual && !resultadoVotacao && sala?.statusAcao !== "aguardando_confirmacao") {
       const timer = setTimeout(() => setTimeLeft(prev => prev - 1), 1000);
       return () => clearTimeout(timer);
-    } else if (timeLeft === 0 && isVotingRound && !resultadoVotacao) {
-      // Tempo acabou na votação: forçar resultado parcial
-      calcularResultadoVotacao(votos);
+    } else if (timeLeft === 0 && !resultadoVotacao && sala?.statusAcao !== "aguardando_confirmacao") {
+      if (isVotingRound) {
+        // Tempo acabou na votação: forçar resultado parcial
+        calcularResultadoVotacao(votos);
+      } else if (isCurrentPlayer) {
+        // Tempo acabou na ação normal: penalidade automática
+        handlePenalidade();
+      }
     }
-  }, [timeLeft, sala?.cartaAtual, isVotingRound, resultadoVotacao, votos]);
+  }, [timeLeft, sala?.cartaAtual, isVotingRound, resultadoVotacao, votos, sala?.statusAcao, isCurrentPlayer]);
 
 
   const calcularResultadoVotacao = async (votosAtuais) => {
@@ -162,7 +169,8 @@ export default function Jogo() {
     if (!isCurrentPlayer || !sala) return;
 
     try {
-      const carta = await sortearCarta(sala.modo, sala.categorias);
+      const categorias = sala.categorias && sala.categorias.length > 0 ? sala.categorias : Object.values(CATEGORIES);
+      const carta = await sortearCarta(sala.modo, categorias);
       await updateDoc(doc(db, "salas", codigo), {
         cartaAtual: carta,
         timeLeft: 30,
@@ -176,7 +184,25 @@ export default function Jogo() {
   };
 
   const handleComplete = async () => {
+    // Em vez de completar direto, pede confirmação
+    try {
+      await updateDoc(doc(db, "salas", codigo), {
+        statusAcao: "aguardando_confirmacao"
+      });
+    } catch (error) {
+      console.error("Erro ao solicitar confirmação:", error);
+    }
+  };
+
+  const handleAdminConfirm = async () => {
     await updatePlayerStats("completou");
+    await updateDoc(doc(db, "salas", codigo), { statusAcao: null }); // Limpa status
+    await passarVez();
+  };
+
+  const handleAdminReject = async () => {
+    await updatePlayerStats("recusou"); // Conta como recusa/falha
+    await updateDoc(doc(db, "salas", codigo), { statusAcao: null }); // Limpa status
     await passarVez();
   };
 
@@ -214,23 +240,43 @@ export default function Jogo() {
   };
 
   const updatePlayerStats = async (action) => {
-    if (!user) return;
+    // Se for o admin confirmando/rejeitando, o 'user' aqui é o admin, mas precisamos atualizar o 'currentPlayer'
+    // Então vamos buscar a ref do jogadorAtual da sala, não necessariamente o 'user.uid'
+    // Mas espere, 'updatePlayerStats' original usava 'user.uid'.
+    // Se a ação é 'completou' ou 'recusou', é sobre o jogador da vez.
+    
+    const targetUid = sala?.jogadorAtual;
+    if (!targetUid) return;
+
     try {
-      const playerRef = doc(db, "salas", codigo, "jogadores", user.uid);
-      await updateDoc(playerRef, {
-        [`stats.${action}`]: increment(1),
-        ultimaAcao: serverTimestamp(),
-      });
+      const playerRef = doc(db, "salas", codigo, "jogadores", targetUid);
+      const playerSnap = await getDoc(playerRef); // Precisamos ler os pontos atuais para validar min 0
+      
+      if (playerSnap.exists()) {
+        const currentPoints = playerSnap.data().pontos || 0;
+        let pointsChange = 0;
+
+        if (action === "completou") pointsChange = 10;
+        if (action === "recusou") pointsChange = -5;
+        // Se for penalidade por tempo, pode ser tratado como recusou ou outro
+
+        const newPoints = Math.max(0, currentPoints + pointsChange);
+
+        await updateDoc(playerRef, {
+          [`stats.${action}`]: increment(1),
+          pontos: newPoints,
+          ultimaAcao: serverTimestamp(),
+        });
+        
+        if (pointsChange > 0) toast.success(`+${pointsChange} Pontos!`);
+        if (pointsChange < 0) toast.error(`${pointsChange} Pontos!`);
+      }
     } catch (error) {
       console.error("Erro ao atualizar stats do jogador:", error);
     }
   };
 
-  // Função de teste (mantida do original)
-  const somarPonto = async () => {
-     if (!user) return;
-     await updatePlayerStats("pontos"); // Exemplo genérico
-  };
+
 
   if (!sala) {
     return <div className="text-white text-center p-8">Carregando jogo...</div>;
@@ -248,6 +294,7 @@ export default function Jogo() {
             modo={sala.modo}
             currentPlayer={currentPlayer}
             isCurrentPlayer={isCurrentPlayer}
+            jogadores={jogadores}
           />
 
           {sala.cartaAtual ? (
@@ -277,15 +324,43 @@ export default function Jogo() {
                     </div>
                   )}
                 </div>
+
               ) : (
-                /* Ações Normais (Verdade/Desafio/etc) */
-                showActions && (
-                  <PlayerActions
-                    onComplete={handleComplete}
-                    onPenalidade={handlePenalidade}
-                    cardType={sala.cartaAtual.tipo}
-                  />
-                )
+                <>
+                  {sala.statusAcao === "aguardando_confirmacao" ? (
+                    <div className="bg-yellow-600/20 border border-yellow-500/50 p-4 rounded-lg text-center animate-pulse">
+                      <p className="text-lg font-bold text-yellow-400 mb-2">
+                        Aguardando confirmação do Admin...
+                      </p>
+                      {/* Se eu sou o Host (Admin), mostro os botões de confirmar/rejeitar */}
+                      {/* Nota: O Host pode ser o próprio jogador da vez, a regra diz "vale para ele também" */}
+                      {jogadores.find(j => j.uid === meuUid)?.isHost && (
+                        <div className="flex justify-center gap-4 mt-4">
+                          <button
+                            onClick={handleAdminConfirm}
+                            className="px-6 py-2 bg-green-600 hover:bg-green-700 rounded font-bold"
+                          >
+                            Confirmar (Cumpriu)
+                          </button>
+                          <button
+                            onClick={handleAdminReject}
+                            className="px-6 py-2 bg-red-600 hover:bg-red-700 rounded font-bold"
+                          >
+                            Rejeitar (Não Cumpriu)
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    showActions && (
+                      <PlayerActions
+                        onComplete={handleComplete}
+                        onPenalidade={handlePenalidade}
+                        cardType={sala.cartaAtual.tipo}
+                      />
+                    )
+                  )}
+                </>
               )}
 
               <Timer timeLeft={timeLeft} totalTime={30} />
@@ -300,7 +375,10 @@ export default function Jogo() {
                   Sortear Carta
                 </button>
               ) : (
-                <p>Aguardando carta...</p>
+
+                <p className="text-xl animate-pulse text-gray-300">
+                  Aguardando <span className="font-bold text-purple-400">{jogadores.find(j => j.uid === currentPlayer)?.nome || "o jogador"}</span> sortear uma carta...
+                </p>
               )}
             </div>
           )}
@@ -311,14 +389,7 @@ export default function Jogo() {
           <h1 className="text-xl font-bold mb-2 text-center text-purple-300 drop-shadow-md !p-[3%]">Ranking</h1>
           <RankingJogadores jogadores={jogadores} meuUid={meuUid} />
           
-          <div className="text-center mt-4">
-            <button
-              onClick={somarPonto}
-              className="px-4 py-2 bg-green-600/80 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition-colors"
-            >
-              +10 Pontos (Teste)
-            </button>
-          </div>
+
         </div>
 
       </div>

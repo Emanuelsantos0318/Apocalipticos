@@ -35,7 +35,7 @@ export default function CreateRoomModal({ isOpen, onClose, onCreate }) {
   const [nome, setNome] = useState("");
   const [dataNascimento, setDataNascimento] = useState("");
   const [copied, setCopied] = useState(false); // novo estado para feedback de cópia
-  const discordLink = "https://discord.gg/PRSGFM86";
+  const discordLink = "https://discord.gg/rQDJht6Hg4";
 
   useEffect(() => {
     if (isOpen) {

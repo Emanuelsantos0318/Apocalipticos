@@ -26,8 +26,9 @@ export async function criarSala(uid, roomData) {
     );
   }
 
-  if (!Array.isArray(roomData.categorias)) {
-    roomData.categorias = [];
+  if (!Array.isArray(roomData.categorias) || roomData.categorias.length === 0) {
+    // Se nenhuma categoria for especificada, ativa todas por padrão
+    roomData.categorias = Object.values(CATEGORIES);
   }
 
   if (
