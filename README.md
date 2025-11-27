@@ -60,7 +60,8 @@ Cada rodada traz um tipo de mini-jogo, com regras específicas:
     - Sorteio de cartas baseado no modo.
     - Timer de 30 segundos.
     - Sistema de pontuação e penalidades.
-- [x] **Ranking**: Placar atualizado em tempo real.
+    - Confirmação de desafios pelo Admin (Host).
+- [ ] **Ranking**: Placar atualizado em tempo real.
 
 ### Em Desenvolvimento / Planejado
 - [ ] **Lógica Avançada de Cartas**: Votação em tempo real para "Amigos de Merda".

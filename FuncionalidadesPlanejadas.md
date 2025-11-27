@@ -31,13 +31,17 @@ Apocalípticos é um jogo de desafios e interações em grupo, onde os jogadores
 ### Fluxo Principal
 - ✅ **Sorteio do Jogador da Vez**: Exibe nome e avatar.
 - ✅ **Sorteio da Carta**: Baseado no modo e categorias.
-- ✅ **Resolução da Carta**:
+- ✅ **Resolução da Carta**: 
     - ✅ Timer de 30s.
     - ✅ Botões "Cumprir" e "Recusar" (penalidade).
-- ✅ **Atualização do Placar**: Pontuação e estatísticas.
-- ✅ **Ranking em Tempo Real**: Lista ordenada.
+    - ✅ Primeiro - O Usuario administrador deve confirmar se o usuario da vez compriu o desafio, isso vale para ele também caso seja sua vez. 
+    - ✅ Segundo - Deve ser contabilizado os pontos de ter comprido o desafio ou responder a pergunta. Caso contrario paga a penalidade e perde pontos.
+    - ✅ Terceiro - Ao final do tempo, e o jogador da vez não tiver feito nenhuma ação, automaticamente sua vez é passada para outro e ele penalizado ou bebe.
+    - ✅ Oservação: caso a pontuação seja 0, e ele perder pontos, não deve ter um valor negativo, continua com a pontuação zerada.
+- **Atualização do Placar**: Pontuação e estatísticas. (🔄 Em Desenvolvimento)
+- **Ranking em Tempo Real**: Lista ordenada. (🔄 Em Desenvolvimento)
 
-### Tipos de Jogos e Lógicas (🔄 Em Desenvolvimento)
+### Tipos de Jogos e Lógicas 
 | Tipo de Jogo | Fluxo | Status |
 | :--- | :--- | :--- |
 | **Verdade ou Desafio** | 1. ADM escolhe "Verdade" ou "Desafio". <br> 2. Sistema sorteia carta da categoria. | 🔄 Parcial (Botões prontos, lógica de escolha pendente) |
