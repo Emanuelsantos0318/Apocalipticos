@@ -207,7 +207,19 @@ export default function Jogo() {
   };
 
   const handlePenalidade = async () => {
-    await updatePlayerStats("recusou");
+    // Em vez de aplicar direto, pede confirmação de penalidade (bebida)
+    try {
+      await updateDoc(doc(db, "salas", codigo), {
+        statusAcao: "aguardando_penalidade"
+      });
+    } catch (error) {
+      console.error("Erro ao solicitar confirmação de penalidade:", error);
+    }
+  };
+
+  const handleAdminConfirmPenalty = async () => {
+    await updatePlayerStats("recusou"); // Aplica penalidade e conta bebida
+    await updateDoc(doc(db, "salas", codigo), { statusAcao: null }); // Limpa status
     await passarVez();
   };
 
@@ -262,11 +274,18 @@ export default function Jogo() {
 
         const newPoints = Math.max(0, currentPoints + pointsChange);
 
-        await updateDoc(playerRef, {
+        const updates = {
           [`stats.${action}`]: increment(1),
           pontos: newPoints,
           ultimaAcao: serverTimestamp(),
-        });
+        };
+
+        // Se recusou, também conta como bebida
+        if (action === "recusou") {
+          updates["stats.bebidas"] = increment(1);
+        }
+
+        await updateDoc(playerRef, updates);
         
         if (pointsChange > 0) toast.success(`+${pointsChange} Pontos!`);
         if (pointsChange < 0) toast.error(`${pointsChange} Pontos!`);
@@ -347,6 +366,26 @@ export default function Jogo() {
                             className="px-6 py-2 bg-red-600 hover:bg-red-700 rounded font-bold"
                           >
                             Rejeitar (Não Cumpriu)
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ) : sala.statusAcao === "aguardando_penalidade" ? (
+                    <div className="bg-red-900/40 border border-red-500/50 p-4 rounded-lg text-center animate-pulse">
+                      <p className="text-lg font-bold text-red-400 mb-2">
+                        {isCurrentPlayer ? "Aguardando Admin confirmar sua penalidade..." : "O jogador desistiu!"}
+                      </p>
+                      <p className="text-sm text-gray-300 mb-4">
+                        {isCurrentPlayer ? "Prepare-se para beber!" : "Confirme se ele bebeu para seguir o jogo."}
+                      </p>
+                      
+                      {jogadores.find(j => j.uid === meuUid)?.isHost && (
+                        <div className="flex justify-center gap-4 mt-4">
+                          <button
+                            onClick={handleAdminConfirmPenalty}
+                            className="px-6 py-2 bg-red-600 hover:bg-red-700 rounded font-bold"
+                          >
+                            Confirmar (Bebeu)
                           </button>
                         </div>
                       )}

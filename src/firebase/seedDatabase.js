@@ -32,8 +32,8 @@ const CATEGORIES = {
 // Configuração do Firebase (Hardcoded para o script de seed)
 // Em produção, usar variáveis de ambiente seria melhor, mas para um script local ok.
 const firebaseConfig = {
-    apiKey: "AIzaSyAVS_gb4f31FKb0jY11U-w7PmIVBxmaNxc",
-    projectId: "apocalipticos-ab93c",
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
 };
 
 const cards = [

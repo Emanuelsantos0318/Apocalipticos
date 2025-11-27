@@ -48,7 +48,7 @@ export default function RankingJogadores({ jogadores, meuUid }) {
                 </span>
               </div>
             </div>
-            <span className="font-bold text-sm 2xl:text-xl text-gray-100">{jogador.pontuacao || 0}</span>
+            <span className="font-bold text-sm 2xl:text-xl text-gray-100">{jogador.pontos || 0}</span>
           </div>
         ))}
         

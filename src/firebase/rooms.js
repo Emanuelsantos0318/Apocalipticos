@@ -11,6 +11,8 @@ import {
   doc,
   setDoc,
   updateDoc,
+  collection,
+  getDocs,
   // arrayUnion,
   serverTimestamp,
 } from "firebase/firestore";
@@ -91,8 +93,19 @@ export async function criarSala(uid, roomData) {
 export async function iniciarJogo(roomCode) {
   const salaRef = doc(db, "salas", roomCode);
 
+  // Buscar jogadores para sortear o primeiro
+  const jogadoresRef = collection(db, "salas", roomCode, "jogadores");
+  const snapshot = await getDocs(jogadoresRef);
+  const jogadores = snapshot.docs.map(doc => doc.id);
+
+  let primeiroJogador = null;
+  if (jogadores.length > 0) {
+    primeiroJogador = jogadores[Math.floor(Math.random() * jogadores.length)];
+  }
+
   await updateDoc(salaRef, {
     estado: GAME_STATES.ONGOING,
+    jogadorAtual: primeiroJogador,
     atualizadoEm: serverTimestamp(),
     "config.comecouEm": serverTimestamp(),
   });
