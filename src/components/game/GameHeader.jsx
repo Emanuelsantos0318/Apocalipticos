@@ -1,8 +1,9 @@
 // GameHeader.jsx
-import React from "react"; // Adicione esta linha
+import React from "react";
+import { LogOut } from "lucide-react";
 import { GAME_MODES } from "../../constants/constants";
 
-export const GameHeader = ({ codigo, modo, currentPlayer, isCurrentPlayer, jogadores }) => {
+export const GameHeader = ({ codigo, modo, currentPlayer, isCurrentPlayer, jogadores, onLeave }) => {
   const getModeLabel = (m) => {
     switch(m) {
       case GAME_MODES.NORMAL: return "Normal";
@@ -32,11 +33,20 @@ export const GameHeader = ({ codigo, modo, currentPlayer, isCurrentPlayer, jogad
             {getModeLabel(modo)}
           </div>
         </div>
-        <div className="text-right">
-          <p className="text-gray-400 text-sm">Vez de:</p>
-          <p className={`font-bold ${isCurrentPlayer ? "text-green-400" : "text-white"}`}>
-            {isCurrentPlayer ? "VOCÊ" : nomeJogadorAtual}
-          </p>
+        <div className="text-right flex items-center gap-4">
+          <div>
+            <p className="text-gray-400 text-sm">Vez de:</p>
+            <p className={`font-bold ${isCurrentPlayer ? "text-green-400" : "text-white"}`}>
+              {isCurrentPlayer ? "VOCÊ" : nomeJogadorAtual}
+            </p>
+          </div>
+          <button
+            onClick={onLeave}
+            className="p-2 bg-red-600/20 hover:bg-red-600/40 text-red-400 rounded-lg transition-colors"
+            title="Sair da Sala"
+          >
+            <LogOut size={20} />
+          </button>
         </div>
       </header>
     </div>

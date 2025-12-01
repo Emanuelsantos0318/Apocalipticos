@@ -13,6 +13,11 @@ import {
   updateDoc,
   collection,
   getDocs,
+  deleteDoc,
+  orderBy,
+  query,
+  limit,
+  where,
   // arrayUnion,
   serverTimestamp,
 } from "firebase/firestore";
@@ -136,4 +141,68 @@ export function validateRoomConfig(mode, config) {
     isValid: config.limiteJogadores <= rules.maxPlayers,
     message: `Máximo de ${rules.maxPlayers} jogadores no modo ${mode}`,
   };
+}
+
+
+/**
+ * Remove um jogador da sala e gerencia a migração de host se necessário.
+ * @param {string} roomCode - Código da sala.
+ * @param {string} uid - UID do jogador que está saindo.
+ */
+export async function sairDaSala(roomCode, uid) {
+  const salaRef = doc(db, "salas", roomCode);
+  const playerRef = doc(db, "salas", roomCode, "jogadores", uid);
+
+  try {
+    // 1. Verificar se o jogador é o Host antes de deletar
+    const playerSnap = await getDocs(query(collection(db, "salas", roomCode, "jogadores"), where("uid", "==", uid))); // Ineficiente, melhor ler o doc direto se possível, mas aqui usamos a coleção para garantir
+    // Melhor: ler o documento do jogador direto
+    // const pDoc = await getDoc(playerRef); // Precisaria importar getDoc. Vamos assumir que temos os dados ou ler a coleção.
+    
+    // Vamos ler a coleção de jogadores para ter todos e decidir o novo host
+    const jogadoresRef = collection(db, "salas", roomCode, "jogadores");
+    const q = query(jogadoresRef, orderBy("timestamp", "asc"));
+    const snapshot = await getDocs(q);
+    
+    const jogadores = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    const saindo = jogadores.find(j => j.uid === uid);
+
+    if (!saindo) return; // Jogador já não existe
+
+    // 2. Deletar o jogador
+    await deleteDoc(playerRef);
+
+    // 3. Se era o Host, passar a coroa
+    if (saindo.isHost) {
+      const novosJogadores = jogadores.filter(j => j.uid !== uid);
+      
+      if (novosJogadores.length > 0) {
+        const novoHost = novosJogadores[0]; // O mais antigo (timestamp menor)
+        
+        // Atualiza o novo host na subcoleção
+        await updateDoc(doc(db, "salas", roomCode, "jogadores", novoHost.uid), {
+          isHost: true
+        });
+
+        // Atualiza o host no documento da sala
+        await updateDoc(salaRef, {
+          "host.uid": novoHost.uid,
+          "host.nome": novoHost.nome,
+          "host.avatar": novoHost.avatar
+        });
+      } else {
+        // Se não sobrou ninguém, deleta a sala (ou marca como abandonada)
+        await updateDoc(salaRef, { estado: GAME_STATES.ABORTED });
+      }
+    }
+
+    // 4. Se o jogo estiver rolando e for a vez dele, passar a vez
+    // Isso deve ser tratado idealmente no componente Jogo ou via Cloud Function,
+    // mas podemos tentar forçar aqui se tivermos acesso à lógica de passar vez.
+    // Por segurança, o front-end (Jogo.jsx) deve detectar que o jogadorAtual sumiu e pular.
+
+  } catch (error) {
+    console.error("Erro ao sair da sala:", error);
+    throw error;
+  }
 }

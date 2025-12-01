@@ -1,11 +1,30 @@
-// const { initializeApp } = require('firebase/app');
-// const { getFirestore, collection, doc, setDoc } = require('firebase/firestore');
-// const {  GAME_MODES,  CARD_TYPES, CATEGORIES, isAdultMode} = require('apocalipticos/src/constants/constants.js');
-//   console.log(constants.GAME_MODES.NORMAL);
-// Configuração (substitua com suas credenciais)
-// src/firebase/seedDatabase.js
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, doc, setDoc, writeBatch } from 'firebase/firestore';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Helper para ler .env
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const envPath = path.resolve(__dirname, '../../.env');
+
+let envConfig = {};
+try {
+  if (fs.existsSync(envPath)) {
+    const envFile = fs.readFileSync(envPath, 'utf8');
+    envFile.split('\n').forEach(line => {
+      const [key, value] = line.split('=');
+      if (key && value) {
+        envConfig[key.trim()] = value.trim();
+      }
+    });
+  } else {
+    console.warn("⚠️ Arquivo .env não encontrado em:", envPath);
+  }
+} catch (e) {
+  console.warn("⚠️ Não foi possível ler o arquivo .env:", e.message);
+}
 
 // Constantes (Duplicadas para evitar problemas de importação no Node)
 const GAME_MODES = {
@@ -29,14 +48,22 @@ const CATEGORIES = {
   SHITTY_FRIENDS: "amigosMerda"
 };
 
-// Configuração do Firebase (Hardcoded para o script de seed)
-// Em produção, usar variáveis de ambiente seria melhor, mas para um script local ok.
+// Configuração do Firebase
 const firebaseConfig = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    apiKey: envConfig.VITE_FIREBASE_API_KEY || process.env.VITE_FIREBASE_API_KEY,
+    projectId: envConfig.VITE_FIREBASE_PROJECT_ID || process.env.VITE_FIREBASE_PROJECT_ID,
 };
 
 const cards = [
+  // --- EU NUNCA (Normal) ---
+  { texto: "Eu nunca andei a cavalo. ", tipo: CARD_TYPES.NEVER, modo: GAME_MODES.NORMAL, categoria: CATEGORIES.NEVER_HAVE_I_EVER },
+  { texto: "Eu nunca bebi álcool.", tipo: CARD_TYPES.NEVER, modo: GAME_MODES.NORMAL, categoria: CATEGORIES.NEVER_HAVE_I_EVER },
+  { texto: "Eu nunca menti sobre a minha idade para fletar.", tipo: CARD_TYPES.NEVER, modo: GAME_MODES.NORMAL, categoria: CATEGORIES.NEVER_HAVE_I_EVER },
+  { texto: "Eu nunca terminei um relacionamento por mensagem. ", tipo: CARD_TYPES.NEVER, modo: GAME_MODES.NORMAL, categoria: CATEGORIES.NEVER_HAVE_I_EVER },
+  { texto: "Eu nunca roubei algo em uma loja.", tipo: CARD_TYPES.NEVER, modo: GAME_MODES.NORMAL, categoria: CATEGORIES.NEVER_HAVE_I_EVER },
+  { texto: "Eu nunca me arrependi imediatamente depois de fazer algo.", tipo: CARD_TYPES.NEVER, modo: GAME_MODES.NORMAL, categoria: CATEGORIES.NEVER_HAVE_I_EVER },
+  { texto: "Eu nunca cantei a música inteira errando a letra.", tipo: CARD_TYPES.NEVER, modo: GAME_MODES.NORMAL, categoria: CATEGORIES.NEVER_HAVE_I_EVER },
+
   // --- VERDADES CABULOSAS (Adulto/Difícil) ---
   { texto: "Qual a maior mentira que já contou pra alguém aqui?", tipo: CARD_TYPES.TRUTH, modo: GAME_MODES.ADULTO, categoria: CATEGORIES.TRUTH_OR_DARE },
   { texto: "Já pegou alguém comprometido? Conta os detalhes.", tipo: CARD_TYPES.TRUTH, modo: GAME_MODES.ADULTO, categoria: CATEGORIES.TRUTH_OR_DARE },
