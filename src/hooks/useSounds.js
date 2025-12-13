@@ -12,7 +12,7 @@ export function useSounds() {
       erro: new Audio("/sounds/erro.mp3"),
       entrar: new Audio("/sounds/entrar.mp3"),
       sair: new Audio("/sounds/sair.mp3"),
-      musicaTema: Object.assign(new Audio("/sounds/bar-dos-doidos.mp3"), {
+      musicaTema: Object.assign(new Audio("/sounds/bar-dos-doidos-blues2.mp3"), {
         loop: true,
         volume: 0.5,
       }),

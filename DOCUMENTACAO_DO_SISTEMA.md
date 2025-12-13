@@ -139,6 +139,12 @@ Utilizada temporariamente durante rodadas de votação.
 }
 ```
 
+### Avatares
+O sistema utiliza a API pública **DiceBear (v7.x)** para geração de avatares. NÃO armazenamos as imagens, apenas a URL gerada, garantindo leveza no banco de dados.
+- **Formato**: SVG (escalável e leve).
+- **Estilos**: `bottts`, `adventurer`, `lorelei`, `avataaars`, `fun-emoji`.
+- **URL Padrão**: `https://api.dicebear.com/7.x/[estilo]/svg?seed=[seed]`
+
 ### Coleção `cartas`
 Banco de dados de conteúdo do jogo.
 ```json

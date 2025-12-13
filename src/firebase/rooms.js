@@ -63,7 +63,7 @@ export async function criarSala(uid, roomData) {
     host: {
       uid,
       nome: roomData.nomeAdmin,
-      avatar: roomData.avatar || "☣️",
+      avatar: roomData.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${uid}`,
       idade: calcularIdade(roomData.dataNascimento),
     },
     estado: GAME_STATES.WAITING, // Usando constante

@@ -63,6 +63,8 @@ const cards = [
   { texto: "Eu nunca roubei algo em uma loja.", tipo: CARD_TYPES.NEVER, modo: GAME_MODES.NORMAL, categoria: CATEGORIES.NEVER_HAVE_I_EVER },
   { texto: "Eu nunca me arrependi imediatamente depois de fazer algo.", tipo: CARD_TYPES.NEVER, modo: GAME_MODES.NORMAL, categoria: CATEGORIES.NEVER_HAVE_I_EVER },
   { texto: "Eu nunca cantei a música inteira errando a letra.", tipo: CARD_TYPES.NEVER, modo: GAME_MODES.NORMAL, categoria: CATEGORIES.NEVER_HAVE_I_EVER },
+  {texto: "Eu nunca matei um gato", tipo: CARD_TYPES.NEVER, modo: GAME_MODES.NORMAL, categoria: CATEGORIES.NEVER_HAVE_I_EVER },
+  {texto: "Eu nunca sair escondido para ir na casa de alguem.", tipo: CARD_TYPES.NEVER, modo: GAME_MODES.NORMAL, categoria: CATEGORIES.NEVER_HAVE_I_EVER },
 
   // --- VERDADES CABULOSAS (Adulto/Difícil) ---
   { texto: "Qual a maior mentira que já contou pra alguém aqui?", tipo: CARD_TYPES.TRUTH, modo: GAME_MODES.ADULTO, categoria: CATEGORIES.TRUTH_OR_DARE },

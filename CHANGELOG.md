@@ -2,6 +2,17 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [Não Lançado] - 2025-12-12
+
+### Adicionado
+
+- **Sistema de Avatares Dinâmicos (DiceBear)**: Substituída a seleção de emojis estáticos por avatares gerados proceduralmente.
+  - Integração com API DiceBear v7.x.
+  - 5 Estilos visuais: Robôs, Aventureiros, Cartoon, Pessoas e Emojis.
+  - Funcionalidade de "Randomizar" para gerar faces únicas.
+  - Persistência visual no Lobby e Ranking.
+- **Admin Avatar**: O criador da sala agora também pode personalizar seu avatar durante a criação da sala.
+
 ## [Não Lançado] - 2025-11-27
 
 ### Adicionado

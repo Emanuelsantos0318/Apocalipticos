@@ -22,7 +22,7 @@ export default function RankingJogadores({ jogadores, meuUid }) {
             <div className="flex items-center gap-2 2xl:gap-4">
               <div className="relative">
                 <div className="w-8 h-8 2xl:w-12 2xl:h-12 rounded-full bg-gray-700 flex items-center justify-center text-sm 2xl:text-xl overflow-hidden ring-1 2xl:ring-2 ring-gray-600">
-                  {jogador.avatar.startsWith("http") ? (
+                  {jogador.avatar && (jogador.avatar.startsWith("http") || jogador.avatar.includes("dicebear")) ? (
                     <img
                       src={jogador.avatar}
                       alt={jogador.nome}

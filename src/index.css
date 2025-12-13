@@ -78,3 +78,26 @@ button:focus-visible {
 .titulo{
   padding:  3px ;
 }
+
+.title span:after{
+  content: "AMIGO DE MERDA";
+  animation: words 6s infinite;
+  font-size: 20px;
+  font-weight: bold;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+@keyframes words {
+  0%, 33%{
+    content: "AMIGO DE MERDA";
+    color: #00ff7f;
+  }
+  34%, 66%{
+    content: " VERDADE OU DESAFIO";
+    color: #ff00ff;
+  }
+  67%, 100%{
+    content: "EU NUNCA";
+    color: #ffd700;
+  }
+}

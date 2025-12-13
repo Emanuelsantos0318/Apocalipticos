@@ -152,8 +152,8 @@ export default function Home() {
             <style>{`
               .heartbeat-img {
                 transform-origin: center;
-                will-change: transform, opacity;
-                animation: heartbeat 2.9s cubic-bezier(.215,.61,.355,1) infinite;
+                will-change: transform, opacity, filter;
+                animation: heartbeat 2.9s cubic-bezier(.215,.61,.355,1) infinite, lightning 4s ease-in-out infinite;
               }
 
               /* animação principal (batida) */
@@ -164,6 +164,16 @@ export default function Home() {
                 42%  { transform: scale(1.06) translateY(-3px); opacity: 0.95; }
                 70%  { transform: scale(1) translateY(0); opacity: 1; }
                 100% { transform: scale(1) translateY(0); opacity: 1; }
+              }
+
+              /* animação de raios/eletricidade */
+              @keyframes lightning {
+                0%, 90% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
+                91% { filter: brightness(2) drop-shadow(0 0 10px #fbbf24); transform: scale(1.13) translateY(-7px) skewX(-2deg); }
+                92% { filter: brightness(1); transform: scale(1.12) translateY(-6px); }
+                93% { filter: brightness(3) drop-shadow(0 0 20px #fbbf24); transform: scale(1.15) translateY(-5px) skewX(2deg); }
+                94% { filter: brightness(1); transform: scale(1.12) translateY(-6px); }
+                100% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
               }
 
               /* efeito de "piscar" sutil sincronizado com a batida */
@@ -187,8 +197,9 @@ export default function Home() {
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-wide drop-shadow-lg">
               Apocallípticos
             </h1>
-            <p className="text-gray-300 mt-2 text-sm sm:text-base md:text-lg leading-relaxed">
-              Sobreviva aos desafios mais absurdos com seus amigos
+            <p className="title text-gray-300 mt-2 text-sm sm:text-base md:text-lg leading-relaxed">
+              Sobreviva aos desafios mais absurdos com seus amigos.
+              <br/><span></span>
             </p>
           </header>
 
