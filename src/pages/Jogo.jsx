@@ -27,6 +27,8 @@ import RankingJogadores from "../components/ranking/RankingJogadores";
 import VotingArea from "../components/game/VotingArea";
 import ConfirmModal from "../components/modals/ConfirmModal";
 import { CARD_TYPES, CATEGORIES } from "../constants/constants";
+import { useSounds } from "../hooks/useSounds";
+import { Volume2, VolumeX } from "lucide-react"; // ícones de som
 
 export default function Jogo() {
   const { codigo } = useParams();
@@ -57,6 +59,12 @@ export default function Jogo() {
   
   // No Eu Nunca, todos veem as ações. Nos outros, só o jogador da vez.
   const showActions = (isCurrentPlayer || isNeverRound) && !actionTaken && sala?.cartaAtual;
+  const {playJogo, stopJogo, toggleMusic, playingBgMusic} = useSounds();
+
+useEffect(() => {
+    playJogo(); // toca ao entrar no Jogo
+    return () => stopJogo(); // para a música ao sair
+  }, []);
 
   // Listener da Sala
   useEffect(() => {
@@ -612,6 +620,19 @@ export default function Jogo() {
             onCancel={() => setShowLeaveModal(false)}
           />
         )}
+
+          {/* BOTÃO DE MÚSICA */}
+          <button
+            onClick={() => toggleMusic("musicaJogo")}
+            className="fixed bottom-5 left-5 bg-black/50 backdrop-blur-sm border border-orange-400 text-white p-3 rounded-full shadow-lg hover:scale-110 hover:bg-black/70 transition-transform duration-200"
+            title={playingBgMusic === "musicaJogo" ? "Parar música" : "Tocar música"}
+          >
+            {playingBgMusic === "musicaJogo" ? (
+              <Volume2 className="w-6 h-6 text-orange-400" />
+            ) : (
+              <VolumeX className="w-6 h-6 text-gray-400" />
+            )}
+          </button>
       </div>
     </PageLayout>
   );

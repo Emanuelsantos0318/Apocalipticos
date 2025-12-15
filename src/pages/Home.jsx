@@ -29,7 +29,7 @@ export default function Home() {
   });
   const [ageError, setAgeError] = useState(null);
   const navigate = useNavigate();
-  const { playComecar, playHome, stopHome, toggleHomeMusic, isMusicPlaying } = useSounds();
+  const { playComecar, playHome, stopHome, toggleMusic, playingBgMusic } = useSounds();
 
   useEffect(() => {
     playHome(); // toca ao entrar na Home
@@ -278,11 +278,11 @@ export default function Home() {
 
           {/* BOTÃO DE MÚSICA */}
           <button
-            onClick={toggleHomeMusic}
+            onClick={() => toggleMusic("musicaTema")}
             className="fixed bottom-5 right-5 bg-black/50 backdrop-blur-sm border border-orange-400 text-white p-3 rounded-full shadow-lg hover:scale-110 hover:bg-black/70 transition-transform duration-200"
-            title={isMusicPlaying ? "Parar música" : "Tocar música"}
+            title={playingBgMusic === "musicaTema" ? "Parar música" : "Tocar música"}
           >
-            {isMusicPlaying ? (
+            {playingBgMusic === "musicaTema" ? (
               <Volume2 className="w-6 h-6 text-orange-400" />
             ) : (
               <VolumeX className="w-6 h-6 text-gray-400" />
