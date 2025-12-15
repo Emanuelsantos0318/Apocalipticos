@@ -48,6 +48,7 @@ export default function CreateRoomModal({ isOpen, onClose, onCreate }) {
   // Avatar states
   const [avatarSeed, setAvatarSeed] = useState("");
   const [currentStyleIndex, setCurrentStyleIndex] = useState(0);
+  const [erro, setErro] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -55,6 +56,7 @@ export default function CreateRoomModal({ isOpen, onClose, onCreate }) {
       setLimiteJogadores(6);
       setModo("normal");
       setNome("");
+      setErro("");
       setDataNascimento("");
       setAvatarSeed(Math.random().toString(36).substring(7));
     }
@@ -89,18 +91,18 @@ export default function CreateRoomModal({ isOpen, onClose, onCreate }) {
 
   const handleSubmit = () => {
     if (!nome || !dataNascimento) {
-      alert("Preencha seu nome e data de nascimento.");
+      setErro("Preencha seu nome e data de nascimento.");
       return;
     }
 
     const idade = calcularIdade(dataNascimento);
     if (idade < 18 && (modo === "mais18" || modo === "dificil")) {
-      alert("Modos +18 e Difícil não estão disponíveis para menores de idade.");
+      setErro("Modos +18 e Difícil não estão disponíveis para menores de idade.");
       return;
     }
 
     if (!MODOS_VALIDOS.includes(modo)) {
-      alert("Modo de jogo inválido.");
+      setErro("Modo de jogo inválido.");
       return;
     }
 
@@ -124,6 +126,11 @@ export default function CreateRoomModal({ isOpen, onClose, onCreate }) {
       <div className="bg-apocal-cinzaEmer p-6 rounded-xl w-full max-w-md shadow-2xl border border-apocal-laranjaClaro/30 animate-in fade-in zoom-in duration-200 h-[90vh] overflow-y-auto custom-scrollbar">
         <h2 className="text-2xl font-bold mb-6 text-center text-white">Criar Nova Sala</h2>
 
+        {erro && (
+          <div className="bg-red-500/10 border border-red-500/50 rounded p-2 mb-4">
+             <p className="text-red-400 text-sm text-center">{erro}</p>
+          </div>
+        )}
          {/* Avatar Section - Reused design */}
          <div className="flex flex-col items-center gap-3 mb-6">
             <label className="text-sm font-medium text-gray-300">Seu Avatar</label>
