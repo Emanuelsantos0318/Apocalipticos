@@ -1,7 +1,9 @@
 import React from "react";
 
 export default function RankingJogadores({ jogadores, meuUid }) {
-  
+  // Ordenar jogadores por pontos (maior para menor)
+  const jogadoresOrdenados = [...jogadores].sort((a, b) => (b.pontos || 0) - (a.pontos || 0));
+
   return (
     <div className="bg-gray-900/60 backdrop-blur-md border border-gray-700 rounded-xl overflow-hidden shadow-xl w-full text-white">
       <div className="bg-gray-800/50 px-3 py-2 2xl:px-5 2xl:py-2 font-bold flex justify-between text-gray-300 border-b border-gray-700 text-xs 2xl:text-base">
@@ -10,7 +12,7 @@ export default function RankingJogadores({ jogadores, meuUid }) {
         <span>Pontos</span>
       </div>
       <div className="max-h-[50vh] 2xl:max-h-[60vh] overflow-y-auto custom-scrollbar">
-        {jogadores.map((jogador, index) => (
+        {jogadoresOrdenados.map((jogador, index) => (
           <div
             key={jogador.uid}
             className={`flex items-center justify-between px-3 py-2 2xl:px-5 2xl:py-2 border-b border-gray-700 transition-colors ${
@@ -54,7 +56,7 @@ export default function RankingJogadores({ jogadores, meuUid }) {
         
         {jogadores.length === 0 && (
           <div className="p-4 2xl:p-8 text-center text-gray-500 text-xs 2xl:text-sm">
-            Nenhum jogador pontuou ainda
+            Nenhum jogador pontuou ainda!
           </div>
         )}
       </div>
