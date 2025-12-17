@@ -84,6 +84,11 @@ As cartas são o motor do jogo e determinam a interação da rodada:
 - **Abandono**: Se todos saírem, a sala é marcada como `ABORTED` ou excluída.
 - **Validação**: O sistema impede a entrada em salas cheias ou inexistentes.
 
+### 3.5 Sistema de Áudio
+O jogo possui um gerenciador de áudio centralizado via hook `useSounds`, responsável por:
+- **Efeitos Sonoros (SFX)**: Feedback imediato para ações (erro, sucesso, clique).
+- **Música de Fundo (BGM)**: Trilhas distintas para Home e Jogo, com controle de estado persistente (`playingBgMusic`) que permite alternar e silenciar faixas sem perder a coerência da UI.
+
 ---
 
 ## 4. Modelo de Dados (Firestore Schema)

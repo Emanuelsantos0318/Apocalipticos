@@ -1,6 +1,54 @@
 # Changelog
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
+## [Não Lançado] - 2025-12-16
+
+### Corrigido
+
+- **Ranking**: Corrigido bug que não atualizava o ranking dos jogadores com mais pontos.
+
+### Refatorado
+
+- **Ranking**: Refatorado para melhorar a performance e a experiência do usuário.
+
+## [Não Lançado] - 2025-12-15
+
+### Refatorado
+
+- **Sistema de Som (`useSounds`)**:
+  - Implementado controle genérico de música de fundo (`toggleMusic`).
+  - Sincronização de estado entre componentes (`playingBgMusic`).
+  - Botão de volume na tela de Jogo agora controla independentemente a música da partida.
+
+  Guia de Refatoração do Controle de Som
+Refatorei a lógica de controle de som para permitir a ativação/desativação genérica da música de fundo, possibilitando que a música do jogo seja controlada da mesma forma que a música da tela inicial.
+
+Alterações
+1. Refatorado o arquivo `useSounds.js`
+Substituí o booleano simples `isMusicPlaying` por `playingBgMusic` (string) para rastrear qual faixa está sendo reproduzida.
+
+Adicionada a função `toggleMusic(type)` para lidar com qualquer faixa de fundo.
+
+Atualizadas as funções `playHome` / `playJogo` para sincronizar com o novo estado.
+
+2. Atualizado o arquivo `Home.jsx`
+Agora utiliza `toggleMusic("musicaTema")`
+
+O botão de volume reflete o estado de musicaTema.
+
+3. Atualizado o arquivo `Jogo.jsx`
+Agora utiliza toggleMusic("musicaJogo")
+
+O botão de volume reflete o estado de musicaJogo.
+
+Resultados da verificação
+Verificação manual
+
+Música da tela inicial: Inicia ao carregar e alterna corretamente com o botão.
+
+Música do jogo: Inicia ao carregar e alterna corretamente com o botão no jogo e no lobby.
+
+Sincronização de estado: Alternar uma das opções atualiza o estado do ícone corretamente, sem necessidade de recarregar a página.
 
 ## [Não Lançado] - 2025-12-12
 
