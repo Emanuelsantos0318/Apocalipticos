@@ -88,6 +88,8 @@ useEffect(() => {
   }, [codigo, navigate]);
 
   // Listener de Jogadores
+  const prevJogadoresRef = React.useRef([]);
+
   useEffect(() => {
     if (!codigo) return;
     const q = collection(db, "salas", codigo, "jogadores");
@@ -96,6 +98,19 @@ useEffect(() => {
         uid: doc.id,
         ...doc.data(),
       }));
+
+      // Detectar quem saiu
+      if (prevJogadoresRef.current.length > 0) {
+        const currentUids = lista.map((p) => p.uid);
+        const saiu = prevJogadoresRef.current.filter(
+          (p) => !currentUids.includes(p.uid)
+        );
+        saiu.forEach((p) => {
+          toast.error(`${p.nome} saiu da sala.`);
+        });
+      }
+
+      prevJogadoresRef.current = lista;
       setJogadores(lista);
     });
     return () => unsub();
@@ -186,28 +201,34 @@ useEffect(() => {
       contagem[target] = (contagem[target] || 0) + 1;
     });
 
-    // Encontrar o mais votado
-    let maisVotado = null;
+    // Encontrar o(s) mais votado(s) - Empate
     let maxVotos = -1;
+    let perdedores = [];
 
     Object.entries(contagem).forEach(([uid, count]) => {
       if (count > maxVotos) {
         maxVotos = count;
-        maisVotado = uid;
+        perdedores = [uid];
+      } else if (count === maxVotos) {
+        perdedores.push(uid);
       }
     });
 
-    if (maisVotado) {
-      setResultadoVotacao({ perdedor: maisVotado, totalVotos: maxVotos });
+    if (perdedores.length > 0) {
+      setResultadoVotacao({ perdedores, totalVotos: maxVotos });
 
       // Apenas o Host ou Jogador Atual aplica a penalidade para evitar duplicidade
       if (isCurrentPlayer || jogadores.find(j => j.uid === meuUid)?.isHost) {
-        // Penalidade para o mais votado
-        const playerRef = doc(db, "salas", codigo, "jogadores", maisVotado);
-        await updateDoc(playerRef, {
-          "stats.bebeu": increment(1), // Exemplo de penalidade
-          ultimaAcao: serverTimestamp(),
+         // Penalidade para o mais votado
+        const batchUpdates = perdedores.map(async (uid) => {
+          const playerRef = doc(db, "salas", codigo, "jogadores", uid);
+          await updateDoc(playerRef, {
+            "stats.bebeu": increment(1), // Exemplo de penalidade
+            ultimaAcao: serverTimestamp(),
+          });
         });
+        
+        await Promise.all(batchUpdates);
       }
     }
   };
@@ -287,7 +308,7 @@ useEffect(() => {
       const eu = jogadores.find(j => j.uid === meuUid);
       await registrarAcaoRodada(codigo, meuUid, "EU_JA", eu?.nome, eu?.avatar);
       
-      toast("🍺 Você bebeu!", { icon: "🍺" });
+      toast("Você bebeu!", { icon: "🍺" });
     } catch (error) {
       console.error("Erro ao registrar Eu Já:", error);
     }

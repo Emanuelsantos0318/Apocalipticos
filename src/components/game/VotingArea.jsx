@@ -17,27 +17,36 @@ export default function VotingArea({ jogadores, meuUid, onVote, votos, resultado
 
   // Se já tiver resultado, mostra quem ganhou
   if (resultado) {
-    const maisVotado = jogadores.find(j => j.uid === resultado.perdedor);
+    const listaPerdedores = resultado.perdedores 
+      ? resultado.perdedores.map(uid => jogadores.find(j => j.uid === uid)).filter(Boolean)
+      : [jogadores.find(j => j.uid === resultado.perdedor)].filter(Boolean);
+
+    const isEmpate = listaPerdedores.length > 1;
+
     return (
       <div className="text-center animate-fade-in">
         <h2 className="text-2xl font-bold text-red-500 mb-4">
-          O mais votado foi:
+          {isEmpate ? "Os mais votados foram:" : "O mais votado foi:"}
         </h2>
-        <div className="flex flex-col items-center">
-          <div className="mb-4">
-            {maisVotado?.avatar && (maisVotado.avatar.startsWith("http") || maisVotado.avatar.includes("dicebear")) ? (
-              <img 
-                src={maisVotado.avatar} 
-                alt="Avatar" 
-                className="w-24 h-24 rounded-full bg-gray-700 object-cover border-4 border-red-500 mx-auto"
-              />
-            ) : (
-              <div className="text-6xl">{maisVotado?.avatar || "🤡"}</div>
-            )}
-          </div>
-          <h3 className="text-xl font-bold">{maisVotado?.nome || "Desconhecido"}</h3>
-          <p className="text-gray-400 mt-2">{resultado.totalVotos} votos</p>
+        <div className="flex flex-wrap justify-center gap-6">
+          {listaPerdedores.map((perdedor) => (
+            <div key={perdedor.uid} className="flex flex-col items-center">
+              <div className="mb-4">
+                {perdedor.avatar && (perdedor.avatar.startsWith("http") || perdedor.avatar.includes("dicebear")) ? (
+                  <img 
+                    src={perdedor.avatar} 
+                    alt="Avatar" 
+                    className="w-24 h-24 rounded-full bg-gray-700 object-cover border-4 border-red-500 mx-auto"
+                  />
+                ) : (
+                  <div className="text-6xl">{perdedor.avatar || "🤡"}</div>
+                )}
+              </div>
+              <h3 className="text-xl font-bold">{perdedor.nome || "Desconhecido"}</h3>
+            </div>
+          ))}
         </div>
+        <p className="text-gray-400 mt-4 font-bold text-lg">{resultado.totalVotos} votos {isEmpate && "cada"}</p>
       </div>
     );
   }

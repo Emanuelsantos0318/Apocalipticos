@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { FiXCircle } from "react-icons/fi"; // Ícone mais bonito
 import ConfirmModal from "../modals/ConfirmModal"; // ajuste o caminho conforme sua estrutura
 import toast from "react-hot-toast";
@@ -39,55 +40,60 @@ const removerJogador = () => {
         Jogadores ({jogadores.length})
       </h2>
       <ul className="space-y-2">
-        {jogadores.map((jogador) => (
-          <li
-            key={jogador.id}
-            className={`flex items-center justify-between p-3 rounded ${
-              jogador.id === currentUser?.uid ? "bg-gray-700" : "bg-gray-900"
-            }`}
-          >
-            <div className="flex items-center gap-3 flex-1 min-w-0">
-              {jogador.avatar && (jogador.avatar.startsWith("http") || jogador.avatar.includes("dicebear")) ? (
-                <img 
-                  src={jogador.avatar} 
-                  alt="Avatar" 
-                  className="w-10 h-10 rounded-full bg-gray-400 object-cover border border-gray-600 flex-shrink-0"
-                />
-              ) : (
-                <span className="text-xl flex-shrink-0">{jogador.avatar || "👤"}</span>
-              )}
-              <span className="truncate">
-                {jogador.nome}
-                {jogador.uid === currentUser?.uid && " (Você)"}
-                {jogador.isHost && (
-                  <span className="ml-2 bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 text-xs px-1.5 py-0.5 rounded">
-                    Admin
-                  </span>
+        <AnimatePresence>
+          {jogadores.map((jogador) => (
+            <motion.li
+              key={jogador.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className={`flex items-center justify-between p-3 rounded ${
+                jogador.id === currentUser?.uid ? "bg-gray-700" : "bg-gray-900"
+              }`}
+            >
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                {jogador.avatar && (jogador.avatar.startsWith("http") || jogador.avatar.includes("dicebear")) ? (
+                  <img 
+                    src={jogador.avatar} 
+                    alt="Avatar" 
+                    className="w-10 h-10 rounded-full bg-gray-400 object-cover border border-gray-600 flex-shrink-0"
+                  />
+                ) : (
+                  <span className="text-xl flex-shrink-0">{jogador.avatar || "👤"}</span>
                 )}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span
-                className={`px-2 py-1 text-xs rounded ${
-                  jogador.pronto ? "bg-green-500" : "bg-gray-600"
-                }`}
-              >
-                {jogador.pronto ? "Pronto" : "Aguardando"}
-              </span>
-
-              {/* Botão de remover (só visível para o host e não para ele mesmo) */}
-              {isHost && jogador.uid !== currentUser?.uid && (
-                <button
-                  onClick={() => confirmarRemocao(jogador.uid)}
-                  className="text-red-400 hover:text-red-600 text-xl"
-                  title="Remover jogador"
+                <span className="truncate">
+                  {jogador.nome}
+                  {jogador.uid === currentUser?.uid && " (Você)"}
+                  {jogador.isHost && (
+                    <span className="ml-2 bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 text-xs px-1.5 py-0.5 rounded">
+                      Admin
+                    </span>
+                  )}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span
+                  className={`px-2 py-1 text-xs rounded ${
+                    jogador.pronto ? "bg-green-500" : "bg-gray-600"
+                  }`}
                 >
-                  <FiXCircle />
-                </button>
-              )}
-            </div>
-          </li>
-        ))}
+                  {jogador.pronto ? "Pronto" : "Aguardando"}
+                </span>
+
+                {/* Botão de remover (só visível para o host e não para ele mesmo) */}
+                {isHost && jogador.uid !== currentUser?.uid && (
+                  <button
+                    onClick={() => confirmarRemocao(jogador.uid)}
+                    className="text-red-400 hover:text-red-600 text-xl"
+                    title="Remover jogador"
+                  >
+                    <FiXCircle />
+                  </button>
+                )}
+              </div>
+            </motion.li>
+          ))}
+        </AnimatePresence>
       </ul>
 
       {/* Modal simples de confirmação */}

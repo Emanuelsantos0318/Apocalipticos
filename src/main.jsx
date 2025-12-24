@@ -10,6 +10,7 @@ import Jogo from './pages/Jogo';
 import ErrorPage from './pages/ErrorPage';
 import './index.css';
 import VideoBackground from './assets/VideoBackground';
+import { Toaster } from 'react-hot-toast';
 
 const router = createBrowserRouter([
   {
@@ -18,7 +19,7 @@ const router = createBrowserRouter([
       <AuthProvider>
         <RoomProvider>
           <App />
-          
+          <Toaster position="top-center" reverseOrder={false} />
         </RoomProvider>
       </AuthProvider>
     ),
