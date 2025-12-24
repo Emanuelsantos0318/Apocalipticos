@@ -1,6 +1,17 @@
 # Changelog
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
+## [Não Lançado] - 2025-12-24
+
+### Adicionado
+
+- **Feedback Visual de Saída**: Implementado Toast notification e animação de fade-out quando jogadores saem da sala.
+- **Polimento Visual**:
+  - Toasts customizados com tema Dark/Neon.
+  - Animação de entrada e "flip" 3D para as cartas.
+- **Efeitos Sonoros**: Integração inicial de sons para ações principais (Flip, Sucesso, Falha, Votação, Sair).
+- **Tratamento de Empate**: No modo "Amigos de Merda", se houver empate, todos os mais votados recebem penalidade.
+
 ## [Não Lançado] - 2025-12-23
 
 ### Adicionado

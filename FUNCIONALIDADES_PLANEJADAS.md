@@ -75,9 +75,15 @@ Aqui estão algumas ideias para elevar o nível do nosso projeto, focando em eng
 ## 1. Experiência do Usuário (UX) e Visual
 
 - **Animações de Cartas**: Use `Framer Motion` para fazer a carta "virar" (flip effect) ao ser sorteada, ou deslizar da tela. Isso dá uma sensação tátil muito boa.
+  > Ainda não está muito bonito, mas é um começo. Vou pesquisar mais sobre isso. E colocamos um design de melhor qualidade.
+  
 - **Feedback Visual de Dano/Cura**: Quando alguém perde pontos, a tela poderia piscar levemente em vermelho (vignette). Quando ganha, em verde ou dourado.
 - **Feedback Visual de saida de jogador**: Quando alguém sai da sala, mostra uma animação de fade-out e remove da lista e uma mensagem de "jogador saiu da sala".
 - **Temas Dinâmicos**: O fundo da tela poderia mudar sutilmente dependendo do modo de jogo (ex: mais sombrio no modo "Difícil", mais neon no "+18").
+- **Fontes**: Se você encontrar fontes mais adequadas para isso pode usar a vontade, essa que tem lá é apenas para testes. 
+- **Efeitos Sonoros**: Adicionar efeitos sonoros e animações avançadas, para subistituir algumas que não estão muito adequadas..
+  1. `flip:/sounds/huh-desmarcar.mp3` (Curto, distinto) essa ficou meio estranha. Colocar um som mais caracteristico de cartas.
+  2. `success: /sounds/oh_my_god_vine.mp3` (Comemorativo/Engraçado) esse audio não é muito bom. Ficou bem estranho tocando toda hora.
 
 ### Correções
 
@@ -109,4 +115,7 @@ Aqui estão algumas ideias para elevar o nível do nosso projeto, focando em eng
 - ⏳ Implementar poderes especiais (escudo, vingança, troca).
 - ⏳ Adicionar rodadas especiais (rodada do caos).
 - ⏳ Adicionar efeitos sonoros e animações avançadas.
+  - Adicionar efeitos sonoros e animações avançadas, para subistituir algumas que não estão muito adequadas..
+  1. `flip:/sounds/huh-desmarcar.mp3` (Curto, distinto) essa ficou meio estranha. Colocar um som mais caracteristico de cartas.
+  2. `success: /sounds/oh_my_god_vine.mp3` (Comemorativo/Engraçado) esse audio não é muito bom. Ficou bem estranho tocando toda hora.
 - ⏳ Tela de Fim de Jogo.

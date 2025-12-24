@@ -11,9 +11,17 @@ export function useSounds() {
       marcarPronto: new Audio("/sounds/tem-certeza.mp3"),
       desmarcarPronto: new Audio("/sounds/vou-nada.mp3"),
       comecar: new Audio("/sounds/comecar.mp3"),
-      erro: new Audio("/sounds/erro.mp3"),
-      entrar: new Audio("/sounds/entrar.mp3"),
-      sair: new Audio("/sounds/sair.mp3"),
+      // Sounds Mapping (Fixing missing files)
+      erro: new Audio("/sounds/spongebob-fail.mp3"), // Substituindo erro.mp3 (que não existe)
+      entrar: new Audio("/sounds/huh-desmarcar.mp3"), // Substituindo entrar.mp3
+      sair: new Audio("/sounds/vai-carnica.mp3"), // Substituindo sair.mp3
+      
+      // New Sounds
+      flip: new Audio("/sounds/huh-desmarcar.mp3"),
+      success: new Audio("/sounds/oh_my_god_vine.mp3"),
+      fail: new Audio("/sounds/spongebob-fail.mp3"),
+      clown: new Audio("/sounds/pato-donald-6.mp3"),
+
       musicaTema: Object.assign(new Audio("/sounds/bar-dos-doidos-blues2.mp3"), {
         loop: true,
         volume: 0.5,
@@ -100,6 +108,12 @@ export function useSounds() {
     playErro: () => play("erro"),
     playEntrar: () => play("entrar"),
     playSair: () => play("sair"),
+    
+    // New Actions
+    playFlip: () => play("flip"),
+    playSuccess: () => play("success"),
+    playFail: () => play("fail"),
+    playClown: () => play("clown"),
     
     // Controles de Música de Fundo
     playHome: () => playBg("musicaTema"),

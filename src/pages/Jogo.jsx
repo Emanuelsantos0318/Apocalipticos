@@ -59,7 +59,17 @@ export default function Jogo() {
   
   // No Eu Nunca, todos veem as ações. Nos outros, só o jogador da vez.
   const showActions = (isCurrentPlayer || isNeverRound) && !actionTaken && sala?.cartaAtual;
-  const {playJogo, stopJogo, toggleMusic, playingBgMusic} = useSounds();
+  const {
+    playJogo,
+    stopJogo,
+    toggleMusic,
+    playingBgMusic,
+    playFlip,
+    playSuccess,
+    playFail,
+    playClown,
+    playSair
+  } = useSounds();
 
 useEffect(() => {
     playJogo(); // toca ao entrar no Jogo
@@ -107,6 +117,7 @@ useEffect(() => {
         );
         saiu.forEach((p) => {
           toast.error(`${p.nome} saiu da sala.`);
+          playSair();
         });
       }
 
@@ -216,6 +227,7 @@ useEffect(() => {
 
     if (perdedores.length > 0) {
       setResultadoVotacao({ perdedores, totalVotos: maxVotos });
+      playClown();
 
       // Apenas o Host ou Jogador Atual aplica a penalidade para evitar duplicidade
       if (isCurrentPlayer || jogadores.find(j => j.uid === meuUid)?.isHost) {
@@ -249,6 +261,7 @@ useEffect(() => {
       setTimeLeft(30);
       setActionTaken(false);
       setResultadoVotacao(null); // Resetar resultado local
+      playFlip();
     } catch (error) {
       console.error("Erro ao sortear carta:", error);
     }
@@ -266,12 +279,14 @@ useEffect(() => {
   };
 
   const handleAdminConfirm = async () => {
+    playSuccess();
     await updatePlayerStats("completou");
     await updateDoc(doc(db, "salas", codigo), { statusAcao: null }); // Limpa status
     await passarVez();
   };
 
   const handleAdminReject = async () => {
+    playFail();
     await updatePlayerStats("recusou"); // Conta como recusa/falha
     await updateDoc(doc(db, "salas", codigo), { statusAcao: null }); // Limpa status
     await passarVez();
@@ -289,6 +304,7 @@ useEffect(() => {
   };
 
   const handleAdminConfirmPenalty = async () => {
+    playFail();
     await updatePlayerStats("recusou"); // Aplica penalidade e conta bebida
     await updateDoc(doc(db, "salas", codigo), { statusAcao: null }); // Limpa status
     await passarVez();
@@ -308,7 +324,10 @@ useEffect(() => {
       const eu = jogadores.find(j => j.uid === meuUid);
       await registrarAcaoRodada(codigo, meuUid, "EU_JA", eu?.nome, eu?.avatar);
       
+      await registrarAcaoRodada(codigo, meuUid, "EU_JA", eu?.nome, eu?.avatar);
+      
       toast("Você bebeu!", { icon: "🍺" });
+      playSuccess(); // ou playFail? Eu já bebe, então é meio fail kkk mas vamos de success pelo "evento"
     } catch (error) {
       console.error("Erro ao registrar Eu Já:", error);
     }
