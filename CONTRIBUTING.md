@@ -28,3 +28,22 @@ Siga o padrão [Conventional Commits](https://www.conventionalcommits.org/):
 1. Crie uma **branch** para sua feature: `git checkout -b feat/minha-nova-feature`
 2. Desenvolva e teste localmente.
 3. Abra um **Pull Request** descrevendo o que foi feito.
+
+Para adicionar novas cartas ao jogo, siga estes passos:
+
+1.  Abra o arquivo `src/firebase/seedDatabase.js`.
+2.  Localize a lista `const cards = [...]`.
+3.  Adicione seu novo objeto de carta no final da lista, seguindo o formato:
+    ```javascript
+    {
+      texto: "Sua pergunta ou desafio aqui",
+      tipo: CARD_TYPES.TRUTH, // ou DARE, NEVER, FRIENDS
+      modo: GAME_MODES.NORMAL, // ou ADULTO, DIFICIL
+      categoria: CATEGORIES.TRUTH_OR_DARE // ou outra correspondente
+    }
+    ```
+4.  No terminal, execute o comando:
+    ```bash
+    node src/firebase/seedDatabase.js
+    ```
+5.  O script irá verificar automaticamente quais cartas são novas e adicionar apenas elas, sem duplicar as existentes. ✨
