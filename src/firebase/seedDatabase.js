@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, doc, setDoc, writeBatch } from 'firebase/firestore';
+import { getFirestore, collection, doc, writeBatch, getDocs } from 'firebase/firestore';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -66,6 +66,18 @@ const cards = [
   {texto: "Eu nunca matei um gato", tipo: CARD_TYPES.NEVER, modo: GAME_MODES.NORMAL, categoria: CATEGORIES.NEVER_HAVE_I_EVER },
   {texto: "Eu nunca sair escondido para ir na casa de alguem.", tipo: CARD_TYPES.NEVER, modo: GAME_MODES.NORMAL, categoria: CATEGORIES.NEVER_HAVE_I_EVER },
 
+  // --- VERDADES LEVES (Normal) ---
+  { texto: "Qual foi a coisa mais vergonhosa que você já fez na escola?", tipo: CARD_TYPES.TRUTH, modo: GAME_MODES.NORMAL, categoria: CATEGORIES.TRUTH_OR_DARE },
+  { texto: "Quem dessa roda você levaria para uma ilha deserta?", tipo: CARD_TYPES.TRUTH, modo: GAME_MODES.NORMAL, categoria: CATEGORIES.TRUTH_OR_DARE },
+  { texto: "Qual é o seu maior medo irracional?", tipo: CARD_TYPES.TRUTH, modo: GAME_MODES.NORMAL, categoria: CATEGORIES.TRUTH_OR_DARE },
+  { texto: "Se pudesse ser invisível por um dia, o que faria?", tipo: CARD_TYPES.TRUTH, modo: GAME_MODES.NORMAL, categoria: CATEGORIES.TRUTH_OR_DARE },
+  { texto: "Qual foi o pior presente que já recebeu e fingiu gostar?", tipo: CARD_TYPES.TRUTH, modo: GAME_MODES.NORMAL, categoria: CATEGORIES.TRUTH_OR_DARE },
+  { texto: "Você já stalkeou alguém nas redes sociais hoje?", tipo: CARD_TYPES.TRUTH, modo: GAME_MODES.NORMAL, categoria: CATEGORIES.TRUTH_OR_DARE },
+  { texto: "Qual é a sua mania mais estranha?", tipo: CARD_TYPES.TRUTH, modo: GAME_MODES.NORMAL, categoria: CATEGORIES.TRUTH_OR_DARE },
+  { texto: "Você fala sozinho quando está em casa?", tipo: CARD_TYPES.TRUTH, modo: GAME_MODES.NORMAL, categoria: CATEGORIES.TRUTH_OR_DARE },
+  { texto: "Qual personagem de desenho animado seria seu crush?", tipo: CARD_TYPES.TRUTH, modo: GAME_MODES.NORMAL, categoria: CATEGORIES.TRUTH_OR_DARE },
+  { texto: "Se pudesse trocar de vida com alguém aqui por um dia, quem seria?", tipo: CARD_TYPES.TRUTH, modo: GAME_MODES.NORMAL, categoria: CATEGORIES.TRUTH_OR_DARE },
+
   // --- VERDADES CABULOSAS (Adulto/Difícil) ---
   { texto: "Qual a maior mentira que já contou pra alguém aqui?", tipo: CARD_TYPES.TRUTH, modo: GAME_MODES.ADULTO, categoria: CATEGORIES.TRUTH_OR_DARE },
   { texto: "Já pegou alguém comprometido? Conta os detalhes.", tipo: CARD_TYPES.TRUTH, modo: GAME_MODES.ADULTO, categoria: CATEGORIES.TRUTH_OR_DARE },
@@ -115,19 +127,49 @@ async function seedDatabase() {
   try {
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const batch = writeBatch(db);
     const cartasRef = collection(db, 'cartas');
+    const batch = writeBatch(db);
+    let addedCount = 0;
+    let skippedCount = 0;
 
-    console.log(`🌱 Preparando para inserir ${cards.length} cartas...`);
+    console.log(`🌱 Verificando ${cards.length} cartas...`);
+
+    // Processar cartas em chunks ou sequencialmente para evitar sobrecarga de leituras se forem muitas.
+    // Como são poucas dezenas/centenas, sequencial com Promise.all é ok, mas o batch tem limite de 500 ops.
+    // Vamos fazer um loop simples para verificar existência.
+
+    // NOTA: Para muita performance com milhares de cartas, seria melhor ler todas do banco em memória primeiro.
+    // Mas para este uso (admin tool), verificar uma a uma é seguro.
+
+    // Vamos ler todas as cartas existentes primeiro para minimizar leituras (1 leitura de coleção vs N leituras)
+    const snapshot = await getDocs(cartasRef);
+    const existingTexts = new Set(snapshot.docs.map(doc => doc.data().texto));
+
+    console.log(`📚 ${existingTexts.size} cartas já existem no banco.`);
 
     cards.forEach((card) => {
-      const newDocRef = doc(cartasRef);
-      batch.set(newDocRef, card);
+      if (!existingTexts.has(card.texto)) {
+        const newDocRef = doc(cartasRef);
+        batch.set(newDocRef, card);
+        addedCount++;
+        // Adiciona ao set para evitar duplicatas dentro do próprio array de input se houver
+        existingTexts.add(card.texto);
+      } else {
+        skippedCount++;
+      }
     });
 
-    await batch.commit();
+    if (addedCount > 0) {
+      await batch.commit();
+      console.log(`✅ ${addedCount} novas cartas adicionadas!`);
+    } else {
+      console.log(`✨ Nenhuma carta nova para adicionar.`);
+    }
 
-    console.log('✅ Banco de dados semeado com sucesso!');
+    if (skippedCount > 0) {
+      console.log(`⏭️ ${skippedCount} cartas já existiam e foram puladas.`);
+    }
+
     process.exit(0);
   } catch (error) {
     console.error('❌ Erro ao semear dados:', error);
