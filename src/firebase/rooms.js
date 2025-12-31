@@ -89,6 +89,11 @@ export async function criarSala(uid, roomData) {
     },
     isHost: true, // Adicionado identificador de host
     timestamp: serverTimestamp(),
+    powerups: {
+      shield: 1,
+      revenge: 1,
+      swap: 1
+    }
   });
 
   return roomData.roomCode;

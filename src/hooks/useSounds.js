@@ -99,7 +99,7 @@ export function useSounds() {
     };
   }, [sons]);
 
-  return {
+  const actions = useMemo(() => ({
     playMarcarPronto: () => play("marcarPronto"),
     stopMarcarPronto: () => stop("marcarPronto"),
     playDesmarcarPronto: () => play("desmarcarPronto"),
@@ -124,6 +124,10 @@ export function useSounds() {
     stopJogo: () => stopBg("musicaJogo"),
     
     toggleMusic,
+  }), [sons, playingBgMusic]); 
+
+  return {
+    ...actions,
     playingBgMusic, // Exporta quem está tocando
   };
 }
