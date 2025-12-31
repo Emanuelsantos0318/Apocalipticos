@@ -41,6 +41,13 @@ O sistema segue uma arquitetura **Serverless** e **Decentralized Game Logic**, o
 | **TailwindCSS** | Estilização | Desenvolvimento rápido e design consistente. |
 | **Framer Motion** | Animações | Feedback visual rico e micro-interações. |
 
+### 2.3 Padrões de Projeto (Refatoração)
+Visando a manutenibilidade e escalabilidade, adota-se o padrão de **Custom Hooks** para desacoplar a lógica de negócio da camada de apresentação (View).
+- **`useGameRoom`**: Gerencia subscriptions do Firestore (dados da sala e lista de jogadores).
+- **`useGameActions`**: Centraliza regras de jogo (sorteio, pontuação, penalidades, turnos).
+- **`useVoting`**: Encapsula inteiramente a lógica de votação ("Amigos de Merda").
+- **`usePowerUpActions`**: Gerencia o inventário e execução de poderes especiais.
+
 ---
 
 ## 3. Regras de Negócio e Mecânicas de Jogo

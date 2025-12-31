@@ -10,9 +10,21 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
   - Implementada tela de Pódio com Top 3 e animações.
   - Premiações especiais: "O Cachaceiro", "O Arregão".
   - Opções de "Novo Jogo" (Reiniciar tudo) e "Voltar ao Lobby" (Nova sala).
-- **Correções**:
-  - Ajuste de sincronia entre status do Jogo e do Lobby para evitar loop de reinício.
-  - Botão de "Encerrar Jogo" exclusivo para o Host.
+- **Power-ups**:
+  - Implementada Barra de Power-ups (Escudo, Troca, Vingança) na interface.
+  - Lógica de consumo de itens e aplicação de efeitos (pular vez, trocar carta, penalizar outro).
+
+### Refatorado
+- **Arquitetura do Jogo**:
+  - `Jogo.jsx` refatorado para utilizar **Custom Hooks** (`useGameRoom`, `useGameActions`, `useVoting`, `usePowerUpActions`).
+  - Separação clara entre UI e Lógica de Negócio.
+  - Remoção de código duplicado e props redundantes.
+
+### Corrigido
+- **Ranking Congelado**: Corrigido bug crítico de performance em `useSounds` (falta de memoização) que causava re-renderizações infinitas e desconexão do Firestore para não-admins.
+- **Crash na Ação**: Corrigido `ReferenceError: onSnapshot is not defined` que quebrava o jogo ao tentar ouvir atualizações de ações.
+- **Header**: Corrigido erro de props `onToggleMusic` não sendo passadas corretamente.
+- **Ajuste de sincronia**: Status do Jogo e Lobby sincronizados para evitar loop de reinício.
     
 
 ## [Não Lançado] - 2025-12-24

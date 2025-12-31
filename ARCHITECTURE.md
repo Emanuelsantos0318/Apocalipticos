@@ -16,6 +16,9 @@ src/
 │   └── ...
 ├── context/         # Gerenciamento de estado global
 │   └── AuthContext  # Gerencia o usuário logado (anônimo)
+├── hooks/           # Custom Hooks (Lógica reutilizável)
+│   ├── game/        # Hooks de lógica de jogo (useGameRoom, useGameActions...)
+│   └── useSounds.js # Gerenciador de Áudio
 ├── firebase/        # Camada de integração com o Backend
 │   ├── config.js    # Inicialização do Firebase
 │   └── game.js      # Funções de lógica de jogo (sorteio, turnos, votos)
@@ -27,7 +30,9 @@ src/
 
 1.  **Criação de Sala**: O ADM cria um documento em `salas/{codigo}`.
 2.  **Entrada**: Jogadores são adicionados à subcoleção `salas/{codigo}/jogadores`.
-3.  **Sincronização**: O componente `Jogo.jsx` usa `onSnapshot` para ouvir mudanças no documento da sala em tempo real.
+3.  **Sincronização**:
+    - O hook **`useGameRoom`** estabelece listeners (`onSnapshot`) nos documentos da sala e subcoleção de jogadores.
+    - Qualquer mudança no banco reflete instantaneamente no estado local.
 4.  **Ações**:
     - Quando um jogador clica em "Sortear Carta", uma função em `firebase/game.js` é chamada.
     - Essa função atualiza o campo `cartaAtual` no Firestore.

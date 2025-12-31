@@ -80,7 +80,7 @@ salas/{codigo}/jogadores/{uid}
 
 ## 🔄 Fase 8 – Ranking em Tempo Real
 
-### 📍 Status: Em Andamento
+### 📍 Status: Concluído
 
 🔹 ✅ RankingJogadores.jsx exibe lista ordenada por pontuação.
 

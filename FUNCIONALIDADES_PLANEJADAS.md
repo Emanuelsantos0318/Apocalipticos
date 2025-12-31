@@ -103,6 +103,8 @@ Aqui estão algumas ideias para elevar o nível do nosso projeto, focando em eng
 - ⏳ **Rodadas Especiais**: A cada 5 rodadas, uma "Rodada do Caos" onde todos jogam ou as regras mudam (ex: vale o dobro de pontos).
 
 # TODO: Decidir fazer alguma alterações no jogo.Por isso por enquanto ignore as funcionalidades abaixo do Eventos do Caos. Vou atualizar o documento mais tarde.
+
+  - Vamos nos basear nos 7 pecados capitais (ou outra coisa). E mudar um pouco o foco do jogo, estamos criando uma historia de plano de fundo para que tudo seja implementado corretamente. Como estamos tentando monetizar o jogo podemos precisar deixar algumas cartas e modos de jogo pagos ou prêmio. Aceito sugestões de forma de ganhar dinheiro com o jogo. 
    - Aqui estão 3 sugestões de "Eventos do Caos" que podem acontecer aleatoriamente (tipo 5% de chance ao sacar uma carta) ou serem ativados pelo Admin:
 
     1. 👑 **O Ditador (Minha Favorita):**
@@ -137,7 +139,17 @@ Aqui estão algumas ideias para elevar o nível do nosso projeto, focando em eng
 ## 3. Engajamento Social
 
 - ⏳ **Compartilhamento**: Botão para gerar uma imagem do resultado final para postar no Instagram/WhatsApp.
-- ⏳ **Reações Rápidas**: Permitir que os outros jogadores mandem emojis (🔥, 🍻, 😱) que flutuam na tela durante a vez do outro.
+  - ⏳ **Reações Rápidas**: Permitir que os outros jogadores mandem emojis (🔥, 🍻, 😱) que flutuam na tela durante a vez do outro.
+
+## 5. Novos Rumos (Tema & Monetização) 💰
+> **Nota do Usuário (30/12/2025)**:
+> - **Novo Tema**: Basear o jogo nos **7 Pecados Capitais** (ou similar) e criar uma lore/história de fundo para dar profundidade.
+> - **Monetização**: O jogo terá itens/modos pagos ou premium.
+>   - *Ideias*: Avatares exclusivos, Baralhos temáticos (ex: "Baralho da Luxúria" +18 pesado, "Baralho da Ira" hardcore), Efeitos visuais de power-ups.
+> - **Eventos do Caos** (Sugestões):
+>     1. 👑 **O Ditador**: Jogador cria regra física por 3 rodadas e multa quem quebrar.
+>     2. 💣 **Modo Blitz**: Timer reduz para 5s. Tela vermelha pulsando.
+>     3. 🎭 **Troca de Corpos**: Avatares e nomes embaralhados visualmente.
 
 
 ## 4. Técnico
