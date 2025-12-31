@@ -29,9 +29,10 @@ import VotingArea from "../components/game/VotingArea";
 import Podium from "../components/game/Podium";
 import ChoiceModal from "../components/game/ChoiceModal";
 import ConfirmModal from "../components/modals/ConfirmModal";
+import PowerUpBar from "../components/game/PowerUpBar"; // IMPORTADO
 import { CARD_TYPES, CATEGORIES } from "../constants/constants";
 import { useSounds } from "../hooks/useSounds";
-import { Volume2, VolumeX } from "lucide-react"; // ícones de som
+import { Volume2, VolumeX, Skull } from "lucide-react"; // ícones de som e kill
 
 export default function Jogo() {
   const { codigo } = useParams();
@@ -49,6 +50,9 @@ export default function Jogo() {
   const [showForceModal, setShowForceModal] = useState(null); // null, 'VOTE', 'NEVER'
   const [showFinishConfirmModal, setShowFinishConfirmModal] = useState(false);
 
+  // Estados para Power-ups
+  const [showRevengeSelector, setShowRevengeSelector] = useState(false);
+
   // Estados para Votação (Amigos de Merda)
   const [votos, setVotos] = useState({});
   const [resultadoVotacao, setResultadoVotacao] = useState(null);
@@ -57,6 +61,11 @@ export default function Jogo() {
   const meuUid = user?.uid;
   const currentPlayer = sala?.jogadorAtual;
   const isCurrentPlayer = currentPlayer === meuUid;
+  
+  // Obter dados do meu jogador (para inventário de powerups)
+  const meuJogador = jogadores.find(j => j.uid === meuUid);
+  
+  // Se for votação, todos podem agir (votar), não só o jogador da vez
 
 
   // Se for votação, todos podem agir (votar), não só o jogador da vez
@@ -79,10 +88,16 @@ export default function Jogo() {
     playSair
   } = useSounds();
 
-useEffect(() => {
-    playJogo(); // toca ao entrar no Jogo
-    return () => stopJogo(); // para a música ao sair
-  }, []);
+  useEffect(() => {
+    // Toca música se não estiver completado
+    if (sala?.status === "completed") {
+        stopJogo();
+    } else {
+        playJogo();
+    }
+    
+    return () => stopJogo(); 
+  }, [sala?.status]);
 
   // Listener da Sala
   useEffect(() => {
@@ -480,6 +495,92 @@ useEffect(() => {
     }
   };
 
+  // --- POWER UPS ---
+
+  const handleUseShield = async () => {
+    try {
+      if (!meuJogador?.powerups?.shield) return;
+
+      // Consumir escudo
+      await updateDoc(doc(db, "salas", codigo, "jogadores", meuUid), {
+        "powerups.shield": increment(-1),
+        ultimaAcao: serverTimestamp()
+      });
+
+      toast.success("🛡️ ESCUDO ATIVADO! Pulando a vez...", {
+        style: { background: '#1e3a8a', color: '#fff' }
+      });
+      
+      playSuccess(); // Somzinho de buff
+      await passarVez(); // Pula a vez sem penalidade
+
+    } catch (error) {
+      console.error("Erro ao usar escudo:", error);
+      toast.error("Falha ao ativar escudo.");
+    }
+  };
+
+  const handleUseSwap = async () => {
+    try {
+      if (!meuJogador?.powerups?.swap) return;
+
+      // Consumir troca
+      await updateDoc(doc(db, "salas", codigo, "jogadores", meuUid), {
+        "powerups.swap": increment(-1),
+        ultimaAcao: serverTimestamp()
+      });
+
+      toast("🔄 TROCA! Ressorteando carta...", {
+        icon: "🔄"
+      });
+
+      // Ressortear
+      await handleSortearCarta();
+
+    } catch (error) {
+      console.error("Erro ao usar troca:", error);
+      toast.error("Falha ao usar troca.");
+    }
+  };
+
+  const handleUseRevenge = () => {
+    if (!meuJogador?.powerups?.revenge) return;
+    setShowRevengeSelector(true);
+  };
+
+  const handleConfirmRevenge = async (targetUid) => {
+    try {
+      setShowRevengeSelector(false);
+      
+      // Consumir vingança
+      await updateDoc(doc(db, "salas", codigo, "jogadores", meuUid), {
+        "powerups.revenge": increment(-1),
+        ultimaAcao: serverTimestamp()
+      });
+
+      // Aplicar penalidade no alvo
+      const targetRef = doc(db, "salas", codigo, "jogadores", targetUid);
+      const targetName = jogadores.find(j => j.uid === targetUid)?.nome || "Alvo";
+
+      await updateDoc(targetRef, {
+        "stats.bebidas": increment(1),
+        "stats.recusou": increment(1) // Opcional: contar como recusa? Melhor só bebida extra.
+        // Vamos contar apenas bebida por enquanto para ser "ataque"
+      });
+      
+      toast.success(`😈 VINGANÇA! ${targetName} vai beber!`, {
+        icon: "⚡",
+        style: { background: '#7f1d1d', color: '#fff' }
+      });
+
+      playClown(); // Som zoado para a vítima
+
+    } catch (error) {
+      console.error("Erro ao usar vingança:", error);
+      toast.error("Falha ao usar vingança.");
+    }
+  };
+
   const resetGameData = async (newStatus) => {
     try {
       // 1. Resetar Sala
@@ -650,6 +751,59 @@ useEffect(() => {
             {sala.cartaAtual ? (
               <>
                 <CardDisplay carta={sala.cartaAtual} timeLeft={timeLeft} />
+
+
+                {/* Visualizar Power-ups (Apenas Jogador Atual e se não tiver feito ação) */}
+                {isCurrentPlayer && !actionTaken && !isVotingRound && !isNeverRound && (
+                  <PowerUpBar 
+                    powerups={meuJogador?.powerups}
+                    onUse={(type) => {
+                        if (type === 'shield') handleUseShield();
+                        if (type === 'swap') handleUseSwap();
+                        if (type === 'revenge') handleUseRevenge();
+                    }}
+                    disabled={resultadoVotacao || sala.statusAcao}
+                  />
+                )}
+
+                {/* Modal de Seleção de Vingança */}
+                {showRevengeSelector && (
+                  <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-gray-900 border border-red-500 rounded-xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200">
+                        <h3 className="text-xl font-bold text-red-500 mb-4 flex items-center gap-2">
+                            <Skull size={24} />
+                            ESCOLHA SUA VÍTIMA
+                        </h3>
+                        <p className="text-gray-300 mb-6 text-sm">Quem vai beber no seu lugar? 😈</p>
+                        
+                        <div className="grid grid-cols-2 gap-3 max-h-60 overflow-y-auto custom-scrollbar">
+                            {jogadores.filter(j => j.uid !== meuUid).map(j => (
+                                <button
+                                    key={j.uid}
+                                    onClick={() => handleConfirmRevenge(j.uid)}
+                                    className="flex items-center gap-3 p-3 rounded-lg bg-gray-800 hover:bg-red-900/40 border border-gray-700 hover:border-red-500 transition-all group"
+                                >
+                                    <div className="w-10 h-10 rounded-full bg-gray-700 overflow-hidden">
+                                        {j.avatar?.startsWith("http") ? (
+                                            <img src={j.avatar} alt={j.nome} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <span className="w-full h-full flex items-center justify-center text-lg">{j.avatar}</span>
+                                        )}
+                                    </div>
+                                    <span className="font-bold text-gray-200 group-hover:text-red-200 truncate">{j.nome}</span>
+                                </button>
+                            ))}
+                        </div>
+                        
+                        <button 
+                            onClick={() => setShowRevengeSelector(false)}
+                            className="mt-6 w-full py-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-white font-bold transition-colors"
+                        >
+                            Cancelar
+                        </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Área de Votação (Amigos de Merda) */}
                 {isVotingRound ? (

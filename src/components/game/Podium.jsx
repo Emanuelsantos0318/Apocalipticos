@@ -3,10 +3,39 @@ import { motion } from "framer-motion";
 import { Trophy, Beer, ShieldAlert, BadgeCheck } from "lucide-react";
 
 export default function Podium({ jogadores, onBackToLobby, onRestart }) {
-  // 1. Ordenar por pontos (Vencedores)
-  const ranking = [...jogadores].sort((a, b) => (b.pontos || 0) - (a.pontos || 0));
+  // 1. Agrupar por pontos (Lógica de Empate)
+  // Cria um Map onde a chave é a pontuação e o valor é um array de jogadores
+  const scoreMap = new Map();
   
-  // 2. Calcular Estatísticas para Prêmios
+  jogadores.forEach(p => {
+    const pts = p.pontos || 0;
+    if (!scoreMap.has(pts)) scoreMap.set(pts, []);
+    scoreMap.get(pts).push(p);
+  });
+
+  // Ordena as pontuações (chaves) do maior para o menor
+  const sortedScores = Array.from(scoreMap.keys()).sort((a, b) => b - a);
+
+  // Define os grupos de jogadores para 1º, 2º e 3º lugar
+  // Ex: podiumGroups[0] são os vencedores (pode ser 1 ou mais)
+  const podiumGroups = sortedScores.map(score => scoreMap.get(score));
+
+  // Achatando o resto para "Outros"
+  // Se tivermos grupos para 1º, 2º e 3º, o resto (4º pontuação em diante) são "others"
+  // Mas cuidado: se tivermos 5 pessoas em 1º lugar, não tem 2º nem 3º lugar "tradicional".
+  // Lógica Olímpica: Se 2 pessoas ganham Ouro, ninguém ganha Prata. O próximo ganha Bronze.
+  // Lógica Simplificada (Party Game): Mostramos os grupos de pontuação.
+  // Vamos usar: Top 3 Pontuações Distintas.
+  
+  const place1 = podiumGroups[0] || [];
+  const place2 = podiumGroups[1] || [];
+  const place3 = podiumGroups[2] || [];
+
+  // "Others" são todos da 4ª maior pontuação para baixo
+  const othersGroups = podiumGroups.slice(3);
+  const others = othersGroups.flat();
+
+  // 2. Calcular Estatísticas para Prêmios (Restaurado)
   const getWinner = (statKey) => {
     let maxVal = -1;
     let winners = [];
@@ -24,11 +53,7 @@ export default function Podium({ jogadores, onBackToLobby, onRestart }) {
 
   const cachaceiros = getWinner('bebidas'); // Quem mais bebeu
   const arregoes = getWinner('recusou');    // Quem mais recusou (arregou)
-  const santos = getWinner('euNunca');      // Quem mais disse "Eu Nunca" (opcional, ou quem fez tudo)
-
-  // Top 3
-  const top3 = ranking.slice(0, 3);
-  const others = ranking.slice(3);
+  const santos = getWinner('euNunca');      // Quem mais disse "Eu Nunca" (opcional)
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4 flex flex-col items-center animate-fade-in relative overflow-hidden">
@@ -42,73 +67,98 @@ export default function Podium({ jogadores, onBackToLobby, onRestart }) {
       </h1>
 
       {/* PODIUM AREA */}
-      <div className="flex flex-col md:flex-row items-end justify-center gap-4 mb-12 w-full max-w-4xl z-10 px-4 mt-8 md:mt-16">
-        {/* 2nd Place */}
-        {top3[1] && (
-          <motion.div 
+      <div className="flex flex-row items-end justify-center gap-2 md:gap-4 mb-12 w-full max-w-5xl z-10 px-4 mt-8 md:mt-16">
+        
+        {/* 2nd Place (Esquerda) */}
+        <motion.div 
             initial={{ opacity: 0, y: 50 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ delay: 0.5 }}
-            className="flex flex-col items-center order-2 md:order-1"
-          >
-            <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-gray-400 overflow-hidden shadow-lg mb-2 relative">
-                {top3[1].avatar?.startsWith("http") ? (
-                    <img src={top3[1].avatar} alt={top3[1].nome} className="w-full h-full object-cover" />
-                ) : (
-                    <div className="w-full h-full bg-gray-700 flex items-center justify-center text-2xl">{top3[1].avatar}</div>
-                )}
-                <div className="absolute -bottom-1 -right-1 bg-gray-400 text-gray-900 font-bold w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center border-2 border-white">2</div>
+            className={`flex flex-col items-center order-1 w-1/3 ${place2.length === 0 ? 'invisible' : ''}`}
+        >
+            <div className={`flex flex-wrap justify-center -space-x-4 ${place2.length > 2 ? '-space-x-6' : ''}`}>
+                {place2.map((p, i) => (
+                    <div key={p.uid} className="flex flex-col items-center group relative transform transition-transform hover:z-20 hover:scale-110">
+                         <div className="relative mb-2">
+                             <div className="w-14 h-14 md:w-20 md:h-20 rounded-full border-4 border-gray-400 overflow-hidden shadow-lg relative z-0 bg-gray-800">
+                                 {p.avatar?.startsWith("http") ? (
+                                     <img src={p.avatar} alt={p.nome} className="w-full h-full object-cover" />
+                                 ) : (
+                                     <div className="w-full h-full bg-gray-700 flex items-center justify-center text-xl md:text-2xl">{p.avatar}</div>
+                                 )}
+                             </div>
+                             {/* Badge só no último ou ajustado (Se tem muitos, o badge pode poluir. Vamos deixar em todos) */}
+                             <div className="absolute -bottom-2 -right-2 bg-gray-400 text-gray-900 font-bold w-5 h-5 md:w-8 md:h-8 rounded-full flex items-center justify-center border-2 border-white z-10 shadow-md text-xs md:text-sm">2</div>
+                         </div>
+                         <span className="font-bold text-gray-300 text-[10px] md:text-sm text-center truncate w-20 md:w-32 block">{p.nome}</span>
+                    </div>
+                ))}
             </div>
-            <span className="font-bold text-gray-300 md:text-xl">{top3[1].nome}</span>
-            <span className="text-sm text-gray-400">{top3[1].pontos || 0} pts</span>
-          </motion.div>
-        )}
+            <span className="text-xs md:text-sm text-gray-400 mt-1 font-bold">{place2[0]?.pontos || 0} pts</span>
+        </motion.div>
 
-        {/* 1st Place (Winner) */}
-        {top3[0] && (
-          <motion.div 
+        {/* 1st Place (Centro - Vencedor) */}
+        <motion.div 
             initial={{ opacity: 0, scale: 0.5, y: 50 }} 
             animate={{ opacity: 1, scale: 1, y: 0 }} 
             transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
-            className="flex flex-col items-center order-1 md:order-2 mb-8 md:mb-0 relative"
-          >
-            <div className="absolute -top-12 md:-top-16 text-yellow-400 animate-bounce">
-                <Trophy size={48} className="md:w-16 md:h-16" />
+            className={`flex flex-col items-center order-2 w-1/3 mb-4 md:mb-0 relative ${place1.length === 0 ? 'invisible' : ''}`}
+        >
+            <div className="absolute -top-12 md:-top-16 text-yellow-400 animate-bounce z-20">
+                <Trophy size={32} className="md:w-16 md:h-16" />
             </div>
-            <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-yellow-400 overflow-hidden shadow-[0_0_30px_rgba(250,204,21,0.5)] mb-2 relative z-10 bg-gray-800">
-                {top3[0].avatar?.startsWith("http") ? (
-                    <img src={top3[0].avatar} alt={top3[0].nome} className="w-full h-full object-cover" />
-                ) : (
-                    <div className="w-full h-full bg-gray-700 flex items-center justify-center text-4xl">{top3[0].avatar}</div>
-                )}
-                 <div className="absolute -bottom-2 -right-2 bg-yellow-400 text-yellow-900 font-bold w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center border-4 border-white text-xl">1</div>
-            </div>
-            <span className="font-black text-2xl md:text-4xl text-yellow-400 drop-shadow-md">{top3[0].nome}</span>
-            <span className="text-lg md:text-2xl text-yellow-200 font-bold">{top3[0].pontos || 0} pts</span>
-            <span className="text-xs md:text-sm text-yellow-500/80 uppercase tracking-widest mt-1">O Apocalíptico</span>
-          </motion.div>
-        )}
 
-        {/* 3rd Place */}
-        {top3[2] && (
-          <motion.div 
+            <div className={`flex flex-wrap justify-center -space-x-4 ${place1.length > 2 ? '-space-x-8' : ''}`}>
+                {place1.map((p) => (
+                   <div key={p.uid} className="flex flex-col items-center group relative transform transition-transform hover:z-30 hover:scale-110">
+                        <div className="relative mb-2">
+                            <div className="w-20 h-20 md:w-32 md:h-32 rounded-full border-4 border-yellow-400 overflow-hidden shadow-[0_0_30px_rgba(250,204,21,0.5)] relative z-10 bg-gray-800">
+                                {p.avatar?.startsWith("http") ? (
+                                    <img src={p.avatar} alt={p.nome} className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="w-full h-full bg-gray-700 flex items-center justify-center text-3xl md:text-5xl">{p.avatar}</div>
+                                )}
+                            </div>
+                           <div className="absolute -bottom-2 -right-2 bg-yellow-400 text-yellow-900 font-bold w-6 h-6 md:w-12 md:h-12 rounded-full flex items-center justify-center border-4 border-white text-sm md:text-xl z-20 shadow-lg">1</div>
+                        </div>
+                         <span className="font-black text-xs md:text-xl text-yellow-400 drop-shadow-md text-center truncate w-24 md:w-40 block">{p.nome}</span>
+                   </div>
+                ))}
+            </div>
+
+            <span className="text-sm md:text-2xl text-yellow-200 font-bold mt-1">{place1[0]?.pontos || 0} pts</span>
+            <span className="text-[10px] md:text-sm text-yellow-500/80 uppercase tracking-widest mt-1">
+                {place1.length > 1 ? "Os Apocalípticos" : "O Apocalíptico"}
+            </span>
+        </motion.div>
+
+        {/* 3rd Place (Direita) */}
+        <motion.div 
             initial={{ opacity: 0, y: 50 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ delay: 0.7 }}
-            className="flex flex-col items-center order-3 md:order-3"
-          >
-            <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-orange-700 overflow-hidden shadow-lg mb-2 relative">
-                {top3[2].avatar?.startsWith("http") ? (
-                    <img src={top3[2].avatar} alt={top3[2].nome} className="w-full h-full object-cover" />
-                ) : (
-                    <div className="w-full h-full bg-gray-700 flex items-center justify-center text-2xl">{top3[2].avatar}</div>
-                )}
-                <div className="absolute -bottom-1 -right-1 bg-orange-700 text-orange-100 font-bold w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center border-2 border-white">3</div>
+            className={`flex flex-col items-center order-3 w-1/3 ${place3.length === 0 ? 'invisible' : ''}`}
+        >
+            <div className={`flex flex-wrap justify-center -space-x-4 ${place3.length > 2 ? '-space-x-6' : ''}`}>
+               {place3.map((p) => (
+                   <div key={p.uid} className="flex flex-col items-center group relative transform transition-transform hover:z-20 hover:scale-110">
+                        <div className="relative mb-2">
+                            <div className="w-14 h-14 md:w-20 md:h-20 rounded-full border-4 border-orange-700 overflow-hidden shadow-lg relative z-0 bg-gray-800">
+                                {p.avatar?.startsWith("http") ? (
+                                    <img src={p.avatar} alt={p.nome} className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="w-full h-full bg-gray-700 flex items-center justify-center text-xl md:text-2xl">{p.avatar}</div>
+                                )}
+                            </div>
+                            <div className="absolute -bottom-2 -right-2 bg-orange-700 text-orange-100 font-bold w-5 h-5 md:w-8 md:h-8 rounded-full flex items-center justify-center border-2 border-white z-10 shadow-md text-xs md:text-sm">3</div>
+                        </div>
+                        <span className="font-bold text-orange-300 text-[10px] md:text-sm text-center truncate w-20 md:w-32 block">{p.nome}</span>
+                   </div>
+               ))}
             </div>
-            <span className="font-bold text-orange-300 md:text-xl">{top3[2].nome}</span>
-            <span className="text-sm text-orange-400/80">{top3[2].pontos || 0} pts</span>
-          </motion.div>
-        )}
+            <span className="text-xs md:text-sm text-orange-400/80 mt-1 font-bold">{place3[0]?.pontos || 0} pts</span>
+        </motion.div>
+
       </div>
 
       {/* AWARDS SECTION */}

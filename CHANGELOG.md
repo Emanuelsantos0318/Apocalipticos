@@ -1,6 +1,20 @@
 # Changelog
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
+## [Não Lançado] - 2025-12-30
+
+### Adicionado
+
+  - *Update*: Adicionado som de Vitória/Pódio (`vitoria.mp3`).
+- **Fim de Jogo Épico (Pódio)**:
+  - Implementada tela de Pódio com Top 3 e animações.
+  - Premiações especiais: "O Cachaceiro", "O Arregão".
+  - Opções de "Novo Jogo" (Reiniciar tudo) e "Voltar ao Lobby" (Nova sala).
+- **Correções**:
+  - Ajuste de sincronia entre status do Jogo e do Lobby para evitar loop de reinício.
+  - Botão de "Encerrar Jogo" exclusivo para o Host.
+    
+
 ## [Não Lançado] - 2025-12-24
 
 ### Adicionado
@@ -11,14 +25,6 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
   - Animação de entrada e "flip" 3D para as cartas.
 - **Efeitos Sonoros**: Integração inicial de sons para ações principais (Flip, Sucesso, Falha, Votação, Sair).
   - *Update*: Substituídos sons de Flip e Sucesso por versões mais sutis (`ding.mp3`, `genio-aparecendo.mp3`).
-  - *Update*: Adicionado som de Vitória/Pódio (`vitoria.mp3`).
-- **Fim de Jogo Épico (Pódio)**:
-  - Implementada tela de Pódio com Top 3 e animações.
-  - Premiações especiais: "O Cachaceiro", "O Arregão".
-  - Opções de "Novo Jogo" (Reiniciar tudo) e "Voltar ao Lobby" (Nova sala).
-- **Correções**:
-  - Ajuste de sincronia entre status do Jogo e do Lobby para evitar loop de reinício.
-  - Botão de "Encerrar Jogo" exclusivo para o Host.
 - **Tratamento de Empate**: No modo "Amigos de Merda", se houver empate, todos os mais votados recebem penalidade.
 - **Lógica Verdade ou Desafio**:
   - Implementado `ChoiceModal` para forçar escolha entre "Verdade" 😇 e "Desafio" 😈 antes de revelar a carta.

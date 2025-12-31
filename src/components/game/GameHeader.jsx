@@ -60,6 +60,20 @@ export const GameHeader = ({ codigo, modo, currentPlayer, isCurrentPlayer, jogad
           </button>
         </div>
       </header>
+      
+      {/* Barra de Ferramentas Extra (ex: Música) */}
+      <div className="flex justify-end mt-2">
+         {onToggleMusic && (
+            <button
+              onClick={() => onToggleMusic("musicaJogo")}
+              className="p-2 text-gray-400 hover:text-white transition-colors flex items-center gap-2 text-xs"
+              title={isMuted ? "Ativar Música" : "Silenciar Música"}
+            >
+              {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+              {isMuted ? "Música Off" : "Música On"}
+            </button>
+         )}
+      </div>
     </div>
   );
 };

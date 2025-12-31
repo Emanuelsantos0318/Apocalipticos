@@ -101,6 +101,22 @@ Aqui estão algumas ideias para elevar o nível do nosso projeto, focando em eng
 
 - **Sair da Sala**: Adicionar um botão para sair do jogor e ir para a Home.
 - ⏳ **Rodadas Especiais**: A cada 5 rodadas, uma "Rodada do Caos" onde todos jogam ou as regras mudam (ex: vale o dobro de pontos).
+
+# TODO: Decidir fazer alguma alterações no jogo.Por isso por enquanto ignore as funcionalidades abaixo do Eventos do Caos. Vou atualizar o documento mais tarde.
+   - Aqui estão 3 sugestões de "Eventos do Caos" que podem acontecer aleatoriamente (tipo 5% de chance ao sacar uma carta) ou serem ativados pelo Admin:
+
+    1. 👑 **O Ditador (Minha Favorita):**
+    O que acontece: O jogador da vez vira o "Ditador Suprema" por 3 rodadas.
+    Poder: Ele cria uma regra física (ex: "Ninguém pode mostrar os dentes" ou "Só pode falar miando").
+    Mecânica: Adicionamos um botão de "Multar" no avatar dos outros. Se o Ditador ver alguém quebrando a regra, ele clica e a pessoa toma penalidade instantânea.
+    2. 💣 **Modo Blitz (Pânico):**
+    O que acontece: O timer cai de 30s para 5s nas próximas rodadas.
+    Visual: A tela fica vermelha pulsando, música acelera (tipo Sonic se afogando). Quem não agir a tempo, perde pontos triplicados.
+    3. 🎭 **Troca de Corpos (Confusão):**
+    O que acontece: Embaralhamos os Avatares e Nomes na tela de todos.
+    O Caos: Você vai votar no "Mateus" mas na verdade está votando na "Ana". Ninguém sabe quem é quem até a rodada acabar.
+
+------------------------------
 - ⏳ **Repetição de Cartas**: Varias vezes a mesma carta pode ser sorteada. Por exemplo no Eu Nunca estava recebendo a mesma carta varias vezes. Sei que tem poucas cartas salvas ainda, mas acho que a lógica de sorteio precisa ser melhorada.  
 - ⏳ **Repetição de Cartas**: Implementar lógica para evitar que a mesma carta seja sorteada repetidamente na mesma sessão.
   - [ ] Criar histórico de cartas usadas na sessão (Sala).
@@ -132,6 +148,11 @@ Aqui estão algumas ideias para elevar o nível do nosso projeto, focando em eng
 
 - Criar logica para caso um jogador não votar ainda o administrador não pode avançar a rodada. Ou dever confirmar se quer avançar a rodada mesmo sem todos os votos. (Modos Eu nunca e amigos de merda)
 
+## Refatorações
+
+- Jogo.jsx parece está muito grande e complexo. Podemos refatorar para melhorar a legibilidade e manutenção do código.
+- Outras refatorações que possam ser necessárias:
+  - 
 ## Status das Implementações Recentes
 
 - ✅ Implementar lógica de votação para "Amigos de Merda". (Travas de Segurança Adicionadas)

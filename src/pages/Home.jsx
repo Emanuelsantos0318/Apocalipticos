@@ -111,6 +111,11 @@ export default function Home() {
           uid: currentUser.uid,
           email: currentUser.email,
           timestamp: serverTimestamp(),
+          powerups: {
+            shield: 1,
+            revenge: 1,
+            swap: 1
+          }
         };
 
         await setDoc(
