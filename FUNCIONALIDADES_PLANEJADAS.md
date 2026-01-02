@@ -118,12 +118,18 @@ Aqui estão algumas ideias para elevar o nível do nosso projeto, focando em eng
     O que acontece: Embaralhamos os Avatares e Nomes na tela de todos.
     O Caos: Você vai votar no "Mateus" mas na verdade está votando na "Ana". Ninguém sabe quem é quem até a rodada acabar.
 
+    - **Mais algumas alterações aqui pra fazer:**
+    Quando for selecionado o modo +18 ele vai ter dois modos a mais pra escolher. Se ele quer o modo mais dezoito com o pegação ou o modo mais dezoito sem pegação. E a partir dai gente define as cartas. É importante a gente adicionar a sexualidade, do usuário.Se a pessoa é do sexo masculino, feminino ou Outro. E quando o usuário colocar o código, quem está sendo convidada, vai colocar o código da sala que é uma sala mais dezoito e automaticamente o código vai ler einterpretar que é uma sala mais dezoito e vai perguntar para pessoa a sexualidade dela, se ela é sexual se ela é gay entendeu? Pra ficar mais fácil aí vai dar um bug mas acho que fica melhor_ modo mais dezoito.
+
 ------------------------------
 - ⏳ **Repetição de Cartas**: Varias vezes a mesma carta pode ser sorteada. Por exemplo no Eu Nunca estava recebendo a mesma carta varias vezes. Sei que tem poucas cartas salvas ainda, mas acho que a lógica de sorteio precisa ser melhorada.  
 - ⏳ **Repetição de Cartas**: Implementar lógica para evitar que a mesma carta seja sorteada repetidamente na mesma sessão.
   - [ ] Criar histórico de cartas usadas na sessão (Sala).
   - [ ] Filtrar cartas já usadas no sorteio.
   - [ ] Resetar histórico quando todas as cartas do deck forem usadas.
+
+- Coreção de bugs:
+ - Fiz o teste aqui de usabilidade do jogo com três celulares. E o jogo não está conseguindo fazer a rota atividade correta de pessoas. Por exemplo ele vai fez eu, Ítala e Gemerson. Ele Ficou sorteando as cartas entre e Gemerson por três quatro rodadas e depois sorteando as cartas entre eu e Gemerson por três quatro rodadas e depois eu e Ítala. Eh o teste de usabilidade está ruim nesse quesito porque ele não está fazendo uma rodada Completa eh com todos os jogadores participando por vez. Eh a gente tem que aumentar o acervo de cartas que está pouco se colocar essas duas anotações aí pra ano que vem a gente já começar a pegar já fora isso está perfeito está muito bom
 
 - ✅ **Fim de Jogo Épico**: Uma tela de pódio mostrando não só o vencedor, mas estatísticas engraçadas como "O Maior Bêbado" e "O Arregão".
 

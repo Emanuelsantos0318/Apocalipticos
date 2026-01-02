@@ -27,11 +27,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Emuladores para desenvolvimento
-// if (import.meta.env.DEV) {
-//   connectAuthEmulator(auth, "http://localhost:9099");
-//   connectFirestoreEmulator(db, "localhost", 8080);
-// }
 
 // Analytics condicional (não quebra em desenvolvimento)
 let analytics;
