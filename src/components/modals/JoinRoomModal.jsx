@@ -1,5 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import { useAuth } from "../../context/AuthContext";
 import { RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
 
 // Estilos curados que combinam mais com o jogo
@@ -16,21 +17,30 @@ export default function JoinRoomModal({ isOpen, onClose, onJoin }) {
   const [dataNascimento, setNascimento] = useState("");
   const [chave, setChave] = useState("");
   const [erro, setErro] = useState("");
-  
+
   // Avatar states
   const [avatarSeed, setAvatarSeed] = useState("");
   const [currentStyleIndex, setCurrentStyleIndex] = useState(0);
 
+  const { currentUser } = useAuth();
+
   useEffect(() => {
     if (isOpen) {
-      setNome("");
-      setNascimento("");
       setChave("");
       setErro("");
-      // Gera um seed aleatório inicial
+
+      if (currentUser) {
+        setNome(currentUser.nome || currentUser.displayName || "");
+        setNascimento(currentUser.dataNascimento || "");
+      } else {
+        setNome("");
+        setNascimento("");
+      }
+
+      // Gera um seed aleatório inicial sempre que abre
       setAvatarSeed(Math.random().toString(36).substring(7));
     }
-  }, [isOpen]);
+  }, [isOpen, currentUser]);
 
   const currentStyle = AVATAR_STYLES[currentStyleIndex];
   const avatarUrl = `https://api.dicebear.com/7.x/${currentStyle.id}/svg?seed=${avatarSeed}`;
@@ -40,11 +50,15 @@ export default function JoinRoomModal({ isOpen, onClose, onJoin }) {
   };
 
   const handlePrevStyle = () => {
-    setCurrentStyleIndex((prev) => (prev === 0 ? AVATAR_STYLES.length - 1 : prev - 1));
+    setCurrentStyleIndex((prev) =>
+      prev === 0 ? AVATAR_STYLES.length - 1 : prev - 1
+    );
   };
 
   const handleNextStyle = () => {
-    setCurrentStyleIndex((prev) => (prev === AVATAR_STYLES.length - 1 ? 0 : prev + 1));
+    setCurrentStyleIndex((prev) =>
+      prev === AVATAR_STYLES.length - 1 ? 0 : prev + 1
+    );
   };
 
   const handleJoin = () => {
@@ -69,35 +83,37 @@ export default function JoinRoomModal({ isOpen, onClose, onJoin }) {
     onClose();
   };
 
-
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
       <div className="bg-apocal-cinzaEmer p-6 rounded-xl w-full max-w-md shadow-2xl border border-apocal-laranjaClaro/30 animate-in fade-in zoom-in duration-200">
-        <h2 className="text-2xl font-bold mb-6 text-center text-white">Entrar na Sala</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center text-white">
+          Entrar na Sala
+        </h2>
 
         {erro && (
           <div className="bg-red-500/10 border border-red-500/50 rounded p-2 mb-4">
-             <p className="text-red-400 text-sm text-center">{erro}</p>
+            <p className="text-red-400 text-sm text-center">{erro}</p>
           </div>
         )}
 
         <div className="space-y-4">
-          
           {/* Avatar Section */}
           <div className="flex flex-col items-center gap-3 mb-6">
-            <label className="text-sm font-medium text-gray-300">Seu Avatar</label>
-            
+            <label className="text-sm font-medium text-gray-300">
+              Seu Avatar
+            </label>
+
             <div className="relative group">
               <div className="w-24 h-24 rounded-full bg-gray-700/50 border-2 border-apocal-laranjaClaro/50 overflow-hidden shadow-[0_0_15px_rgba(251,146,60,0.3)]">
-                <img 
-                  src={avatarUrl} 
-                  alt="Avatar Preview" 
+                <img
+                  src={avatarUrl}
+                  alt="Avatar Preview"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <button 
+              <button
                 onClick={handleRandomize}
                 className="absolute bottom-0 right-0 p-2 bg-apocal-laranjaEscuro rounded-full hover:bg-orange-500 transition-colors shadow-lg border border-white/20"
                 title="Novo visual"
@@ -107,20 +123,28 @@ export default function JoinRoomModal({ isOpen, onClose, onJoin }) {
             </div>
 
             <div className="flex items-center gap-3 bg-gray-800/50 px-3 py-1.5 rounded-full border border-gray-700">
-              <button onClick={handlePrevStyle} className="p-1 hover:text-apocal-laranjaClaro transition-colors text-gray-400">
+              <button
+                onClick={handlePrevStyle}
+                className="p-1 hover:text-apocal-laranjaClaro transition-colors text-gray-400"
+              >
                 <ChevronLeft size={18} />
               </button>
               <span className="text-xs font-mono uppercase tracking-wider text-gray-300 min-w-[80px] text-center select-none">
                 {currentStyle.label}
               </span>
-              <button onClick={handleNextStyle} className="p-1 hover:text-apocal-laranjaClaro transition-colors text-gray-400">
+              <button
+                onClick={handleNextStyle}
+                className="p-1 hover:text-apocal-laranjaClaro transition-colors text-gray-400"
+              >
                 <ChevronRight size={18} />
               </button>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Apelido</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              Apelido
+            </label>
             <input
               type="text"
               value={nome}

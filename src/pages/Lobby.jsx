@@ -29,7 +29,13 @@ export default function Lobby() {
   const [jogadores, setJogadores] = useState([]);
   const [loading, setLoading] = useState(true);
   const [mostrarConfirmacaoSaida, setMostrarConfirmacaoSaida] = useState(false);
-  const { playMarcarPronto, playDesmarcarPronto, playRemover, stopMarcarPronto, stopDesmarcarPronto } = useSounds();
+  const {
+    playMarcarPronto,
+    playDesmarcarPronto,
+    playRemover,
+    stopMarcarPronto,
+    stopDesmarcarPronto,
+  } = useSounds();
 
   // Monitorar estado da sala
   useEffect(() => {
@@ -160,7 +166,6 @@ export default function Lobby() {
       <div className="min-h-screen text-white p-4 pb-20">
         <div className="max-w-2xl mx-auto">
           <div className="mb-6 text-center">
-            
             <a
               href={sala.discordLink}
               target="_blank"

@@ -13,12 +13,21 @@ import MainButton from "../components/buttons/MainButton";
 import CreateRoomModal from "../components/modals/CreateRoomModal";
 import JoinRoomModal from "../components/modals/JoinRoomModal";
 import AgeVerificationModal from "../components/modals/AgeVerificationModal";
-// importe useAuth (já presente no seu arquivo)
+import AuthModal from "../components/modals/AuthModal"; // [NEW]
 import { useAuth } from "../context/AuthContext";
 import { useSounds } from "../hooks/useSounds";
-import { Zap, Flame, Skull } from "lucide-react";
+import {
+  Zap,
+  Flame,
+  Skull,
+  Volume2,
+  VolumeX,
+  LogIn,
+  User,
+  Crown,
+  LogOut,
+} from "lucide-react"; // [UPDATED]
 import PageLayout from "../components/PageLayout";
-import { Volume2, VolumeX } from "lucide-react"; // ícones de som
 
 export default function Home() {
   const { currentUser, logout, loading } = useAuth();
@@ -26,21 +35,24 @@ export default function Home() {
     create: false,
     join: false,
     ageRestricted: false,
+    auth: false, // [NEW]
   });
   const [ageError, setAgeError] = useState(null);
   const navigate = useNavigate();
-  const { playComecar, playHome, stopHome, toggleMusic, playingBgMusic } = useSounds();
+  const { playComecar, playHome, stopHome, toggleMusic, playingBgMusic } =
+    useSounds();
 
   useEffect(() => {
-    playHome(); // toca ao entrar na Home
-    return () => stopHome(); // para a música ao sair
+    playHome();
+    return () => stopHome();
   }, []);
 
   const handleCreateRoom = async (roomData) => {
     try {
-      if (!currentUser) {
-        alert("Você precisa estar logado para criar uma sala");
-        return;
+      if (!currentUser || currentUser.isAnonymous) {
+        // Se for anônimo, permite criar, mas avisa?
+        // O requisito diz "manter login". Anônimo mantem, mas se limpar cache perde.
+        // Vamos permitir anônimo criar sala normal (comportamento atual).
       }
 
       if ([GAME_MODES.ADULTO, GAME_MODES.DIFICIL].includes(roomData.modo)) {
@@ -51,21 +63,41 @@ export default function Home() {
         }
       }
 
+      // [NOVO] Atualiza perfil do usuário se estiver logado e dados forem novos
+      if (currentUser && !currentUser.isAnonymous) {
+        try {
+          await setDoc(
+            doc(db, "users", currentUser.uid),
+            {
+              nome: roomData.nomeAdmin || roomData.nome,
+              dataNascimento: roomData.dataNascimento,
+            },
+            { merge: true }
+          );
+        } catch (error) {
+          console.error("Erro ao atualizar perfil:", error);
+        }
+      }
+
       const codigo = await criarSala(currentUser.uid, {
         ...roomData,
         categorias: roomData.categorias || [],
         criador: currentUser.displayName || currentUser.email,
+        criadorAvatar: currentUser.photoURL || roomData.avatar || "👤", // Add avatar do Auth
       });
 
-   // Salvar dados do administrador no localStorage (compatível com campos do modal)
       const adminData = {
         uid: currentUser.uid,
         nome:
           roomData.nomeAdmin ||
           roomData.nome ||
           currentUser.displayName ||
-          currentUser.email,
-        avatar: roomData.avatar || roomData.avatarSelecionado || "👤",
+          "Anônimo",
+        avatar:
+          currentUser.photoURL ||
+          roomData.avatar ||
+          roomData.avatarSelecionado ||
+          "👤",
         email: currentUser.email,
       };
       localStorage.setItem("playerData", JSON.stringify(adminData));
@@ -81,11 +113,6 @@ export default function Home() {
 
   const handleJoinRoom = async (joinData) => {
     try {
-      if (!currentUser) {
-        alert("Você precisa estar logado para entrar em uma sala");
-        return;
-      }
-
       const salaRef = doc(db, "salas", joinData.chave);
       const salaSnap = await getDoc(salaRef);
 
@@ -100,13 +127,30 @@ export default function Home() {
           }
         }
 
+        // [NOVO] Atualiza perfil do usuário se estiver logado
+        if (currentUser && !currentUser.isAnonymous) {
+          try {
+            await setDoc(
+              doc(db, "users", currentUser.uid),
+              {
+                nome: joinData.nome,
+                dataNascimento: joinData.dataNascimento,
+              },
+              { merge: true }
+            );
+          } catch (error) {
+            console.error("Erro ao atualizar perfil entre:", error);
+          }
+        }
+
         playComecar();
         const nascimentoDate = parseBirthDate(joinData.dataNascimento);
         const nascimentoFormatado = nascimentoDate.toISOString().split("T")[0];
 
+        // Usa dados do Auth se disponíveis
         const jogador = {
-          nome: joinData.nome,
-          avatar: joinData.avatar || "👤",
+          nome: joinData.nome || currentUser.displayName,
+          avatar: joinData.avatar || currentUser.photoURL || "👤",
           idade: calculateAge(nascimentoFormatado),
           uid: currentUser.uid,
           email: currentUser.email,
@@ -114,8 +158,8 @@ export default function Home() {
           powerups: {
             shield: 1,
             revenge: 1,
-            swap: 1
-          }
+            swap: 1,
+          },
         };
 
         await setDoc(
@@ -149,50 +193,78 @@ export default function Home() {
           backgroundImage: "url('/bg-apocalipticos.jpg')",
         }}
       >
-        <div className="absolute inset-0 bg-white/2 backdrop-blur-[2px]" />{" "}
-        {/* overlay escuro */}
-        <main className="relative z-10 flex flex-col items-center justify-center w-full max-w-5xl mx-auto text-center">
-          {/* LOGO E TÍTULO */ }
+        <div className="absolute inset-0 bg-white/2 backdrop-blur-[2px]" />
+
+        {/* BUTTONS CORNER */}
+        <div className="absolute top-5 right-5 z-50 flex flex-col items-end gap-3">
+          {/* User Profile / Login */}
+          {!currentUser || currentUser.isAnonymous ? (
+            <button
+              onClick={() => setModals({ ...modals, auth: true })}
+              className="flex items-center gap-2 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 px-4 py-2 rounded-full font-bold shadow-lg transition-transform hover:-translate-y-1"
+            >
+              <LogIn className="w-4 h-4" />
+              LOGIN / CADASTRO
+            </button>
+          ) : (
+            <div className="flex flex-col items-end">
+              <div className="flex items-center gap-2 bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-orange-500/30">
+                {currentUser.photoURL ? (
+                  <img
+                    src={currentUser.photoURL}
+                    className="w-6 h-6 rounded-full"
+                    alt="Avatar"
+                  />
+                ) : (
+                  <User className="w-5 h-5 text-orange-400" />
+                )}
+                <span className="font-semibold text-sm text-gray-200">
+                  Olá, {currentUser.displayName?.split(" ")[0]}
+                </span>
+                <button
+                  onClick={logout}
+                  title="Sair"
+                  className="ml-2 hover:bg-white/10 p-1 rounded-full transition-colors"
+                >
+                  <LogOut className="w-4 h-4 text-red-400" />
+                </button>
+              </div>
+              {currentUser.email && (
+                <span className="text-[10px] text-gray-400 mr-2 mt-1 shadow-black drop-shadow-md">
+                  Conta Verificada
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+
+        <main className="relative z-10 flex flex-col items-center justify-center w-full max-w-5xl mx-auto text-center mt-12 sm:mt-0">
+          {/* LOGO E TÍTULO */}
           <header className="text-center mb-6 sm:mb-8 flex flex-col items-center gap-2 px-4 max-w-3xl">
             <style>{`
-              .heartbeat-img {
-                transform-origin: center;
-                will-change: transform, opacity, filter;
-                animation: heartbeat 2.9s cubic-bezier(.215,.61,.355,1) infinite, lightning 4s ease-in-out infinite;
-              }
-
-              /* animação principal (batida) */
-              @keyframes heartbeat {
-                0%   { transform: scale(1) translateY(0); opacity: 1; }
-                14%  { transform: scale(1.12) translateY(-6px); opacity: 0.9; }
-                28%  { transform: scale(0.98) translateY(0); opacity: 1; }
-                42%  { transform: scale(1.06) translateY(-3px); opacity: 0.95; }
-                70%  { transform: scale(1) translateY(0); opacity: 1; }
-                100% { transform: scale(1) translateY(0); opacity: 1; }
-              }
-
-              /* animação de raios/eletricidade */
-              @keyframes lightning {
-                0%, 90% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
-                91% { filter: brightness(2) drop-shadow(0 0 10px #fbbf24); transform: scale(1.13) translateY(-7px) skewX(-2deg); }
-                92% { filter: brightness(1); transform: scale(1.12) translateY(-6px); }
-                93% { filter: brightness(3) drop-shadow(0 0 20px #fbbf24); transform: scale(1.15) translateY(-5px) skewX(2deg); }
-                94% { filter: brightness(1); transform: scale(1.12) translateY(-6px); }
-                100% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
-              }
-
-              /* efeito de "piscar" sutil sincronizado com a batida */
-              .heartbeat-img::after { content: ""; }
-              /* se quiser um piscar mais pronunciado, adicione uma segunda animação:
-                 animation: heartbeat 1.2s cubic-bezier(...) infinite, blink 1.2s linear infinite;
-              */
-              @keyframes blink {
-                0%   { opacity: 1; }
-                12%  { opacity: 0.6; }
-                24%  { opacity: 1; }
-                100% { opacity: 1; }
-              }
-            `}</style>
+                  /* ... (mantendo estilos inalterados) ... */
+                  .heartbeat-img {
+                    transform-origin: center;
+                    will-change: transform, opacity, filter;
+                    animation: heartbeat 2.9s cubic-bezier(.215,.61,.355,1) infinite, lightning 4s ease-in-out infinite;
+                  }
+                  @keyframes heartbeat {
+                    0%   { transform: scale(1) translateY(0); opacity: 1; }
+                    14%  { transform: scale(1.12) translateY(-6px); opacity: 0.9; }
+                    28%  { transform: scale(0.98) translateY(0); opacity: 1; }
+                    42%  { transform: scale(1.06) translateY(-3px); opacity: 0.95; }
+                    70%  { transform: scale(1) translateY(0); opacity: 1; }
+                    100% { transform: scale(1) translateY(0); opacity: 1; }
+                  }
+                  @keyframes lightning {
+                    0%, 90% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
+                    91% { filter: brightness(2) drop-shadow(0 0 10px #fbbf24); transform: scale(1.13) translateY(-7px) skewX(-2deg); }
+                    92% { filter: brightness(1); transform: scale(1.12) translateY(-6px); }
+                    93% { filter: brightness(3) drop-shadow(0 0 20px #fbbf24); transform: scale(1.15) translateY(-5px) skewX(2deg); }
+                    94% { filter: brightness(1); transform: scale(1.12) translateY(-6px); }
+                    100% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
+                  }
+             `}</style>
 
             <img
               src="/logo-apocalipticos.svg"
@@ -204,37 +276,34 @@ export default function Home() {
             </h1>
             <p className="title text-gray-300 mt-2 text-sm sm:text-base md:text-lg leading-relaxed">
               Sobreviva aos desafios mais absurdos com seus amigos.
-              <br/><span></span>
             </p>
           </header>
 
           {/* BOTÕES */}
-          {currentUser ? (
-            <>
-              <div className="flex flex-col sm:flex-row gap-4 mb-8 justify-center w-full max-w-xs sm:max-w-md">
-                <button
-                  onClick={() => setModals({ ...modals, create: true })}
-                  className="bg-orange-600 hover:bg-orange-500 px-4 py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 shadow-lg transition-transform duration-200 hover:-translate-y-1 w-full"
-                >
-                  Criar Sala
-                </button>
-                <button
-                  onClick={() => setModals({ ...modals, join: true })}
-                  className="bg-gray-800 hover:bg-gray-700 px-4 py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 shadow-lg transition-transform duration-200 hover:-translate-y-1 w-full"
-                >
-                  Entrar na Sala
-                </button>
-              </div>
-            </>
-          ) : (
-            <div className="bg-black/50 p-5 rounded-lg text-center mx-4">
-              <h2 className="text-2xl mb-2 font-semibold">
-                Faça login para jogar
-              </h2>
-              <p className="text-gray-300 text-sm">
-                Você precisa estar logado para criar ou entrar em salas
-              </p>
-            </div>
+          {/* Removemos o bloqueio de renderização do currentUser para mostrar os botões mesmo para anônimos (que agora é o default) */}
+          <div className="flex flex-col sm:flex-row gap-4 mb-8 justify-center w-full max-w-xs sm:max-w-md">
+            <button
+              onClick={() => setModals({ ...modals, create: true })}
+              className="bg-orange-600 hover:bg-orange-500 px-4 py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 shadow-lg transition-transform duration-200 hover:-translate-y-1 w-full"
+            >
+              Criar Sala
+            </button>
+            <button
+              onClick={() => setModals({ ...modals, join: true })}
+              className="bg-gray-800 hover:bg-gray-700 px-4 py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 shadow-lg transition-transform duration-200 hover:-translate-y-1 w-full"
+            >
+              Entrar na Sala
+            </button>
+          </div>
+
+          {/* Aviso opcional para anônimos se quisermos incentivar login */}
+          {(!currentUser || currentUser.isAnonymous) && (
+            <p
+              className="text-xs text-gray-400 mb-6 cursor-pointer hover:text-orange-400 transition-colors"
+              onClick={() => setModals({ ...modals, auth: true })}
+            >
+              Jogue agora, registre-se depois para salvar seu progresso.
+            </p>
           )}
 
           {/* CARDS DE INFORMAÇÃO */}
@@ -280,12 +349,18 @@ export default function Home() {
             onClose={() => setModals({ ...modals, ageRestricted: false })}
             message={ageError}
           />
+          <AuthModal
+            isOpen={modals.auth}
+            onClose={() => setModals({ ...modals, auth: false })}
+          />
 
           {/* BOTÃO DE MÚSICA */}
           <button
             onClick={() => toggleMusic("musicaTema")}
-            className="fixed bottom-5 right-5 bg-black/50 backdrop-blur-sm border border-orange-400 text-white p-3 rounded-full shadow-lg hover:scale-110 hover:bg-black/70 transition-transform duration-200"
-            title={playingBgMusic === "musicaTema" ? "Parar música" : "Tocar música"}
+            className="fixed bottom-5 right-5 bg-black/50 backdrop-blur-sm border border-orange-400 text-white p-3 rounded-full shadow-lg hover:scale-110 hover:bg-black/70 transition-transform duration-200 z-50"
+            title={
+              playingBgMusic === "musicaTema" ? "Parar música" : "Tocar música"
+            }
           >
             {playingBgMusic === "musicaTema" ? (
               <Volume2 className="w-6 h-6 text-orange-400" />
