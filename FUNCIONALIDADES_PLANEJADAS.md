@@ -172,5 +172,5 @@ Aqui estão algumas ideias para elevar o nível do nosso projeto, focando em eng
 - ✅ Adicionar efeitos sonoros e animações avançadas.
 - ✅ Sair da Sala e Sucessão de Host.
 - ⏳ Implementar poderes especiais (escudo, vingança, troca).
-- ⏳ Adicionar rodadas especiais (rodada do caos).
+- ⏳ Adicionar rodadas especiais (7 pecados capitais).
 - ✅ Tela de Fim de Jogo Épico (Pódio e Estatísticas).
