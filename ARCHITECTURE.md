@@ -38,20 +38,23 @@ src/
     - Essa função atualiza o campo `cartaAtual` no Firestore.
     - Todos os clientes recebem a atualização e renderizam a carta.
 5.  **Votação (Amigos de Merda)**:
+
     - Votos são salvos na subcoleção `salas/{codigo}/votos`.
     - O cliente monitora essa coleção e calcula o resultado quando todos votam.
 
-6. **Botão Sair: No canto superior direito da tela do jogo, tem um ícone de "Sair".**
+6.  **Botão Sair: No canto superior direito da tela do jogo, tem um ícone de "Sair".**
     - Confirmação: Ao clicar, o jogo pergunta "Tem certeza?".
     - Sucessão de Poder:
     - Se um jogador comum sair, ele só é removido.
     - Se o Admin (Host) sair, o sistema automaticamente promove o jogador mais antigo da sala para ser o novo Admin.
     - Se for o último jogador a sair, a sala é marcada como abandonada.
-    
+
 ## 🔐 Segurança e Regras
 
-- **Autenticação**: Anônima via Firebase Auth. Cada sessão gera um UID único.
-- **Persistência**: O estado do usuário é persistido no LocalStorage para permitir reconexão (refresh da página).
+- **Autenticação**: Gerenciada inteiramente pelo **Firebase Auth**.
+  - **Anônima**: Padrão para entrada rápida.
+  - **Google**: Vinculação opcional para persistência de dados e perfil.
+- **Persistência**: Dados do usuário (nome, avatar, stats) salvos na coleção `users` no Firestore, vinculados ao UID.
 
 ## 🎨 Design System
 
