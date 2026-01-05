@@ -1,11 +1,29 @@
 # Changelog
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
+
+## [Não Lançado] - 2026-01-05
+
+### Adicionado
+
+- **Sistema de Autenticação Robusto**:
+  - **Login Google**: Usuários podem vincular conta Google para salvar progresso.
+  - **Identidade Persistente**: Login anônimo agora é salvo no dispositivo; dados não são perdidos ao fechar o navegador.
+  - **Link de Contas**: Converter conta anônima para Google sem perder dados.
+- **Melhorias de UX (Lobby)**:
+  - **Preenchimento Automático**: Ao criar/entrar em salas, nome e foto são puxados do perfil do usuário logado.
+  - **Logout**: Opção de sair da conta no menu principal.
+- **Planejamento RPG (Documentação)**:
+  - Definidas mecânicas de **HP (Vida)** e **Modo Crítico**.
+  - Detalhadas 5 Classes: Médico, Assassino, Estrategista, Incendiária, Sobrevivente.
+  - Criados "Eventos do Caos" baseados nos 7 Pecados Capitais.
+- **Modo Amigos de Merda**:
+
 ## [Não Lançado] - 2025-12-30
 
 ### Adicionado
 
-  - *Update*: Adicionado som de Vitória/Pódio (`vitoria.mp3`).
+- _Update_: Adicionado som de Vitória/Pódio (`vitoria.mp3`).
 - **Fim de Jogo Épico (Pódio)**:
   - Implementada tela de Pódio com Top 3 e animações.
   - Premiações especiais: "O Cachaceiro", "O Arregão".
@@ -15,17 +33,18 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
   - Lógica de consumo de itens e aplicação de efeitos (pular vez, trocar carta, penalizar outro).
 
 ### Refatorado
+
 - **Arquitetura do Jogo**:
   - `Jogo.jsx` refatorado para utilizar **Custom Hooks** (`useGameRoom`, `useGameActions`, `useVoting`, `usePowerUpActions`).
   - Separação clara entre UI e Lógica de Negócio.
   - Remoção de código duplicado e props redundantes.
 
 ### Corrigido
+
 - **Ranking Congelado**: Corrigido bug crítico de performance em `useSounds` (falta de memoização) que causava re-renderizações infinitas e desconexão do Firestore para não-admins.
 - **Crash na Ação**: Corrigido `ReferenceError: onSnapshot is not defined` que quebrava o jogo ao tentar ouvir atualizações de ações.
 - **Header**: Corrigido erro de props `onToggleMusic` não sendo passadas corretamente.
 - **Ajuste de sincronia**: Status do Jogo e Lobby sincronizados para evitar loop de reinício.
-    
 
 ## [Não Lançado] - 2025-12-24
 
@@ -36,7 +55,7 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
   - Toasts customizados com tema Dark/Neon.
   - Animação de entrada e "flip" 3D para as cartas.
 - **Efeitos Sonoros**: Integração inicial de sons para ações principais (Flip, Sucesso, Falha, Votação, Sair).
-  - *Update*: Substituídos sons de Flip e Sucesso por versões mais sutis (`ding.mp3`, `genio-aparecendo.mp3`).
+  - _Update_: Substituídos sons de Flip e Sucesso por versões mais sutis (`ding.mp3`, `genio-aparecendo.mp3`).
 - **Tratamento de Empate**: No modo "Amigos de Merda", se houver empate, todos os mais votados recebem penalidade.
 - **Lógica Verdade ou Desafio**:
   - Implementado `ChoiceModal` para forçar escolha entre "Verdade" 😇 e "Desafio" 😈 antes de revelar a carta.
@@ -75,28 +94,30 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 ### Refatorado
 
 - **Sistema de Som (`useSounds`)**:
+
   - Implementado controle genérico de música de fundo (`toggleMusic`).
   - Sincronização de estado entre componentes (`playingBgMusic`).
   - Botão de volume na tela de Jogo agora controla independentemente a música da partida.
 
   Guia de Refatoração do Controle de Som
-Refatorei a lógica de controle de som para permitir a ativação/desativação genérica da música de fundo, possibilitando que a música do jogo seja controlada da mesma forma que a música da tela inicial.
+  Refatorei a lógica de controle de som para permitir a ativação/desativação genérica da música de fundo, possibilitando que a música do jogo seja controlada da mesma forma que a música da tela inicial.
 
 Alterações
+
 1. Refatorado o arquivo `useSounds.js`
-Substituí o booleano simples `isMusicPlaying` por `playingBgMusic` (string) para rastrear qual faixa está sendo reproduzida.
+   Substituí o booleano simples `isMusicPlaying` por `playingBgMusic` (string) para rastrear qual faixa está sendo reproduzida.
 
 Adicionada a função `toggleMusic(type)` para lidar com qualquer faixa de fundo.
 
 Atualizadas as funções `playHome` / `playJogo` para sincronizar com o novo estado.
 
 2. Atualizado o arquivo `Home.jsx`
-Agora utiliza `toggleMusic("musicaTema")`
+   Agora utiliza `toggleMusic("musicaTema")`
 
 O botão de volume reflete o estado de musicaTema.
 
 3. Atualizado o arquivo `Jogo.jsx`
-Agora utiliza toggleMusic("musicaJogo")
+   Agora utiliza toggleMusic("musicaJogo")
 
 O botão de volume reflete o estado de musicaJogo.
 
@@ -152,12 +173,15 @@ Sincronização de estado: Alternar uma das opções atualiza o estado do ícone
 ### Detalhes da versão
 
 Correções Críticas:
+
 - Inicialização de salas (jogadores não eram reconhecidos).
 - Ranking (pontuação zerada).
 - Script de Seed (cartas "Eu Nunca" sendo cadastradas novas com o tempo).
 
 Novas Funcionalidades:
+
 - Contador de Bebidas: Agora sabemos quem bebeu mais! 🍺
+
 # Changelog
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
@@ -204,6 +228,7 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 ### Detalhes da versão
 
 Correções Críticas:
+
 - Inicialização de salas (jogadores não eram reconhecidos).
 - Ranking (pontuação zerada).
 - Script de Seed (cartas "Eu Nunca" sendo cadastradas novas com o tempo).

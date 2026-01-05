@@ -90,23 +90,41 @@ salas/{codigo}/jogadores/{uid}
 
 🔹 Botão "Sair do Jogo" fecha a sala e remove o jogador do Firestore.
 
-## 🔄 Fase 9 – Lógica Avançada das Cartas Especiais
+## ✅ Fase 9 – Lógica Avançada das Cartas Especiais
 
-### 📍 Status: Em Andamento
+### 📍 Status: Concluído
 
-🔄 Implementação da carta do tipo verdadeDesafio:
+🔹 Implementação da carta do tipo verdadeDesafio.
 
-Jogador escolhe "Verdade" ou "Desafio" antes de mostrar a carta.
+🔹 Divisão por fases de jogo (aguardando, exibindoCarta).
 
-Firestore busca carta do subtipo correto.
+## ✅ Fase 10 – Autenticação e Identidade
 
-🔄 Divisão por fases:
+### 📍 Status: Concluído
 
-aguardando, escolhendoVD, exibindoCarta, etc.
+🔹 Login com Google (Firebase Auth).
+
+🔹 Persistência de Login Anônimo.
+
+🔹 Vinculação de Contas (Anônimo -> Google).
+
+🔹 Recuperação de dados do perfil (Nome/Foto) ao criar salas.
+
+## 🔜 Fase 11 – Implementação RPG (Personagens e HP)
+
+### 📍 Status: Planejado (Janeiro 2026)
+
+🔹 Sistema de Vida (HP) e Modo Crítico.
+
+🔹 Tela de Seleção de Personagens (Lobby).
+
+🔹 Implementação das Habilidades de Classe (Médico, Assassino, etc).
+
+🔹 Eventos do Caos (Cartas Especiais).
 
 ## 📈 Próximos Passos – Planejamento
 
-### 🧩 Fase 10 – Finalizar lógica de todas as categorias
+### 🧩 Fase 12 – Finalizar Categorias Restantes
 
 ### 📍 Previsão: Dezembro 2025
 
@@ -154,7 +172,7 @@ Botão “Voltar à Home”
 
 ### 📍 Previsão: Janeiro 2026
 
-Tratamento de erros e bugs. Implementação de feedback visual e sonoro. 
+Tratamento de erros e bugs. Implementação de feedback visual e sonoro.
 
 Melhorias na interface e experiência do usuário.
 
