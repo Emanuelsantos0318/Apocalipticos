@@ -16,6 +16,7 @@ src/
 │   └── ...
 ├── context/         # Gerenciamento de estado global
 │   └── AuthContext  # Gerencia o usuário logado (anônimo)
+├── data/            # Dados estáticos (updates, regras)
 ├── hooks/           # Custom Hooks (Lógica reutilizável)
 │   ├── game/        # Hooks de lógica de jogo (useGameRoom, useGameActions...)
 │   └── useSounds.js # Gerenciador de Áudio

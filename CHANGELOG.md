@@ -18,6 +18,11 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
   - Detalhadas 5 Classes: Médico, Assassino, Estrategista, Incendiária, Sobrevivente.
   - Criados "Eventos do Caos" baseados nos 7 Pecados Capitais.
 - **Modo Amigos de Merda**:
+  - Implementado sistema de votação secreta e penalidades.
+- **Modal de Novidades (What's New)**:
+  - Implementado modal automático que exibe o changelog para o usuário após uma atualização.
+  - Sistema de versionamento via `localStorage` para garantir que o aviso apareça apenas uma vez por versão.
+  - Arquivo de configuração `dates/updates.js` para fácil manutenção das notícias.
 
 ## [Não Lançado] - 2025-12-30
 

@@ -1,16 +1,17 @@
 import { initializeApp } from "firebase/app";
-import { 
-  getAuth, 
-  signInAnonymously, 
+import {
+  getAuth,
+  signInAnonymously,
   onAuthStateChanged,
-  //connectAuthEmulator 
+  GoogleAuthProvider,
+  setPersistence,
+  browserLocalPersistence,
 } from "firebase/auth";
-import { 
-  getFirestore, 
-  //connectFirestoreEmulator 
+import {
+  getFirestore,
+  //connectFirestoreEmulator
 } from "firebase/firestore";
 import { getAnalytics, isSupported } from "firebase/analytics";
-
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -27,6 +28,10 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Configurar persistência local explícita
+setPersistence(auth, browserLocalPersistence).catch((error) => {
+  console.error("Erro ao definir persistência de auth:", error);
+});
 
 // Analytics condicional (não quebra em desenvolvimento)
 let analytics;
@@ -35,10 +40,11 @@ isSupported().then((supported) => {
 });
 
 // Exportações organizadas
-export { 
+export {
   auth,
   db,
   analytics,
   signInAnonymously,
-  onAuthStateChanged 
+  onAuthStateChanged,
+  GoogleAuthProvider,
 };
