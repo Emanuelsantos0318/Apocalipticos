@@ -2,181 +2,266 @@
 
 Apocalípticos é um jogo de desafios e interações em grupo, onde os jogadores enfrentam cartas com perguntas, desafios e situações absurdas em um ambiente temático pós-apocalíptico. O jogo pode ser jogado online ou presencialmente, com diferentes níveis de dificuldade e categorias para adaptar-se ao público.
 
-## 📱 Tela Inicial (Home)
+---
 
-### Design e Funcionalidades
+## 1. Estrutura e Navegação
+
+### 📱 Tela Inicial (Home)
+
+**Login & Identificação**
+
+- **Login Persistente:** Funcionalidade para manter usuários logados (Google/Email) e evitar perda de sessão ao recarregar.
+- **Modo Anônimo:** Permitir jogar sem cadastro, mas com limitações de histórico.
+
+**Design e Funcionalidades**
 
 - ✅ Logotipo "Apocalípticos" (estilo neon/grunge).
 - ✅ Botões Principais: "Criar Sala", "Entrar na Sala".
+- **Footer:** Sobre nós, redes sociais, licença de uso.
 
-### Fluxo de Criação de Sala (Modal)
+**Criar Sala (Modal)**
 
 - ✅ Nome do Administrador (obrigatório).
-- ✅ Data de Nascimento (para verificação de idade).
+- ✅ Data de Nascimento (verificação de idade).
 - ✅ Nome da Sala (opcional).
 - ✅ Nível do Jogo (Normal, +18, Difícil).
-- ✅ Validação de Idade (Bloqueio para menores em modos +18).
+- ✅ Validação de Idade (Bloqueio para menores em modos 18+).
 - ✅ Geração de código único (ex: ZUMBI).
 
-### Fluxo de Entrar na Sala (Modal)
+**Entrar na Sala (Modal)**
 
 - ✅ Nome do Jogador.
 - ✅ Data de Nascimento.
 - ✅ Chave de Acesso.
-- ✅ Validação de Idade para sala +18.
+- ✅ Validação de Idade para sala 18+.
 
-## 🛋️ Lobby (Sala de Espera)
-
-### Funcionalidades
+### 🛋️ Lobby (Sala de Espera)
 
 - ✅ Lista de Jogadores Conectados (com avatares).
-- ⏳ Chat Simples (opcional).
-- ✅ Botão "Iniciar Jogo" (apenas ADM).
 - ✅ Contagem de Jogadores.
-
-## 🎮 Tela de Jogo
-
-### Fluxo Principal
-
-- ✅ **Sorteio do Jogador da Vez**: Exibe nome e avatar.
-- ✅ **Sorteio da Carta**: Baseado no modo e categorias.
-- ✅ **Resolução da Carta**:
-  - ✅ Timer de 30s.
-  - ✅ Botões "Cumprir" e "Recusar" (penalidade).
-  - ✅ Primeiro - O Usuario administrador deve confirmar se o usuario da vez compriu o desafio, isso vale para ele também caso seja sua vez.
-  - ✅ Segundo - Deve ser contabilizado os pontos de ter comprido o desafio ou responder a pergunta. Caso contrario paga a penalidade e perde pontos.
-  - ✅ Terceiro - Ao final do tempo, e o jogador da vez não tiver feito nenhuma ação, automaticamente sua vez é passada para outro e ele penalizado ou bebe.
-    - ⏳Caso o jogador da vez não tenha feito nenhuma ação, automaticamente sua vez é passada para outro e ele penalizado ou bebe. (Ainda não implementado)
-  - ✅ Observação: caso a pontuação seja 0, e ele perder pontos, não deve ter um valor negativo, continua com a pontuação zerada.
-- ✅ **Atualização do Placar**: Pontuação e estatísticas. (🔄 Em Desenvolvimento)
-- ✅ **Ranking em Tempo Real**: Lista ordenada. (🔄 Em Desenvolvimento)
-
-- **Botão "Sair do Jogo" fecha a sala e remove o jogador do Firestore.**
-- Observei que temos que ter um botão(funcionalidade) de sair do jogo e fechar a sala.
-  - **Sucessão Automática:** Se o Admin sair, o jogo automaticamente promove o "vice-líder" (geralmente quem entrou na sala logo depois dele) para ser o novo Admin. É instantâneo e ninguém precisa fazer nada.
-    * Criar o botão "Sair da Sala".
-    * Implementar essa Troca de Admin Automática (baseada em quem está na sala há mais tempo).
-    * Se o jogador da vez sair, o jogo já passa a vez para o próximo.
-
-### Tipos de Jogos e Lógicas
-
-| Tipo de Jogo           | Fluxo                                                                              | Status                                                  |
-| :--------------------- | :--------------------------------------------------------------------------------- | :------------------------------------------------------ |
-| **Verdade ou Desafio** | 1. ADM escolhe "Verdade" ou "Desafio". <br> 2. Sistema sorteia carta da categoria. | ✅ Completo (Modal de Escolha condicional)      |
-| **Decisões de Merda**  | 1. Situação absurda + castigo. <br> 2. Apenas jogador da vez executa.              | ✅ Implementado (Cartas genéricas)                      |
-| **Amigos de Merda**    | 1. Pergunta exibida. <br> 2. Votação secreta. <br> 3. Revelação do perdedor (bebe). | ✅ Implementado (Votação e Penalidade Automática)    |
-| **Eu Nunca**           | 1. Afirmação exibida. <br> 2. Todos votam (Eu Já/Eu Nunca). <br> 3. Feedback visual em tempo real. <br> 4. Admin avança rodada. | ✅ Implementado (Com feedback visual e animações)       |
-
-## 🔜 Próximos Passos
-
-## Sugestões de Melhorias para o Apocalípticos
-
-Aqui estão algumas ideias para elevar o nível do nosso projeto, focando em engajamento e polimento visual.
-
-## 1. Experiência do Usuário (UX) e Visual
-
-- **Animações de Cartas**: Use `Framer Motion` para fazer a carta "virar" (flip effect) ao ser sorteada, ou deslizar da tela. Isso dá uma sensação tátil muito boa.
-  > Ainda não está muito bonito, mas é um começo. Vou pesquisar mais sobre isso. E colocamos um design de melhor qualidade.
-  
-- ⏳ **Feedback Visual de Dano/Cura**: Quando alguém perde pontos, a tela poderia piscar levemente em vermelho (vignette). Quando ganha, em verde ou dourado. (🔄 Em Desenvolvimento)
-- ✅ **Feedback Visual de saida de jogador**: Quando alguém sai da sala, mostra uma animação de fade-out e remove da lista e uma mensagem de "jogador saiu da sala".
-- **Temas Dinâmicos**: O fundo da tela poderia mudar sutilmente dependendo do modo de jogo (ex: mais sombrio no modo "Difícil", mais neon no "+18").
-- ⏳ **Fontes**: Se você encontrar fontes mais adequadas para isso pode usar a vontade, essa que tem lá é apenas para testes. 
-- ✅ Adicionar efeitos sonoros e animações avançadas.
+- ✅ Botão "Iniciar Jogo" (apenas ADM).
+- ⏳ Chat Simples (opcional).
+- **Seleção de Personagem:** Jogadores escolhem sua Classe/Papel aqui (veja seção RPG).
 
 ### Correções
-  -  Substituídos sons de Flip (`genio-aparecendo.mp3`) e Sucesso (`ding.mp3`) para opções mais agradáveis.
 
-- ⏳ **Interface do Lobby**: Melhorar a interface do lobby para que seja mais agradável e bonita. Principalmente o RoomHeader.jsx, está bem simples e feio.
+### 🎮 Tela de Jogo
 
-## 2. Mecânicas de Jogo
+**Fluxo Principal**
 
-- **Poderes Especiais (Power-ups)**:
-  - _Escudo_: O jogador pode pular uma vez sem penalidade.
-  - _Vingança_: Se beber, pode escolher alguém para beber junto.
-  - _Troca_: Trocar de carta uma vez por jogo.
+- ✅ **Sorteio do Jogador da Vez:** Exibe nome e avatar.
+- ✅ **Sorteio da Carta:** Baseado no modo e categorias (evitar repetição).
+- ✅ **Resolução da Carta:**
+  - Timer de 30s.
+  - Botões "Cumprir" (pontua/cura) e "Recusar" (bebe/dano).
+  - Validação do Admin (confirma se cumpriu).
+  - **Inatividade:** Se o tempo acabar e ninguém agir, passa e aplica penalidade automática.
+- ✅ **Placar e Ranking:** Atualização em tempo real de Vida (PV) e Estatísticas.
 
-  - **Futuramente**: Adicionar uma configuração para permitir ou não Poderes Especiais (ou/e outras coisas também). Isso deve ser feito na tela de configuração do jogo. 
-  >**Aberto a sugestões**:
+**Funcionalidades de Sala**
 
-- **Sair da Sala**: Adicionar um botão para sair do jogor e ir para a Home.
-- ⏳ **Rodadas Especiais**: A cada 5 rodadas, uma "Rodada do Caos" onde todos jogam ou as regras mudam (ex: vale o dobro de pontos).
+- **Sair da Sala:** Botão para sair e retornar à Home.
+- **Sucessão Automática:** Se o Admin sair, o próximo jogador mais antigo vira Admin.
 
-# TODO: Decidir fazer alguma alterações no jogo.Por isso por enquanto ignore as funcionalidades abaixo do Eventos do Caos. Vou atualizar o documento mais tarde.
+### Correções
 
-  - Vamos nos basear nos 7 pecados capitais (ou outra coisa). E mudar um pouco o foco do jogo, estamos criando uma historia de plano de fundo para que tudo seja implementado corretamente. Como estamos tentando monetizar o jogo podemos precisar deixar algumas cartas e modos de jogo pagos ou prêmio. Aceito sugestões de forma de ganhar dinheiro com o jogo. 
-   - Aqui estão 3 sugestões de "Eventos do Caos" que podem acontecer aleatoriamente (tipo 5% de chance ao sacar uma carta) ou serem ativados pelo Admin:
+---
 
-    1. 👑 **O Ditador (Minha Favorita):**
-    O que acontece: O jogador da vez vira o "Ditador Suprema" por 3 rodadas.
-    Poder: Ele cria uma regra física (ex: "Ninguém pode mostrar os dentes" ou "Só pode falar miando").
-    Mecânica: Adicionamos um botão de "Multar" no avatar dos outros. Se o Ditador ver alguém quebrando a regra, ele clica e a pessoa toma penalidade instantânea.
-    2. 💣 **Modo Blitz (Pânico):**
-    O que acontece: O timer cai de 30s para 5s nas próximas rodadas.
-    Visual: A tela fica vermelha pulsando, música acelera (tipo Sonic se afogando). Quem não agir a tempo, perde pontos triplicados.
-    3. 🎭 **Troca de Corpos (Confusão):**
-    O que acontece: Embaralhamos os Avatares e Nomes na tela de todos.
-    O Caos: Você vai votar no "Mateus" mas na verdade está votando na "Ana". Ninguém sabe quem é quem até a rodada acabar.
+## 2. Modos de Jogo e Lógica
 
-    - **Mais algumas alterações aqui pra fazer:**
-    Quando for selecionado o modo +18 ele vai ter dois modos a mais pra escolher. Se ele quer o modo mais dezoito com o pegação ou o modo mais dezoito sem pegação. E a partir dai gente define as cartas. É importante a gente adicionar a sexualidade, do usuário.Se a pessoa é do sexo masculino, feminino ou Outro. E quando o usuário colocar o código, quem está sendo convidada, vai colocar o código da sala que é uma sala mais dezoito e automaticamente o código vai ler einterpretar que é uma sala mais dezoito e vai perguntar para pessoa a sexualidade dela, se ela é sexual se ela é gay entendeu? Pra ficar mais fácil aí vai dar um bug mas acho que fica melhor_ modo mais dezoito.
+| Tipo                   | Fluxo                                                                 | Status          |
+| :--------------------- | :-------------------------------------------------------------------- | :-------------- |
+| **Verdade ou Desafio** | 1. ADM escolhe tipo. <br> 2. Sorteia carta.                           | ✅ Completo     |
+| **Decisões de Merda**  | 1. Situação absurda. <br> 2. Jogador decide.                          | ✅ Implementado |
+| **Amigos de Merda**    | 1. Pergunta polêmica. <br> 2. Votação secreta. <br> 3. Perdedor bebe. | ✅ Implementado |
+| **Eu Nunca**           | 1. Afirmação. <br> 2. Voto (Já/Nunca). <br> 3. Feedback visual.       | ✅ Implementado |
 
-------------------------------
-- ⏳ **Repetição de Cartas**: Varias vezes a mesma carta pode ser sorteada. Por exemplo no Eu Nunca estava recebendo a mesma carta varias vezes. Sei que tem poucas cartas salvas ainda, mas acho que a lógica de sorteio precisa ser melhorada.  
-- ⏳ **Repetição de Cartas**: Implementar lógica para evitar que a mesma carta seja sorteada repetidamente na mesma sessão.
-  - [ ] Criar histórico de cartas usadas na sessão (Sala).
-  - [ ] Filtrar cartas já usadas no sorteio.
-  - [ ] Resetar histórico quando todas as cartas do deck forem usadas.
+### Correções
 
-- Coreção de bugs:
- - Fiz o teste aqui de usabilidade do jogo com três celulares. E o jogo não está conseguindo fazer a rota atividade correta de pessoas. Por exemplo ele vai fez eu, Ítala e Gemerson. Ele Ficou sorteando as cartas entre e Gemerson por três quatro rodadas e depois sorteando as cartas entre eu e Gemerson por três quatro rodadas e depois eu e Ítala. Eh o teste de usabilidade está ruim nesse quesito porque ele não está fazendo uma rodada Completa eh com todos os jogadores participando por vez. Eh a gente tem que aumentar o acervo de cartas que está pouco se colocar essas duas anotações aí pra ano que vem a gente já começar a pegar já fora isso está perfeito está muito bom
+---
 
-- ✅ **Fim de Jogo Épico**: Uma tela de pódio mostrando não só o vencedor, mas estatísticas engraçadas como "O Maior Bêbado" e "O Arregão".
+## 3. Universo e Mecânicas RPG (Lore & Rules)
 
--  **Correções**:
-  - Caso tenha acontecido um empate, o pôdio deve mostrar todos os jogadores que empataram. Ou algo do tipo.
-  - Sobre a música de fundo, quando o jogo termina, a música para. E retorna apenas quando o jogo for reiniciado. Mas, caso o jogador tenha silenciado a música, ela não deve retornar. Apenas se ele deselecionar a opção de silenciar a música. Isso está de acordo ou estou fazendo besteira? 
+> Uma **história narrativa coesa**, com **ambientação pós-apocalíptica**, e **5 personagens jogáveis**, cada um com **habilidades únicas** que **alteram o destino do jogo**, sempre mantendo o espírito de _drinking game_ (risco, sacrifício e escolhas difíceis).
 
-## Correções
+### 🌍 História: O Mundo de Apocalípticos
 
-- ✅ **Botão de Sair da Sala e Expulsar Jogador**: O botão para sair do lobby ou expulsar um jogador não está aparecendo em telas pequenas.
+O mundo acabou… mas a sede não.
 
+Após o **Colapso Rubro**, uma série de explosões nucleares e epidemias dissolveram governos, cidades e qualquer vestígio de ordem. Os poucos sobreviventes se espalharam em **zonas mortas**, vivendo entre ruínas, fumaça e silêncio.
 
-## 3. Engajamento Social
+A humanidade não luta mais por dinheiro ou poder. Luta por **recursos**, **controle**… e **lucidez**.
 
-- ⏳ **Compartilhamento**: Botão para gerar uma imagem do resultado final para postar no Instagram/WhatsApp.
-  - ⏳ **Reações Rápidas**: Permitir que os outros jogadores mandem emojis (🔥, 🍻, 😱) que flutuam na tela durante a vez do outro.
+Em meio ao caos, surgiram os **Apocalípticos** — grupos de sobreviventes que se reúnem em antigos abrigos, bares abandonados e bunkers para enfrentar desafios brutais. Cada rodada não é apenas um jogo: é um **teste de sanidade, coragem e sobrevivência**.
 
-## 5. Novos Rumos (Tema & Monetização) 💰
-> **Nota do Usuário (30/12/2025)**:
-> - **Novo Tema**: Basear o jogo nos **7 Pecados Capitais** (ou similar) e criar uma lore/história de fundo para dar profundidade.
-> - **Monetização**: O jogo terá itens/modos pagos ou premium.
->   - *Ideias*: Avatares exclusivos, Baralhos temáticos (ex: "Baralho da Luxúria" +18 pesado, "Baralho da Ira" hardcore), Efeitos visuais de power-ups.
-> - **Eventos do Caos** (Sugestões):
->     1. 👑 **O Ditador**: Jogador cria regra física por 3 rodadas e multa quem quebrar.
->     2. 💣 **Modo Blitz**: Timer reduz para 5s. Tela vermelha pulsando.
->     3. 🎭 **Troca de Corpos**: Avatares e nomes embaralhados visualmente.
+**Beber não é diversão. Beber é o preço para continuar vivo.**
 
+---
 
-## 4. Técnico
+### ❤️ Sistema de Vida (HP) e Modo Crítico
 
-- ⏳ **Cloud Functions**: Mover a lógica crítica (sorteio, pontuação, passar vez) para o backend (Firebase Functions) para evitar que usuários mal-intencionados manipulem o jogo pelo console do navegador.
-- ⏳ **Presença Online**: Melhorar o sistema de "Online/Offline" para remover jogadores que fecharam a aba mais rapidamente.
+Todos começam com **30 Pontos de Vida (PV)**.
+O objetivo é terminar o jogo com **mais PV** que os oponentes.
 
+- **Dano e Cura:** Cartas e habilidades podem tirar ou restaurar PV.
+- **Modo Crítico (0 PV):**
+  - Se um jogador chegar a **0 PV**, ele **NÃO é eliminado**. Ele entra em **Modo Crítico**.
+  - **Penalidade Dupla:** Enquanto estiver com 0 ou menos, qualquer punição (bebida ou perda de pontos) é **multiplicada por 2**.
+  - **Recuperação:** É possível sair do modo crítico se for curado (ex: pelo Médico ou carta de recompensa).
 
-- Criar logica para caso um jogador não votar ainda o administrador não pode avançar a rodada. Ou dever confirmar se quer avançar a rodada mesmo sem todos os votos. (Modos Eu nunca e amigos de merda)
+---
 
-## Refatorações
+### 🧟 Personagens e Habilidades
 
-- Jogo.jsx parece está muito grande e complexo. Podemos refatorar para melhorar a legibilidade e manutenção do código.
-- Outras refatorações que possam ser necessárias:
-  - 
-## Status das Implementações Recentes
+Cada jogador assume um papel que pode **mudar o rumo da partida**. As habilidades possuem **Custo em Doses** para serem ativadas.
 
-- ✅ Implementar lógica de votação para "Amigos de Merda". (Travas de Segurança Adicionadas)
-- ✅ Refinar fluxo de "Verdade ou Desafio" (escolha prévia e modal).
-- ✅ Adicionar efeitos sonoros e animações avançadas.
-- ✅ Sair da Sala e Sucessão de Host.
-- ⏳ Implementar poderes especiais (escudo, vingança, troca).
-- ⏳ Adicionar rodadas especiais (rodada do caos).
-- ✅ Tela de Fim de Jogo Épico (Pódio e Estatísticas).
+#### 🩺 1. O MÉDICO DA ZONA MORTA
+
+**História:** Antigo socorrista de guerra, o Médico aprendeu que salvar vidas sempre cobra um preço. Ele carrega seringas improvisadas e remédios instáveis, feitos com restos do velho mundo.
+
+- **Habilidade: “Tratamento de Risco”**  
+  Cura **+1 PV** de qualquer jogador (inclusive ele mesmo).
+- **Custo:**  
+  🍺 O Médico bebe **1 dose**.  
+  🍺 O Paciente bebe **1 dose**.
+- **Regra Extra:** Não pode curar o mesmo jogador duas rodadas seguidas.
+
+> 🧠 _Narrativa:_ “Vai doer. Se não doer, não funciona.”
+
+#### 🔪 2. O ASSASSINO DAS RUÍNAS
+
+**História:** Ninguém sabe de onde ele veio. Apenas que sempre sobra alguém no chão depois que ele passa. No apocalipse, a violência virou moeda.
+
+- **Habilidade: “Roubo de Sangue”**  
+  Rouba **2 PV** de qualquer jogador alvo.
+- **Custo:**  
+  🍺 O Assassino bebe **2 doses**.
+- **Limitação:** Uso único por partida.
+
+> 🧠 _Narrativa:_ “Não é pessoal. É sobrevivência.”
+
+#### 🧠 3. O ESTRATEGISTA (O MENTOR)
+
+**História:** Ex-líder de um abrigo subterrâneo. Sobreviveu aprendendo que decisões erradas matam mais do que radiação.
+
+- **Habilidade: “Plano de Contingência”**  
+  Pode **alterar a ordem dos jogadores** (inverte sentido ou pula).
+- **Custo:**  
+  🍺 O Estrategista bebe **1 dose**.
+- **Efeito:** Pode salvar alguém de um desafio pesado ou colocar um rival na linha de fogo.
+
+> 🧠 _Narrativa:_ “Quem controla a ordem, controla o caos.”
+
+#### 🔥 4. A INCENDIÁRIA
+
+**História:** Viveu entre gangues nômades. Ama ver tudo pegar fogo — inclusive o equilíbrio do grupo.
+
+- **Habilidade: “Caos Controlado”**  
+  Na sua vez, pode **Forçar um jogador** a comprar um desafio. Se o jogador negar, a penalidade (bebida e dano) é **dobrada**.
+- **Custo:**  
+  🍺 A Incendiária bebe **2 doses**.
+
+> 🧠 _Narrativa:_ “Nada é mais justo do que duas péssimas opções.”
+
+#### ☠️ 5. O SOBREVIVENTE (O IMORTAL)
+
+**História:** Esteve presente em todos os colapsos. Já deveria estar morto. Ninguém sabe como ainda respira.
+
+- **Habilidade: “Último Fôlego”**  
+  Quando chegaria a **0 PV** (entraria em crítico), ele permanece com **1 PV**.
+- **Custo:**  
+  🍺 Bebe **2 doses** (Automático).
+- **Regra:** Ativa **apenas uma vez por partida** automaticamente.
+
+> 🧠 _Narrativa:_ “Ainda não acabou.”
+
+---
+
+### ☣️ Eventos do Caos (Os 7 Pecados)
+
+_Cartas Raras (5% chance) que interrompem o fluxo do jogo._
+
+“Quando o mundo acabou, os pecados não morreram. Eles evoluíram.”
+
+#### 👑 1. ORGULHO — O DITADOR SUPREMO (Evento Global)
+
+- **Efeito:** O jogador da vez vira o Ditador por até 3 rodadas.
+- **Poder:** Cria uma **Regra Física Absurda** (ex: "Falar miando", "Proibido mostrar dentes").
+- **Mecânica:** Botão "APLICAR MULTA" aparece para o Ditador. Se alguém quebrar a regra, ele multa e o infrator bebe.
+- **Custo:** Ditador bebe 1 dose ao ativar.
+- **Ambientação:** Música de marcha, tela dourada.
+
+#### 💣 2. GANÂNCIA — MODO BLITZ (Evento Global)
+
+- **Efeito:** O jogo entra em **Pânico Total** por 2 rodadas.
+- **Mecânica:** Timer cai de 30s para **5-10s**.
+- **Penalidade:** Quem falhar ou demorar tem penalidade **TRIPLICADA**.
+- **Ambientação:** Tela vermelha pulsando, sirene, música acelerada.
+- **Custo:** Todos bebem 1 dose ao iniciar.
+- > "No apocalipse, quem hesita… paga."
+
+#### 🎭 3. INVEJA — TROCA DE CORPOS (Evento Global)
+
+- **Efeito:** Avatares e Nomes são **embaralhados** na tela. Você vê o nome de outro jogador no seu lugar.
+- **Caos:** Votações e interações ficam confusas (você acha que vota em X, mas vota em Y).
+- **Revelação:** Só no fim da rodada a tela "glitcha" e revela a verdade.
+- **Penalidade:** Quem receber mais votos bebe **2 doses** (mesmo se foi por engano).
+
+#### 🍔 4. GULA — BANQUETE TÓXICO (Evento Imediato)
+
+- **Lore:** Um suprimento contaminado foi encontrado.
+- **Decisão:** Todos devem escolher imediatamente:
+  1.  **Segurança:** Beber 1 dose agora.
+  2.  **Risco:** Rolar o Dado. (50% Nada / 50% Bebe 3 Doses).
+- **Ambientação:** Sons de mastigação distorcidos, mesa radioativa.
+
+#### 😡 5. IRA — SURTO DE VIOLÊNCIA (Evento Direcionado)
+
+- **Efeito:** O jogador da vez perde o controle e escolhe **2 oponentes**.
+- **Confronto:** Esses dois duelam (bebem 1 dose cada).
+- **Finalização:** O jogador da vez escolhe qual dos dois bebe +1 dose extra.
+- **Ambientação:** Tela tremendo, sons de metal e gritos.
+
+#### 😴 6. PREGUIÇA — ABRIGO ADORMECIDO (Evento Global)
+
+- **Efeito:** Tudo desacelera por 1 rodada.
+- **Mecânica:** Timer aumenta para **45s**.
+- **Opção:** Jogadores podem escolher **"Pular Vez"**, mas custa **1 dose** para descansar.
+- **Ambientação:** Música lenta, blur na tela. > "Sobreviver cansa."
+
+#### 💔 7. LUXÚRIA — PACTO PROIBIDO (Evento Social)
+
+- **Efeito:** Jogador da vez escolhe 2 pessoas para formar um par.
+- **Vínculo:** Até o fim do jogo, tudo que um sofre, o outro sofre metade (bebida/dano).
+- **Traição:** Se um votar no outro ou usar habilidade contra, o vínculo quebra e **ambos bebem 2 doses**.
+- **Ambientação:** Corações com glitch, sussurros.
+
+### Correções
+
+---
+
+## 4. Planejamento Técnico & Futuro
+
+### Melhorias de Engajamento
+
+- **Fim de Jogo Épico:** Tela de pódio com estatísticas ("Maior Bêbado", "Arregão").
+- **Compartilhamento:** Gerar imagem do resultado para Instagram/Zap.
+- **Reações flutuantes:** Emojis (🔥, 🍻, 😱) enviados por quem não é a vez.
+
+### Correções
+
+### Refatoração e Backend
+
+- [ ] **Cloud Functions:** Mover lógica de sorteio e pontuação para o servidor (segurança).
+- [ ] **Presença:** Melhorar detecção de offline (heartbeat).
+- [ ] **Histórico:** Garantir que cartas não se repitam na mesma sessão.
+
+### Correções
+
+### Monetização (Ideias)
+
+- **Itens Cosméticos:** Avatares exclusivos, skins de cartas.
+- **Baralhos Premium:** Pacotes temáticos (ex: "Baralho da Ira Hardcore").
+- **Efeitos Visuais:** Animações diferenciadas de vitória ou ações.
+
+### Correções
