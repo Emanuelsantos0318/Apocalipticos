@@ -19,6 +19,7 @@ Apocalípticos é um jogo de desafios e interações em grupo, onde os jogadores
 - ✅ Logotipo "Apocalípticos" (estilo neon/grunge).
 - ✅ Botões Principais: "Criar Sala", "Entrar na Sala".
 - **Footer:** Sobre nós, redes sociais, licença de uso.
+- Seria bom ter um tutorial de como jogar. 
 
 **Criar Sala (Modal)**
 
