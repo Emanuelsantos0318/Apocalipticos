@@ -12,6 +12,7 @@ Apocalípticos é um jogo de desafios e interações em grupo, onde os jogadores
 
 - **Login Persistente:** Funcionalidade para manter usuários logados (Google/Email) e evitar perda de sessão ao recarregar.
 - **Modo Anônimo:** Permitir jogar sem cadastro, mas com limitações de histórico.
+- **Perfil de usuário:** Salvar nome, avatar, etc.
 
 **Design e Funcionalidades**
 
@@ -69,18 +70,46 @@ Apocalípticos é um jogo de desafios e interações em grupo, onde os jogadores
 
 ## 2. Modos de Jogo e Lógica
 
-| Tipo                   | Fluxo                                                                 | Status          |
-| :--------------------- | :-------------------------------------------------------------------- | :-------------- |
-| **Verdade ou Desafio** | 1. ADM escolhe tipo. <br> 2. Sorteia carta.                           | ✅ Completo     |
-| **Decisões de Merda**  | 1. Situação absurda. <br> 2. Jogador decide.                          | ✅ Implementado |
-| **Amigos de Merda**    | 1. Pergunta polêmica. <br> 2. Votação secreta. <br> 3. Perdedor bebe. | ✅ Implementado |
-| **Eu Nunca**           | 1. Afirmação. <br> 2. Voto (Já/Nunca). <br> 3. Feedback visual.       | ✅ Implementado |
+| Tipo                   | Fluxo                                                                                                                                                                                                                                                                                     | Status          |
+| :--------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------- |
+| **Verdade ou Desafio** | 1. ADM escolhe tipo. <br> 2. Sorteia carta.                                                                                                                                                                                                                                               | ✅ Completo     |
+| **Decisões de Merda**  | 1. Situação absurda. <br> 2. Jogador decide.                                                                                                                                                                                                                                              | ✅ Implementado |
+| **Amigos de Merda**    | 1. Pergunta polêmica. <br> 2. Votação secreta. <br> 3. Perdedor bebe.                                                                                                                                                                                                                     | ✅ Implementado |
+| **Eu Nunca**           | 1. Afirmação. <br> 2. Voto (Já/Nunca). <br> 3. Feedback visual. <br> 4. Dependendo da pergunta se for uma pergunta de coisas boas ou ruins, ele pode beber ou não, sendo que caso uma pergunta seja ruim, ele perde pontos de vida, caso seja uma pergunta boa, ele ganha pontos de vida. | ✅ Implementado |
 
 ### Correções
 
+⏳ **Repetição de Cartas**: Varias vezes a mesma carta pode ser sorteada. Por exemplo no Eu Nunca estava recebendo a mesma carta varias vezes. Sei que tem poucas cartas salvas ainda, mas acho que a lógica de sorteio precisa ser melhorada.
+
+- ⏳ **Repetição de Cartas**: Implementar lógica para evitar que a mesma carta seja sorteada repetidamente na mesma sessão.
+
+- [ ] Criar histórico de cartas usadas na sessão (Sala).
+
+- [ ] Filtrar cartas já usadas no sorteio.
+
+- [ ] Resetar histórico quando todas as cartas do deck forem usadas.
+
 ---
 
-## 3. Universo e Mecânicas RPG (Lore & Rules)
+## 3. Experiência do Usuário (UX) e Visual
+
+- **Animações de Cartas**: Use `Framer Motion` para fazer a carta "virar" (flip effect) ao ser sorteada, ou deslizar da tela. Isso dá uma sensação tátil muito boa.
+
+> Ainda não está muito bonito, mas é um começo. Vou pesquisar mais sobre isso. E colocamos um design de melhor qualidade.
+
+⏳ **Feedback Visual de Dano/Cura**: Quando alguém perde pontos, a tela poderia piscar levemente em vermelho (vignette). Quando ganha, em verde ou dourado. (🔄 Em Desenvolvimento)
+
+**Temas Dinâmicos**: O fundo da tela poderia mudar sutilmente dependendo do modo de jogo (ex: mais sombrio no modo "Difícil", mais neon no "+18").
+
+⏳ **Fontes**: Se você encontrar fontes mais adequadas para isso pode usar a vontade, essa que tem lá é apenas para testes.
+
+⏳ **Efeitos Sonoros**: Adicionar efeitos sonoros e animações avançadas.
+
+### Correções
+
+⏳ **Interface do Lobby**: Melhorar a interface do lobby para que seja mais agradável e bonita. Principalmente o RoomHeader.jsx, está bem simples e feio.
+
+## 4. Universo e Mecânicas RPG (Lore & Rules)
 
 > Uma **história narrativa coesa**, com **ambientação pós-apocalíptica**, e **5 personagens jogáveis**, cada um com **habilidades únicas** que **alteram o destino do jogo**, sempre mantendo o espírito de _drinking game_ (risco, sacrifício e escolhas difíceis).
 
@@ -240,7 +269,13 @@ _Cartas Raras (5% chance) que interrompem o fluxo do jogo._
 
 ---
 
-## 4. Planejamento Técnico & Futuro
+## 5. Engajamento Social
+
+- ⏳ **Compartilhamento**: Botão para gerar uma imagem do resultado final para postar no Instagram/WhatsApp.
+
+- ⏳ **Reações Rápidas**: Permitir que os outros jogadores mandem emojis (🔥, 🍻, 😱) que flutuam na tela durante a vez do outro.
+
+## 6. Planejamento Técnico & Futuro
 
 ### Melhorias de Engajamento
 
@@ -252,7 +287,7 @@ _Cartas Raras (5% chance) que interrompem o fluxo do jogo._
 
 ### Refatoração e Backend
 
-- [ ] **Cloud Functions:** Mover lógica de sorteio e pontuação para o servidor (segurança).
+- [ ] **Cloud Functions:** Mover lógica de sorteio e pontuação para o servidor (segurança) para evitar que usuários mal-intencionados manipulem o jogo pelo console do navegador.
 - [ ] **Presença:** Melhorar detecção de offline (heartbeat).
 - [ ] **Histórico:** Garantir que cartas não se repitam na mesma sessão.
 
@@ -265,3 +300,5 @@ _Cartas Raras (5% chance) que interrompem o fluxo do jogo._
 - **Efeitos Visuais:** Animações diferenciadas de vitória ou ações.
 
 ### Correções
+
+## 7. Refatorações
