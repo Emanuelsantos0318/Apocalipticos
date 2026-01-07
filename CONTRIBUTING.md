@@ -5,11 +5,13 @@ Obrigado por querer contribuir com o caos! 🧨
 ## 🛠️ Padrões de Código
 
 ### Javascript / React
+
 - **Componentes Funcionais**: Use sempre `function Componente() { ... }` ou `const Componente = () => { ... }`.
 - **Hooks**: Mantenha a lógica de estado complexa em custom hooks (`useGame`, `useAuth`) sempre que possível.
 - **Nomes de Arquivos**: PascalCase para componentes (`MeuComponente.jsx`) e camelCase para utilitários (`meuUtil.js`).
 
 ### CSS / Estilização
+
 - **TailwindCSS**: Priorize o uso de classes utilitárias do Tailwind.
 - Evite criar arquivos `.css` separados a menos que seja estritamente necessário para animações complexas não suportadas pelo Tailwind.
 
@@ -34,6 +36,7 @@ Para adicionar novas cartas ao jogo, siga estes passos:
 1.  Abra o arquivo `src/firebase/seedDatabase.js`.
 2.  Localize a lista `const cards = [...]`.
 3.  Adicione seu novo objeto de carta no final da lista, seguindo o formato:
+
     ```javascript
     {
       texto: "Sua pergunta ou desafio aqui",
@@ -41,7 +44,10 @@ Para adicionar novas cartas ao jogo, siga estes passos:
       modo: GAME_MODES.NORMAL, // ou ADULTO, DIFICIL
       categoria: CATEGORIES.TRUTH_OR_DARE // ou outra correspondente
     }
+
+    > node src/firebase/seedDatabase.js
     ```
+
 4.  No terminal, execute o comando:
     ```bash
     node src/firebase/seedDatabase.js

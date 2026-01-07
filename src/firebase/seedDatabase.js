@@ -117,27 +117,15 @@ const mapTypeAndCategory = (csvGame) => {
 
 // Ler e processar o CSV
 const getCardsFromCSV = () => {
-  // O arquivo utc8 está confirmado como UTF-8 válido e contendo os dados.
-  const csvPath = path.resolve(
-    __dirname,
-    "../../Cartas_apocalipticos_utc8.csv"
-  );
-  const backupCsvPath = path.resolve(
-    __dirname,
-    "../../Cartas_apocalipticos.csv"
-  );
+  // Arquivo padronizado em src/data/cards.csv
+  const csvPath = path.resolve(__dirname, "../data/cards.csv");
 
   let fileContent;
   if (fs.existsSync(csvPath)) {
     console.log(`📂 Lendo CSV de: ${csvPath}`);
     fileContent = fs.readFileSync(csvPath, "utf8");
-  } else if (fs.existsSync(backupCsvPath)) {
-    // Tenta ler o outro caso o utc8 não exista, mas prioriza utc8
-    console.log(`📂 Lendo CSV alternativo: ${backupCsvPath}`);
-    // Se o alternativo estiver corrompido, utf8 pode gerar Replacement Characters, mas é a melhor tentativa
-    fileContent = fs.readFileSync(backupCsvPath, "utf8");
   } else {
-    console.warn("⚠️ Nenhum arquivo CSV de cartas encontrado.");
+    console.warn("⚠️ Arquivo src/data/cards.csv não encontrado.");
     return [];
   }
 

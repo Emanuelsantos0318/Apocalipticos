@@ -24,7 +24,25 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
   - Sistema de versionamento via `localStorage` para garantir que o aviso apareça apenas uma vez por versão.
   - Arquivo de configuração `dates/updates.js` para fácil manutenção das notícias.
 
-## [Não Lançado] - 2025-12-30
+## [Não Lançado] - 2026-01-06
+
+### Adicionado
+
+- **Seleção de Personagens (RPG Core)**:
+  - Implementada tela de seleção de classes no Lobby.
+  - 5 Classes Jogáveis: Médico, Assassino, Estrategista, Incendiária, Sobrevivente.
+  - Exibição de ícones de classe e backgrounds personalizados na lista de jogadores.
+- **Novas Cartas**:
+  - Adicionadas categorias "Faz ou Bebe" e "Isso ou Aquilo".
+  - Script de seed atualizado para popular o banco com 300+ novas cartas.
+
+### Corrigido
+
+- **Erro de Cartas**: Corrigido bug onde novas categorias não eram reconhecidas na criação da sala (`constants.js`).
+- **Seed Database**: Corrigido caminho do arquivo CSV no script de seed.
+- **Lobby**: Restaurados imports perdidos que causavam crash na tela de Lobby.
+
+## [Não Lançado] - 2026-01-05
 
 ### Adicionado
 

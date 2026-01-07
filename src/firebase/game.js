@@ -1,6 +1,13 @@
-
 import { db } from "./config";
-import { collection, query, where, getDocs, doc, setDoc, serverTimestamp } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  setDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 import { CARD_TYPES } from "../constants/constants";
 
 /**
@@ -12,11 +19,16 @@ import { CARD_TYPES } from "../constants/constants";
  * @returns {Promise<{carta: Object, reset: boolean}>} Objeto com a carta sorteada e flag de reset.
  * @throws {Error} Se nenhuma carta for encontrada.
  */
-export async function sortearCarta(modo, categorias, tipo = null, cartasUsadas = []) {
+export async function sortearCarta(
+  modo,
+  categorias,
+  tipo = null,
+  cartasUsadas = []
+) {
   const cartasRef = collection(db, "cartas");
   let constraints = [
     where("modo", "==", modo),
-    where("categoria", "in", categorias)
+    where("categoria", "in", categorias),
   ];
 
   if (tipo) {
@@ -26,19 +38,23 @@ export async function sortearCarta(modo, categorias, tipo = null, cartasUsadas =
   const q = query(cartasRef, ...constraints);
 
   const snapshot = await getDocs(q);
-  const cartas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  
+  const cartas = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
   if (cartas.length === 0) {
     // Fallback: se não achar do tipo específico, tenta achar qualquer uma (e ignora filtro, pois vai falhar)
     if (tipo) {
-       console.warn(`Nenhuma carta do tipo ${tipo} encontrada. Tentando fallback...`);
-       return sortearCarta(modo, categorias, null, cartasUsadas);
+      console.warn(
+        `Nenhuma carta do tipo ${tipo} encontrada. Tentando fallback...`
+      );
+      return sortearCarta(modo, categorias, null, cartasUsadas);
     }
     throw new Error("Nenhuma carta encontrada para os critérios");
   }
 
   // Filtrar cartas já usadas
-  let cartasDisponiveis = cartas.filter(cart => !cartasUsadas.includes(cart.id));
+  let cartasDisponiveis = cartas.filter(
+    (cart) => !cartasUsadas.includes(cart.id)
+  );
   let reset = false;
 
   // Se todas as cartas já foram usadas, reseta o histórico e usa todas novamente
@@ -48,7 +64,8 @@ export async function sortearCarta(modo, categorias, tipo = null, cartasUsadas =
     reset = true;
   }
 
-  const cartaSorteada = cartasDisponiveis[Math.floor(Math.random() * cartasDisponiveis.length)];
+  const cartaSorteada =
+    cartasDisponiveis[Math.floor(Math.random() * cartasDisponiveis.length)];
   return { carta: cartaSorteada, reset };
 }
 
@@ -62,18 +79,19 @@ export async function sortearCarta(modo, categorias, tipo = null, cartasUsadas =
 export async function proximoJogador(salaId, jogadorAtualUid) {
   const jogadoresRef = collection(db, "salas", salaId, "jogadores");
   const snapshot = await getDocs(jogadoresRef);
-  const jogadores = snapshot.docs.map(doc => doc.id);
+  const jogadores = snapshot.docs.map((doc) => doc.id);
 
   if (jogadores.length <= 1) return jogadorAtualUid;
 
   // Filtrar o jogador atual para não repetir imediatamente (opcional)
-  const outrosJogadores = jogadores.filter(uid => uid !== jogadorAtualUid);
-  
+  const outrosJogadores = jogadores.filter((uid) => uid !== jogadorAtualUid);
+
   // Se só tinha 1 outro jogador, retorna ele. Se tinha mais, sorteia.
   // Se por acaso o filtro removeu todos (ex: só 1 jogador na sala), retorna o mesmo.
   if (outrosJogadores.length === 0) return jogadorAtualUid;
 
-  const proximo = outrosJogadores[Math.floor(Math.random() * outrosJogadores.length)];
+  const proximo =
+    outrosJogadores[Math.floor(Math.random() * outrosJogadores.length)];
   return proximo;
 }
 
@@ -87,6 +105,28 @@ export async function submitVote(salaId, voterUid, targetUid) {
   const voteRef = doc(db, "salas", salaId, "votos", voterUid);
   await setDoc(voteRef, {
     target: targetUid,
-    timestamp: serverTimestamp()
+    timestamp: serverTimestamp(),
   });
+}
+
+/**
+ * Atualiza a classe/papel de um jogador e inicializa seus status de RPG.
+ * @param {string} salaId - ID da sala.
+ * @param {string} uid - UID do jogador.
+ * @param {string} roleId - ID da classe selecionada (medico, assassino, etc).
+ */
+export async function updatePlayerRole(salaId, uid, roleId) {
+  const playerRef = doc(db, "salas", salaId, "jogadores", uid);
+  await setDoc(
+    playerRef,
+    {
+      role: roleId,
+      hp: 30, // Vida Inicial
+      maxHp: 30,
+      isCritical: false,
+      status: [], // buffs/debuffs
+      roleUsed: false, // para habilidades de uso único
+    },
+    { merge: true }
+  );
 }

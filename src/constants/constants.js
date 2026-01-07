@@ -6,7 +6,7 @@
 export const GAME_MODES = {
   NORMAL: "normal",
   ADULTO: "mais18",
-  DIFICIL: "dificil"
+  DIFICIL: "dificil",
 };
 
 // 2. Tipos de Cartas
@@ -15,7 +15,9 @@ export const CARD_TYPES = {
   DARE: "desafio",
   NEVER: "euNunca",
   FRIENDS: "amigosMerda",
-  DECISIONS: "decisoesMerda"
+  DECISIONS: "decisoesMerda",
+  DO_OR_DRINK: "fazOuBebe",
+  THIS_OR_THAT: "issoOuAquilo",
 };
 
 // 3. Categorias
@@ -23,7 +25,9 @@ export const CATEGORIES = {
   TRUTH_OR_DARE: "verdadeDesafio",
   NEVER_HAVE_I_EVER: "euNunca",
   BAD_DECISIONS: "decisoesMerda",
-  SHITTY_FRIENDS: "amigosMerda"
+  SHITTY_FRIENDS: "amigosMerda",
+  DO_OR_DRINK_GAME: "fazOuBebe",
+  THIS_OR_THAT_GAME: "issoOuAquilo",
 };
 
 // 4. Estados do Jogo
@@ -31,26 +35,25 @@ export const GAME_STATES = {
   WAITING: "esperando",
   ONGOING: "em_andamento",
   FINISHED: "finalizado",
-  ABORTED: "cancelado"
+  ABORTED: "cancelado",
 };
 
 // 5. Configurações Padrão
 export const DEFAULTS = {
   MAX_PLAYERS: 8,
   TIMEOUT: 30, // segundos
-  ROUND_LIMIT: 10
+  ROUND_LIMIT: 10,
 };
 
 // 6. Prefixos para Salas
 export const ROOM_PREFIXES = ["ZUMBI", "RADI", "FOME", "MOTO", "APOC"];
 
-
-
 // 7. Métodos auxiliares
-export const isAdultMode = (mode) => [GAME_MODES.ADULTO, GAME_MODES.EXTREMO].includes(mode);
+export const isAdultMode = (mode) =>
+  [GAME_MODES.ADULTO, GAME_MODES.EXTREMO].includes(mode);
 
 export const getModeRules = (mode) => {
-  switch(mode) {
+  switch (mode) {
     case GAME_MODES.ADULTO:
       return { minAge: 18, maxPlayers: 10 };
     case GAME_MODES.EXTREMO:
@@ -58,5 +61,4 @@ export const getModeRules = (mode) => {
     default:
       return { minAge: 16, maxPlayers: 8 };
   }
-
 };

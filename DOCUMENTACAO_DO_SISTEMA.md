@@ -165,6 +165,10 @@ Armazena os participantes daquela sala específica.
   "nome": "Mateus",
   "avatar": "💀",
   "isHost": false,
+  "role": "medico", // [RPG]
+  "hp": 30, // [RPG]
+  "maxHp": 30, // [RPG]
+  "isCritical": false, // [RPG]
   "stats": {
     "cumpriu": 2,
     "recusou": 1,
