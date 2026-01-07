@@ -54,6 +54,8 @@ Apocalípticos é um jogo de desafios e interações em grupo, onde os jogadores
 ### Correções
 
 - Alterar o avatar pela carta ou transforma a carta também em avatar.
+
+- Alterar o avatar pela carta ou transforma a carta também em avatar.
   g
 
 ### 🎮 Tela de Jogo
