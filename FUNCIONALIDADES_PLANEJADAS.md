@@ -49,14 +49,17 @@ Apocalípticos é um jogo de desafios e interações em grupo, onde os jogadores
 - ✅ Contagem de Jogadores.
 - ✅ Botão "Iniciar Jogo" (apenas ADM).
 - ⏳ Chat Simples (opcional).
-- **Seleção de Personagem:** Jogadores escolhem sua Classe/Papel aqui (veja seção RPG).
+- ✅ **Seleção de Personagem:** Jogadores escolhem sua Classe/Papel aqui (veja seção RPG).
 
 ### Correções
 
 - Alterar o avatar pela carta ou transforma a carta também em avatar.
 
-- Alterar o avatar pela carta ou transforma a carta também em avatar.
-  g
+Erro no Google Login: FirebaseError: Firebase: Error (auth/unauthorized-domain).
+at Ty (index-BPQFfFFe.js:473:758)
+at Vr (index-BPQFfFFe.js:473:30)
+at dM (index-BPQFfFFe.js:1508:197)
+overrideMethod @ installHook.js:1
 
 ### 🎮 Tela de Jogo
 
@@ -78,7 +81,7 @@ Apocalípticos é um jogo de desafios e interações em grupo, onde os jogadores
 
 ### Correções
 
-- ⏳ **GameHeader**: Mudar o formato do jogadores da vez e adicionar o nome do jogador atual, o anterior e o próximo. E centralizar tudo.
+- ✅ **GameHeader**: Mudar o formato do jogadores da vez e adicionar o nome do jogador atual, o anterior e o próximo. E centralizar tudo.
 
 ---
 
@@ -105,6 +108,8 @@ Apocalípticos é um jogo de desafios e interações em grupo, onde os jogadores
 
 - **Decisoes de Merda:** O admin não está confirmando que o jogador cumpriu a tarefa.
 
+- **Ao selecionar novo jogo:** não está resetando os dados do jogo como a vida dos jogadores.
+
 ### ⏳ Pendências
 
 #### ⏳ Funções prevista
@@ -124,7 +129,10 @@ Apocalípticos é um jogo de desafios e interações em grupo, onde os jogadores
 
 > Ainda não está muito bonito, mas é um começo. Vou pesquisar mais sobre isso. E colocamos um design de melhor qualidade.
 
-⏳ **Feedback Visual de Dano/Cura**: Quando alguém perde pontos, a tela poderia piscar levemente em vermelho (vignette). Quando ganha, em verde ou dourado. (🔄 Em Desenvolvimento)
+⏳ **Feedback Visual de Dano/Cura:**
+
+- Quando alguém perde pontos, a tela poderia piscar levemente em vermelho (vignette). Quando ganha, em verde ou dourado. (🔄 Em Desenvolvimento)
+- Quando alguém usar uma habilidade seria bom que quem usou e em quem a habilidade foi aplicada fosse exibido em tela de todos os jogadores (🔄 Em Desenvolvimento)
 
 **Temas Dinâmicos**: O fundo da tela poderia mudar sutilmente dependendo do modo de jogo (ex: mais sombrio no modo "Difícil", mais neon no "+18").
 
@@ -167,7 +175,7 @@ O objetivo é terminar o jogo com **mais PV** que os oponentes.
 
 ---
 
-### 🧟 Personagens e Habilidades
+### 🧟 Personagens e Habilidades (✅ Implementado)
 
 Cada jogador assume um papel que pode **mudar o rumo da partida**. As habilidades possuem **Custo em Doses** para serem ativadas.
 

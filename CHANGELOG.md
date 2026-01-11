@@ -2,6 +2,24 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [Não Lançado] - 2026-01-10
+
+### Adicionado
+
+- **Sistema de RPG Completo (Classes e Habilidades)**:
+  - **Médico**: Habilidade "Tratamento de Risco" (Cura 1 PV, Custo 1+1).
+  - **Assassino**: Habilidade "Roubo de Sangue" (Dano 2 PV, Custo 2, Uso Único).
+  - **Estrategista**: Habilidade "Plano de Contingência" (Define o próximo jogador, ignorando sorteio).
+  - **Incendiária**: Habilidade "Caos Controlado" (Força turno imediato com Dano Dobrado em caso de recusa).
+  - **Sobrevivente**: Habilidade Passiva "Último Fôlego" (Trava em 1 HP ao morrer, uma vez por jogo).
+  - **Interface**: Modal de Habilidades com seleção de alvos e custos claros.
+  - **Feedback Visual**: Botão "Usar Habilidade" integrado à tela de jogo.
+
+### Ajustado
+
+- **GameHeader**: Layout reorganizado para destacar Jogador Atual, Anterior e Próximo.
+- **Sobrevivente**: Modal adaptado para indicar "Habilidade Passiva" e bloquear acionamento manual.
+
 ## [Não Lançado] - 2026-01-05
 
 ### Adicionado
