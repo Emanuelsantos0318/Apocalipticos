@@ -53,13 +53,9 @@ Apocalípticos é um jogo de desafios e interações em grupo, onde os jogadores
 
 ### Correções
 
-- Alterar o avatar pela carta ou transforma a carta também em avatar.
+- Alterar o avatar pela carta ou transforma a carta também em avatar. Eu particulamente prefiro como está, com aquelas figuras que tinhamos feito, deixa mais personalizado e caso repita o personagem teria uma perfil diferente do outro, mas parece que meu colega quer a foto do personagem que o usuário escolheu.
 
-Erro no Google Login: FirebaseError: Firebase: Error (auth/unauthorized-domain).
-at Ty (index-BPQFfFFe.js:473:758)
-at Vr (index-BPQFfFFe.js:473:30)
-at dM (index-BPQFfFFe.js:1508:197)
-overrideMethod @ installHook.js:1
+- ⏳ Adicionar uma Borda Colorida no avatar dependendo da classe (Ex: Vermelho pro Assassino, Branco pro Médico).
 
 ### 🎮 Tela de Jogo
 
@@ -112,6 +108,8 @@ overrideMethod @ installHook.js:1
 
 ### ⏳ Pendências
 
+- Atualizar o useGameActions.js com os novos tipos de cartas.
+
 #### ⏳ Funções prevista
 
 - ⏳ Cartas com maior usabilidade
@@ -147,18 +145,6 @@ overrideMethod @ installHook.js:1
 ## 4. Universo e Mecânicas RPG (Lore & Rules)
 
 > Uma **história narrativa coesa**, com **ambientação pós-apocalíptica**, e **5 personagens jogáveis**, cada um com **habilidades únicas** que **alteram o destino do jogo**, sempre mantendo o espírito de _drinking game_ (risco, sacrifício e escolhas difíceis).
-
-### 🌍 História: O Mundo de Apocalípticos
-
-O mundo acabou… mas a sede não.
-
-Após o **Colapso Rubro**, uma série de explosões nucleares e epidemias dissolveram governos, cidades e qualquer vestígio de ordem. Os poucos sobreviventes se espalharam em **zonas mortas**, vivendo entre ruínas, fumaça e silêncio.
-
-A humanidade não luta mais por dinheiro ou poder. Luta por **recursos**, **controle**… e **lucidez**.
-
-Em meio ao caos, surgiram os **Apocalípticos** — grupos de sobreviventes que se reúnem em antigos abrigos, bares abandonados e bunkers para enfrentar desafios brutais. Cada rodada não é apenas um jogo: é um **teste de sanidade, coragem e sobrevivência**.
-
-**Beber não é diversão. Beber é o preço para continuar vivo.**
 
 ---
 

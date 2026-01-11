@@ -5,12 +5,24 @@
 ![React](https://img.shields.io/badge/React-18-blue)
 ![Firebase](https://img.shields.io/badge/Firebase-9-orange)
 
-**Apocalípticos** é um jogo interativo e insano para grupos de amigos (presencial ou remoto), inspirado em clássicos como *Amigos de Merda*, *Verdade ou Desafio* e *Eu Nunca*. Com foco em desafios, perguntas e decisões bizarras em tempo real, tudo embrulhado em uma estética "apocalíptica zoada". Ideal para animar qualquer rolê!
+**Apocalípticos** é um jogo interativo e insano para grupos de amigos (presencial ou remoto), inspirado em clássicos como _Amigos de Merda_, _Verdade ou Desafio_ e _Eu Nunca_. Com foco em desafios, perguntas e decisões bizarras em tempo real, tudo embrulhado em uma estética "apocalíptica zoada". Ideal para animar qualquer rolê!
+
+### 🌍 História: O Mundo de Apocalípticos
+
+O mundo acabou… mas a sede não.
+
+Após o **Colapso Rubro**, uma série de explosões nucleares e epidemias dissolveram governos, cidades e qualquer vestígio de ordem. Os poucos sobreviventes se espalharam em **zonas mortas**, vivendo entre ruínas, fumaça e silêncio.
+
+A humanidade não luta mais por dinheiro ou poder. Luta por **recursos**, **controle**… e **lucidez**.
+
+Em meio ao caos, surgiram os **Apocalípticos** — grupos de sobreviventes que se reúnem em antigos abrigos, bares abandonados e bunkers para enfrentar desafios brutais. Cada rodada não é apenas um jogo: é um **teste de sanidade, coragem e sobrevivência**.
+
+**Beber não é diversão. Beber é o preço para continuar vivo.**
 
 ## 📸 Telas do Jogo
 
-| Tela Inicial | Criando uma Sala | Entrando em uma Sala | Lobby |
-| :---: | :---: | :---: | :---: |
+|                        Tela Inicial                         |                            Criando uma Sala                            |                              Entrando em uma Sala                              |                                Lobby                                |
+| :---------------------------------------------------------: | :--------------------------------------------------------------------: | :----------------------------------------------------------------------------: | :-----------------------------------------------------------------: |
 | ![Tela inicial do jogo Apocalípticos](docs/images/home.png) | ![Modal para criar uma sala de jogo](docs/images/modal-criar-sala.png) | ![Modal para entrar em uma sala com código](docs/images/modal-entrar-sala.png) | ![Tela de lobby aguardando o início do jogo](docs/images/lobby.png) |
 
 ---
@@ -28,11 +40,11 @@
 
 Os modos definem a intensidade e ousadia das cartas:
 
-| Modo    | Descrição                                  |
-|---------|---------------------------------------------|
-| **Normal**  | Perguntas leves e desafios tranquilos. Ideal para começar a noite.      |
-| **+18**     | Conteúdo adulto e provocante. Apenas para maiores de 18 anos.               |
-| **Difícil** | Pesado, insano, para jogadores sem limites. Prepare o fígado.  |
+| Modo        | Descrição                                                          |
+| ----------- | ------------------------------------------------------------------ |
+| **Normal**  | Perguntas leves e desafios tranquilos. Ideal para começar a noite. |
+| **+18**     | Conteúdo adulto e provocante. Apenas para maiores de 18 anos.      |
+| **Difícil** | Pesado, insano, para jogadores sem limites. Prepare o fígado.      |
 
 ---
 
@@ -40,30 +52,32 @@ Os modos definem a intensidade e ousadia das cartas:
 
 Cada rodada traz um tipo de mini-jogo, com regras específicas:
 
-| Tipo             | Nome             | Mecânica                                                                 |
-|------------------|------------------|--------------------------------------------------------------------------|
-| `verdadeDesafio` | **Verdade ou Desafio** | O clássico. ADM ou sistema escolhe o tipo antes da carta aparecer.                              |
-| `decisoes`       | **Decisões de Merda** | Jogador da vez enfrenta uma situação absurda e deve cumprir uma prenda.                    |
-| `votacao`        | **Amigos de Merda**   | Todos votam em alguém baseado na carta (ex: "Quem é mais provável de ser preso?"). O mais votado bebe.              |
-| `euNunca`        | **Eu Nunca**          | Quem já fez o que está na carta, bebe.                                    |
+| Tipo             | Nome                   | Mecânica                                                                                               |
+| ---------------- | ---------------------- | ------------------------------------------------------------------------------------------------------ |
+| `verdadeDesafio` | **Verdade ou Desafio** | O clássico. ADM ou sistema escolhe o tipo antes da carta aparecer.                                     |
+| `decisoes`       | **Decisões de Merda**  | Jogador da vez enfrenta uma situação absurda e deve cumprir uma prenda.                                |
+| `votacao`        | **Amigos de Merda**    | Todos votam em alguém baseado na carta (ex: "Quem é mais provável de ser preso?"). O mais votado bebe. |
+| `euNunca`        | **Eu Nunca**           | Quem já fez o que está na carta, bebe.                                                                 |
 
 ---
 
 ## ✅ Status do Desenvolvimento
 
 ### Funcionalidades Implementadas
+
 - [x] **Autenticação Anônima**: Jogadores entram sem cadastro complexo.
 - [x] **Sistema de Salas**: Criação e entrada via código (ex: ZUMBI).
 - [x] **Lobby em Tempo Real**: Visualização de avatares e status dos jogadores.
 - [x] **Core do Jogo**:
-    - Sorteio de jogador da vez.
-    - Sorteio de cartas baseado no modo.
-    - Timer de 30 segundos.
-    - Sistema de pontuação e penalidades.
-    - Confirmação de desafios pelo Admin (Host).
+  - Sorteio de jogador da vez.
+  - Sorteio de cartas baseado no modo.
+  - Timer de 30 segundos.
+  - Sistema de pontuação e penalidades.
+  - Confirmação de desafios pelo Admin (Host).
 - [ ] **Ranking**: Placar atualizado em tempo real.
 
 ### Em Desenvolvimento / Planejado
+
 - [ ] **Lógica Avançada de Cartas**: Votação em tempo real para "Amigos de Merda".
 - [ ] **Efeitos Sonoros**: Feedback auditivo para ações do jogo.
 - [ ] **Fim de Jogo**: Tela de encerramento com pódio e estatísticas finais.
@@ -76,18 +90,21 @@ Cada rodada traz um tipo de mini-jogo, com regras específicas:
 Siga os passos abaixo para rodar o projeto na sua máquina:
 
 1. **Clone o repositório**
+
    ```bash
    git clone https://github.com/Emanuelsantos0318/Apocalipticos.git
    cd apocalipticos
    ```
 
 2. **Instale as dependências**
+
    ```bash
    npm install
    ```
 
 3. **Configure o Firebase**
    Crie um arquivo `.env.local` na raiz do projeto e adicione suas credenciais do Firebase:
+
    ```env
    VITE_API_KEY=sua_api_key
    VITE_AUTH_DOMAIN=seu_projeto.firebaseapp.com
@@ -135,4 +152,4 @@ Este jogo é destinado a maiores de 18 anos. O consumo de álcool deve ser feito
 Feito com caos por:
 
 | [<img loading="lazy" src="https://avatars.githubusercontent.com/u/126841158?v=4" width=115><br><sub>Mateus Sanfer</sub>](https://github.com/MateusSanfer) | [<img loading="lazy" src="https://avatars.githubusercontent.com/u/128701097?v=4" width=115><br><sub>Emanuel Santos</sub>](https://github.com/Emanuelsantos0318) |
-| :---: | :---: |
+| :-------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------: |
