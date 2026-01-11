@@ -23,9 +23,10 @@ import Podium from "../components/game/Podium";
 import ChoiceModal from "../components/game/ChoiceModal";
 import ConfirmModal from "../components/modals/ConfirmModal";
 import PowerUpBar from "../components/game/PowerUpBar";
+import ClassAbilityModal from "../components/game/ClassAbilityModal";
 
 import { CARD_TYPES } from "../constants/constants";
-import { Volume2, VolumeX, Skull } from "lucide-react";
+import { Volume2, VolumeX, Skull, Zap } from "lucide-react";
 
 export default function Jogo() {
   const { codigo } = useParams();
@@ -71,6 +72,7 @@ export default function Jogo() {
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [showForceModal, setShowForceModal] = useState(null); // null, 'VOTE', 'NEVER'
   const [showRanking, setShowRanking] = useState(false);
+  const [showAbilityModal, setShowAbilityModal] = useState(false);
 
   // Computed Values
   const currentPlayer = sala?.jogadorAtual;
@@ -426,12 +428,25 @@ export default function Jogo() {
               // START GAME BUTTON
               <div className="text-center py-12">
                 {isCurrentPlayer ? (
-                  <button
-                    onClick={gameActions.handleSortearCarta}
-                    className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg text-lg font-bold animate-bounce"
-                  >
-                    Sortear Carta
-                  </button>
+                  <div className="flex flex-col items-center gap-4">
+                    <button
+                      onClick={gameActions.handleSortearCarta}
+                      className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 rounded-xl text-xl font-bold animate-bounce shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-all hover:scale-105"
+                    >
+                      SORTEAR CARTA 🃏
+                    </button>
+
+                    {/* Botão de Habilidade de Classe */}
+                    {meuJogador?.role && (
+                      <button
+                        onClick={() => setShowAbilityModal(true)}
+                        className="flex items-center gap-2 px-6 py-2 bg-gray-800 border border-purple-500/30 hover:bg-gray-700 hover:border-purple-400 rounded-lg text-purple-300 font-bold transition-all text-sm uppercase tracking-wider"
+                      >
+                        <Zap size={16} />
+                        Usar Habilidade
+                      </button>
+                    )}
+                  </div>
                 ) : (
                   <p className="text-xl animate-pulse text-gray-300">
                     Aguardando{" "}
@@ -468,10 +483,9 @@ export default function Jogo() {
             <div className="w-full max-w-sm relative">
               <button
                 onClick={() => setShowRanking(false)}
-                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 z-50 shadow-lg"
+                className="absolute -top-2 -right-2  bg-red-500 text-white rounded-full p-2 z-50 shadow-lg"
               >
-                <VolumeX size={20} />{" "}
-                {/* Usando Icone de Fechar improviaado ou X? Melhor LogOut */}X
+                X
               </button>
               <h2 className="text-xl font-bold mb-4 text-center text-white">
                 Ranking
@@ -519,6 +533,15 @@ export default function Jogo() {
           message="O jogo será finalizado e o Pódio será exibido. Tem certeza?"
           onConfirm={gameActions.handleFinishGame}
           onCancel={() => gameActions.setShowFinishConfirmModal(false)}
+        />
+
+        <ClassAbilityModal
+          isOpen={showAbilityModal}
+          onClose={() => setShowAbilityModal(false)}
+          userRoleKey={meuJogador?.role}
+          jogadores={jogadores}
+          meuUid={meuUid}
+          onUseAbility={gameActions.handleUseAbility}
         />
 
         {/* BOTÃO DE MÚSICA (Floating) */}
