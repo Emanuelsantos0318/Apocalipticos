@@ -1,15 +1,33 @@
 import { useState, useEffect } from "react";
-import { doc, updateDoc, increment, serverTimestamp, arrayUnion, getDoc, getDocs, collection, onSnapshot } from "firebase/firestore";
+import {
+  doc,
+  updateDoc,
+  increment,
+  serverTimestamp,
+  arrayUnion,
+  getDoc,
+  getDocs,
+  collection,
+  onSnapshot,
+  deleteField,
+} from "firebase/firestore";
 import { db } from "../../firebase/config";
 import toast from "react-hot-toast";
 import { sortearCarta, proximoJogador } from "../../firebase/game";
-import { limparAcoesRodada, limparVotosRodada, sairDaSala, registrarAcaoRodada } from "../../firebase/rooms";
+import {
+  limparAcoesRodada,
+  limparVotosRodada,
+  sairDaSala,
+  registrarAcaoRodada,
+} from "../../firebase/rooms";
 import { useSounds } from "../../hooks/useSounds";
 import { CARD_TYPES, CATEGORIES } from "../../constants/constants";
+import { useRPG } from "./useRPG";
 
 export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
   const { playFlip, playSuccess, playFail, playPodium } = useSounds();
-  
+  const { takeDamage, heal, useAbility } = useRPG(codigo);
+
   const [showChoiceModal, setShowChoiceModal] = useState(false);
   const [choiceTimeLeft, setChoiceTimeLeft] = useState(10);
   const [actionTaken, setActionTaken] = useState(false);
@@ -21,7 +39,6 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
   const currentPlayer = sala?.jogadorAtual;
   const isCurrentPlayer = currentPlayer === meuUid;
   const isVotingRound = sala?.cartaAtual?.tipo === CARD_TYPES.FRIENDS;
-
 
   // Listener de Ações da Rodada (Eu Nunca)
   useEffect(() => {
@@ -51,20 +68,22 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
           : Object.values(CATEGORIES);
 
       const { carta: tempCarta, reset } = await sortearCarta(
-        sala.modo, 
-        categorias, 
-        null, 
+        sala.modo,
+        categorias,
+        null,
         sala.cartasUsadas || []
       );
-      
+
       if (reset) {
         toast("Baralho reembaralhado! 🔄", { icon: "🃏" });
         await updateDoc(doc(db, "salas", codigo), { cartasUsadas: [] });
       }
 
-      if (tempCarta.categoria === CATEGORIES.TRUTH_OR_DARE || 
-          tempCarta.tipo === CARD_TYPES.TRUTH || 
-          tempCarta.tipo === CARD_TYPES.DARE) {
+      if (
+        tempCarta.categoria === CATEGORIES.TRUTH_OR_DARE ||
+        tempCarta.tipo === CARD_TYPES.TRUTH ||
+        tempCarta.tipo === CARD_TYPES.DARE
+      ) {
         setShowChoiceModal(true);
         setChoiceTimeLeft(10);
         return;
@@ -73,12 +92,11 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
       await updateDoc(doc(db, "salas", codigo), {
         cartaAtual: tempCarta,
         timeLeft: 30,
-        cartasUsadas: reset ? [tempCarta.id] : arrayUnion(tempCarta.id)
+        cartasUsadas: reset ? [tempCarta.id] : arrayUnion(tempCarta.id),
       });
-      if(setTimeLeft) setTimeLeft(30);
+      if (setTimeLeft) setTimeLeft(30);
       setActionTaken(false);
       playFlip();
-
     } catch (error) {
       console.error("Erro ao sortear carta preliminar:", error);
       toast.error("Erro ao iniciar rodada.");
@@ -87,32 +105,32 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
 
   const handleChoice = async (tipoEscolhido = null) => {
     setShowChoiceModal(false);
-    
+
     try {
       const categorias =
         sala.categorias && sala.categorias.length > 0
           ? sala.categorias
           : Object.values(CATEGORIES);
-      
+
       const { carta, reset } = await sortearCarta(
-        sala.modo, 
-        categorias, 
-        tipoEscolhido, 
+        sala.modo,
+        categorias,
+        tipoEscolhido,
         sala.cartasUsadas || []
       );
-      
+
       const updates = {
         cartaAtual: carta,
         timeLeft: 30,
-        cartasUsadas: reset ? [carta.id] : arrayUnion(carta.id)
+        cartasUsadas: reset ? [carta.id] : arrayUnion(carta.id),
       };
 
       if (reset) {
-         toast("Baralho reembaralhado! 🔄", { icon: "🃏" });
+        toast("Baralho reembaralhado! 🔄", { icon: "🃏" });
       }
-      
+
       await updateDoc(doc(db, "salas", codigo), updates);
-      if(setTimeLeft) setTimeLeft(30);
+      if (setTimeLeft) setTimeLeft(30);
       setActionTaken(false);
       playFlip();
     } catch (error) {
@@ -123,19 +141,36 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
 
   const passarVez = async () => {
     try {
-      const proximoUid = await proximoJogador(codigo, currentPlayer);
+      let proximoUid;
 
-      if (isVotingRound) {
-        await limparVotosRodada(codigo);
+      // Verifica se o Estrategista definiu o próximo
+      if (sala.nextPlayerOverride) {
+        proximoUid = sala.nextPlayerOverride;
+      } else {
+        proximoUid = await proximoJogador(codigo, currentPlayer);
       }
 
-      await limparAcoesRodada(codigo);
-
-      await updateDoc(doc(db, "salas", codigo), {
+      const updates = {
         jogadorAtual: proximoUid,
         cartaAtual: null,
         timeLeft: 30,
-      });
+        statusAcao: null,
+      };
+
+      // Se usou override, limpa
+      if (sala.nextPlayerOverride) {
+        updates.nextPlayerOverride = deleteField();
+      }
+
+      // Se tinha punição dobrada (Incendiária), limpa ao passar a vez
+      if (sala.config?.punicaoDobrada) {
+        updates["config.punicaoDobrada"] = deleteField();
+      }
+
+      if (isVotingRound) await limparVotosRodada(codigo);
+      await limparAcoesRodada(codigo);
+
+      await updateDoc(doc(db, "salas", codigo), updates);
       setActionTaken(false);
     } catch (error) {
       console.error("Erro ao passar a vez:", error);
@@ -167,6 +202,10 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
 
         if (action === "recusou") {
           updates["stats.bebidas"] = increment(1);
+          // RPG: Recusar causa dano! (5 HP base)
+          // Se Incendiária ativou, dobra o dano base.
+          const baseDamage = sala.config?.punicaoDobrada ? 10 : 5;
+          await takeDamage(targetUid, baseDamage);
         }
 
         await updateDoc(playerRef, updates);
@@ -179,42 +218,44 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
     }
   };
 
-   const resetGameData = async (newStatus) => {
+  const resetGameData = async (newStatus) => {
     try {
       await updateDoc(doc(db, "salas", codigo), {
         status: newStatus,
-        estado: newStatus === "waiting" ? "waiting" : "ongoing", 
+        estado: newStatus === "waiting" ? "waiting" : "ongoing",
         cartaAtual: null,
-        cartasUsadas: [], 
+        cartasUsadas: [],
         "config.comecouEm": serverTimestamp(),
       });
 
       const jogadoresRef = collection(db, "salas", codigo, "jogadores");
       const snapshot = await getDocs(jogadoresRef);
-      
-      const resetPromises = snapshot.docs.map(playerDoc => {
+
+      const resetPromises = snapshot.docs.map((playerDoc) => {
         return updateDoc(playerDoc.ref, {
           pontos: 0,
+          hp: 30,
+          maxHp: 30,
+          isCritical: false,
           "stats.bebeu": 0,
           "stats.recusou": 0,
           "stats.cumpriu": 0,
           "stats.euJa": 0,
           "stats.euNunca": 0,
-          ultimaAcao: serverTimestamp()
+          ultimaAcao: serverTimestamp(),
         });
       });
 
       await Promise.all(resetPromises);
-      
+
       if (newStatus === "playing") {
-        const uids = snapshot.docs.map(d => d.id);
+        const uids = snapshot.docs.map((d) => d.id);
         const novoJogador = uids[Math.floor(Math.random() * uids.length)];
         await updateDoc(doc(db, "salas", codigo), {
           jogadorAtual: novoJogador,
-          estado: "playing" 
+          estado: "playing",
         });
       }
-
     } catch (error) {
       console.error("Erro ao resetar dados do jogo:", error);
       throw error;
@@ -278,57 +319,64 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
 
   // --- Handlers para Eu Nunca / Ações ---
   const handleEuJa = async () => {
-      try {
-        const playerRef = doc(db, "salas", codigo, "jogadores", meuUid);
-        await updateDoc(playerRef, {
-          "stats.bebidas": increment(1),
-          "stats.euJa": increment(1),
-          ultimaAcao: serverTimestamp(),
-        });
-        
-        const eu = jogadores.find(j => j.uid === meuUid);
-        await registrarAcaoRodada(codigo, meuUid, "EU_JA", eu?.nome, eu?.avatar);
-        
-        toast("Você bebeu!", { icon: "🍺" });
-        playSuccess(); 
-      } catch (error) {
-        console.error("Erro ao registrar Eu Já:", error);
-      }
-    };
-  
+    try {
+      const playerRef = doc(db, "salas", codigo, "jogadores", meuUid);
+      await updateDoc(playerRef, {
+        "stats.bebidas": increment(1),
+        "stats.euJa": increment(1),
+        ultimaAcao: serverTimestamp(),
+      });
+
+      const eu = jogadores.find((j) => j.uid === meuUid);
+      await registrarAcaoRodada(codigo, meuUid, "EU_JA", eu?.nome, eu?.avatar);
+
+      toast("Você bebeu!", { icon: "🍺" });
+      playSuccess();
+    } catch (error) {
+      console.error("Erro ao registrar Eu Já:", error);
+    }
+  };
+
   const handleEuNunca = async () => {
-      try {
-        const eu = jogadores.find(j => j.uid === meuUid);
-        await registrarAcaoRodada(codigo, meuUid, "EU_NUNCA", eu?.nome, eu?.avatar);
-        toast.success("😇 Salvo!");
-      } catch (error) {
-        console.error("Erro ao registrar Eu Nunca:", error);
-      }
+    try {
+      const eu = jogadores.find((j) => j.uid === meuUid);
+      await registrarAcaoRodada(
+        codigo,
+        meuUid,
+        "EU_NUNCA",
+        eu?.nome,
+        eu?.avatar
+      );
+      toast.success("😇 Salvo!");
+    } catch (error) {
+      console.error("Erro ao registrar Eu Nunca:", error);
+    }
   };
 
   return {
-      handleSortearCarta,
-      handleChoice,
-      passarVez,
-      updatePlayerStats,
-      resetGameData,
-      handleFinishGame,
-      handleEuJa,
-      handleEuNunca,
-      handleComplete,
-      handleAdminConfirm,
-      handleAdminReject,
-      handlePenalidade,
-      handleAdminConfirmPenalty,
-      handleAdminConfirmPenalty,
-      acoesRodada,
-      showChoiceModal,
-      setShowChoiceModal,
-      choiceTimeLeft,
-      setChoiceTimeLeft,
-      actionTaken, 
-      setActionTaken,
-      showFinishConfirmModal, 
-      setShowFinishConfirmModal
+    handleSortearCarta,
+    handleChoice,
+    passarVez,
+    updatePlayerStats,
+    resetGameData,
+    handleFinishGame,
+    handleEuJa,
+    handleEuNunca,
+    handleComplete,
+    handleAdminConfirm,
+    handleAdminReject,
+    handlePenalidade,
+    handleAdminConfirmPenalty,
+    handleAdminConfirmPenalty,
+    acoesRodada,
+    showChoiceModal,
+    setShowChoiceModal,
+    choiceTimeLeft,
+    setChoiceTimeLeft,
+    actionTaken,
+    setActionTaken,
+    showFinishConfirmModal,
+    setShowFinishConfirmModal,
+    handleUseAbility: useAbility,
   };
 }
