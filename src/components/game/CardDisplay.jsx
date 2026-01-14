@@ -11,6 +11,7 @@ const TYPE_STYLES = {
   [CARD_TYPES.DO_OR_DRINK]:
     "bg-orange-600 border-bronw-400 shadow-orange-500/50",
   [CARD_TYPES.THIS_OR_THAT]: "bg-pink-600 border-pink-400 shadow-pink-500/50",
+  CAOS: "bg-gray-900 border-red-600 shadow-red-900/100 animate-pulse", // Estilo do Caos
 };
 
 export default function CardDisplay({ carta, timeLeft }) {
@@ -42,6 +43,8 @@ export default function CardDisplay({ carta, timeLeft }) {
               ? "Faz ou Bebe"
               : carta.tipo === CARD_TYPES.THIS_OR_THAT
               ? "Isso ou Aquilo"
+              : carta.tipo === "CAOS"
+              ? "⚡ EVENTO DO CAOS ⚡"
               : "Carta"}
           </span>
           <div className="flex items-center gap-2">

@@ -26,7 +26,7 @@ import { useRPG } from "./useRPG";
 
 export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
   const { playFlip, playSuccess, playFail, playPodium } = useSounds();
-  const { takeDamage, heal, useAbility } = useRPG(codigo);
+  const { takeDamage, heal, useAbility } = useRPG(codigo, sala);
 
   const [showChoiceModal, setShowChoiceModal] = useState(false);
   const [choiceTimeLeft, setChoiceTimeLeft] = useState(10);
@@ -89,12 +89,20 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
         return;
       }
 
+      // Check for Blitz Mode (GREED)
+      const isBlitz = sala.activeEvents?.some((e) => e.id === "GANANCIA");
+      const isSloth = sala.activeEvents?.some((e) => e.id === "PREGUICA");
+
+      let timeToSet = 30;
+      if (isBlitz) timeToSet = 10;
+      if (isSloth) timeToSet = 60; // Sloth overrides everything with laziness
+
       await updateDoc(doc(db, "salas", codigo), {
         cartaAtual: tempCarta,
-        timeLeft: 30,
+        timeLeft: timeToSet,
         cartasUsadas: reset ? [tempCarta.id] : arrayUnion(tempCarta.id),
       });
-      if (setTimeLeft) setTimeLeft(30);
+      if (setTimeLeft) setTimeLeft(timeToSet);
       setActionTaken(false);
       playFlip();
     } catch (error) {
@@ -119,9 +127,13 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
         sala.cartasUsadas || []
       );
 
+      // Check for Blitz Mode (GREED)
+      const isBlitz = sala.activeEvents?.some((e) => e.id === "GANANCIA");
+      const timeToSet = isBlitz ? 10 : 30;
+
       const updates = {
         cartaAtual: carta,
-        timeLeft: 30,
+        timeLeft: timeToSet,
         cartasUsadas: reset ? [carta.id] : arrayUnion(carta.id),
       };
 
@@ -130,7 +142,7 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
       }
 
       await updateDoc(doc(db, "salas", codigo), updates);
-      if (setTimeLeft) setTimeLeft(30);
+      if (setTimeLeft) setTimeLeft(timeToSet);
       setActionTaken(false);
       playFlip();
     } catch (error) {
@@ -139,7 +151,7 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
     }
   };
 
-  const passarVez = async () => {
+  const passarVez = async (overrideUpdates = {}) => {
     try {
       let proximoUid;
 
@@ -155,6 +167,7 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
         cartaAtual: null,
         timeLeft: 30,
         statusAcao: null,
+        ...overrideUpdates,
       };
 
       // Se usou override, limpa
@@ -169,6 +182,22 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
 
       if (isVotingRound) await limparVotosRodada(codigo);
       await limparAcoesRodada(codigo);
+
+      // Decrement chaos events duration
+      // Use override activeEvents if available, else current state
+      const currentEvents = overrideUpdates.activeEvents || sala.activeEvents;
+
+      if (currentEvents && currentEvents.length > 0) {
+        const updatedEvents = currentEvents
+          .map((ev) => ({ ...ev, duration: ev.duration - 1 }))
+          .filter((ev) => ev.duration > 0);
+
+        updates.activeEvents = updatedEvents;
+
+        if (updatedEvents.length < currentEvents.length) {
+          toast("Um Evento do Caos expirou!", { icon: "🕊️" });
+        }
+      }
 
       await updateDoc(doc(db, "salas", codigo), updates);
       setActionTaken(false);
@@ -225,6 +254,7 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
         estado: newStatus === "waiting" ? "waiting" : "ongoing",
         cartaAtual: null,
         cartasUsadas: [],
+        activeEvents: [], // Limpa eventos do caos
         "config.comecouEm": serverTimestamp(),
       });
 
@@ -288,9 +318,37 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
 
   const handleAdminConfirm = async () => {
     playSuccess();
+
+    let extraUpdates = {};
+
+    // Check for Chaos Event
+    if (sala?.cartaAtual?.tipo === "CAOS") {
+      const event = sala.cartaAtual;
+
+      if (
+        event.type === "GLOBAL_EFFECT" ||
+        event.type === "PERSISTENT_EFFECT"
+      ) {
+        const newEvent = {
+          ...event,
+          startedAt: Date.now(),
+          owner: sala.jogadorAtual,
+        };
+
+        // Pass new list to passarVez to avoid stale state overwrite
+        const currentEvents = sala.activeEvents || [];
+        extraUpdates.activeEvents = [...currentEvents, newEvent];
+
+        toast.success(`Evento ${event.name} ATIVADO!`);
+      }
+      // Immediate actions don't need persistence, just execution (which is manual for now)
+    }
+
     await updatePlayerStats("completou");
     await updateDoc(doc(db, "salas", codigo), { statusAcao: null }); // Limpa status
-    await passarVez();
+
+    // Pass extra updates (Chaos Events) to PasarVez
+    await passarVez(extraUpdates);
   };
 
   const handleAdminReject = async () => {
@@ -353,6 +411,82 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
     }
   };
 
+  const handleMultar = async (targetUid) => {
+    try {
+      // Multa padrão: 5 de dano (1 drink)
+      await takeDamage(targetUid, 5);
+      toast.success("Multa aplicada! 👮‍♂️");
+      playSuccess(); // Or a custom sound?
+    } catch (error) {
+      console.error("Erro ao multar:", error);
+      toast.error("Erro ao aplicar multa.");
+    }
+  };
+
+  const handleLinkSoul = async (targetUid) => {
+    if (!sala?.activeEvents) return;
+
+    const lustEventIndex = sala.activeEvents.findIndex(
+      (e) => e.id === "LUXURIA" && e.owner === meuUid
+    );
+    if (lustEventIndex === -1) return;
+
+    const newEvents = [...sala.activeEvents];
+    newEvents[lustEventIndex] = {
+      ...newEvents[lustEventIndex],
+      linkedTo: targetUid,
+    };
+
+    try {
+      await updateDoc(doc(db, "salas", codigo), { activeEvents: newEvents });
+      toast.success("Alma VINCULADA! 💋");
+      playSuccess();
+    } catch (error) {
+      console.error("Erro ao vincular alma:", error);
+      toast.error("Erro ao realizar pacto.");
+    }
+  };
+
+  const handleBanquet = async () => {
+    try {
+      // Gula: Todos tomam 5 de dano (Simulando "todos bebem")
+      const damages = jogadores.map((j) => takeDamage(j.uid, 5, false, false)); // false propagate to avoid loop chaos here
+      await Promise.all(damages);
+
+      toast.success("🍔 BANQUETE TÓXICO SERVIDO! Todos bebem!", {
+        duration: 4000,
+      });
+      playSuccess();
+
+      // Gula completa a rodada
+      await updatePlayerStats("completou");
+      await updateDoc(doc(db, "salas", codigo), { statusAcao: null });
+      await passarVez();
+    } catch (error) {
+      console.error("Erro no banquete:", error);
+    }
+  };
+
+  const handleDuel = async (targetUid1, targetUid2) => {
+    try {
+      const p1 = jogadores.find((j) => j.uid === targetUid1)?.nome || "P1";
+      const p2 = jogadores.find((j) => j.uid === targetUid2)?.nome || "P2";
+
+      toast(`⚔️ DUELO INICIADO: ${p1} vs ${p2}!`, {
+        icon: "😠",
+        duration: 5000,
+      });
+      playSuccess();
+
+      // Ira completa a rodada
+      await updatePlayerStats("completou");
+      await updateDoc(doc(db, "salas", codigo), { statusAcao: null });
+      await passarVez();
+    } catch (error) {
+      console.error("Erro no duelo:", error);
+    }
+  };
+
   return {
     handleSortearCarta,
     handleChoice,
@@ -378,5 +512,9 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
     showFinishConfirmModal,
     setShowFinishConfirmModal,
     handleUseAbility: useAbility,
+    handleMultar,
+    handleLinkSoul,
+    handleBanquet,
+    handleDuel,
   };
 }

@@ -9,15 +9,19 @@
 
 ### 🌍 História: O Mundo de Apocalípticos
 
-O mundo acabou… mas a sede não.
+#### O Colapso Rubro (A Grande Traição)
 
+Não foi uma guerra de nações, foi uma guerra de egos. Quando o "Projeto Aurora" (uma rede de satélites de defesa) falhou, as ogivas químicas detonaram na atmosfera superior. A reação criou a **Névoa Rubra**: um nevoeiro denso, avermelhado e semiconsciente que devora a memória e a carne.
 Após o **Colapso Rubro**, uma série de explosões nucleares e epidemias dissolveram governos, cidades e qualquer vestígio de ordem. Os poucos sobreviventes se espalharam em **zonas mortas**, vivendo entre ruínas, fumaça e silêncio.
 
-A humanidade não luta mais por dinheiro ou poder. Luta por **recursos**, **controle**… e **lucidez**.
+O mundo não morreu em silêncio; ele morreu gritando sob um céu cor de carne. A humanidade não luta mais por dinheiro ou poder. Luta por **recursos**, **controle**… e **lucidez**.
 
-Em meio ao caos, surgiram os **Apocalípticos** — grupos de sobreviventes que se reúnem em antigos abrigos, bares abandonados e bunkers para enfrentar desafios brutais. Cada rodada não é apenas um jogo: é um **teste de sanidade, coragem e sobrevivência**.
+Em meio ao caos, surgiram os **Apocalípticos** — grupos de sobreviventes que se reúnem em antigos abrigos, bares abandonados e bunkers para enfrentar desafios brutais.
+Os "Apocalípticos" são aqueles que desenvolveram resistência à névoa, mas a um custo: eles precisam de substâncias químicas constantes (o álcool e as poções) para impedir que a névoa invada seus pulmões e suas mentes. Cada rodada não é apenas um jogo: é um **teste de sanidade, coragem e sobrevivência**.
 
 **Beber não é diversão. Beber é o preço para continuar vivo.**
+
+_O mundo acabou… mas a sede não. No bar dos Doidos a gente bebe e dar risada…_
 
 ## 📸 Telas do Jogo
 

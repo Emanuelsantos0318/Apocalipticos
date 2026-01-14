@@ -2,14 +2,20 @@ import { doc, updateDoc, increment, getDoc } from "firebase/firestore";
 import { db } from "../../firebase/config";
 import toast from "react-hot-toast";
 
-export function useRPG(codigo) {
+export function useRPG(codigo, sala = null) {
   /**
    * Aplica Dano a um alvo.
    * @param {string} targetUid - UID do jogador alvo
    * @param {number} amount - Quantidade de Dano
    * @param {boolean} isCriticalMultiplier - Se deve aplicar multiplicador de critico (padrão true)
+   * @param {boolean} propagate - Se deve propagar o dano para parceiros (Luxúria)
    */
-  const takeDamage = async (targetUid, amount, isCriticalMultiplier = true) => {
+  const takeDamage = async (
+    targetUid,
+    amount,
+    isCriticalMultiplier = true,
+    propagate = true
+  ) => {
     if (!codigo || !targetUid) return;
 
     try {
@@ -47,6 +53,28 @@ export function useRPG(codigo) {
 
       if (finalDamage > 0) {
         toast.error(`-${finalDamage} HP! ${isCritical ? "(CRÍTICO!)" : ""}`);
+      }
+
+      // --- PROPAGAÇÃO DE DANO (LUXÚRIA) ---
+      if (propagate && sala?.activeEvents) {
+        const lustEvent = sala.activeEvents.find((e) => e.id === "LUXURIA");
+        if (lustEvent && lustEvent.linkedTo) {
+          const { owner, linkedTo } = lustEvent;
+          let partnerUid = null;
+
+          if (targetUid === owner) partnerUid = linkedTo;
+          if (targetUid === linkedTo) partnerUid = owner;
+
+          if (partnerUid) {
+            // Delay pequeno para efeito dramático
+            setTimeout(() => {
+              toast("💔 O Pacto da Luxúria exige sacrifício compartilhado...", {
+                icon: "💋",
+              });
+              takeDamage(partnerUid, amount, isCriticalMultiplier, false); // False para evitar loop
+            }, 1500);
+          }
+        }
       }
     } catch (error) {
       console.error("Erro ao aplicar dano:", error);

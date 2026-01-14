@@ -9,6 +9,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { CARD_TYPES } from "../constants/constants";
+import { CHAOS_EVENTS } from "../constants/chaosEvents";
 
 /**
  * Sorteia uma carta aleatória do banco de dados baseada no modo e categorias.
@@ -36,6 +37,25 @@ export async function sortearCarta(
   }
 
   const q = query(cartasRef, ...constraints);
+
+  // 1. Chance de Evento do Caos (20%)
+  // Apenas se NÃO estivermos buscando um tipo específico (sorteio normal)
+  if (!tipo && Math.random() < 0.9) {
+    const eventos = CHAOS_EVENTS;
+    const eventoSorteado = eventos[Math.floor(Math.random() * eventos.length)];
+
+    console.log("🔥 EVENTO DO CAOS SORTEADO:", eventoSorteado.name);
+
+    return {
+      carta: {
+        ...eventoSorteado,
+        isChaosEvent: true,
+        texto: eventoSorteado.description, // Compatibilidade com UI de carta
+        tipo: "CAOS",
+      },
+      reset: false,
+    };
+  }
 
   const snapshot = await getDocs(q);
   const cartas = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));

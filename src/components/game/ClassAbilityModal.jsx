@@ -6,6 +6,7 @@ export default function ClassAbilityModal({
   isOpen,
   onClose,
   userRoleKey,
+  customRole, // New prop
   jogadores,
   meuUid,
   onUseAbility,
@@ -14,17 +15,15 @@ export default function ClassAbilityModal({
 
   if (!isOpen) return null;
 
-  // Encontra objeto da Role
-  const role = Object.values(ROLES).find((r) => r.id === userRoleKey);
+  // Encontra objeto da Role ou usa CustomRole
+  const role =
+    customRole || Object.values(ROLES).find((r) => r.id === userRoleKey);
 
   if (!role) return null;
 
-  const needsTarget = [
-    "medico",
-    "assassino",
-    "incendiaria",
-    "estrategista",
-  ].includes(role.id);
+  const needsTarget =
+    role.needsTarget ||
+    ["medico", "assassino", "incendiaria", "estrategista"].includes(role.id);
 
   const handleConfirm = () => {
     if (needsTarget && !selectedTarget) return;
@@ -89,33 +88,35 @@ export default function ClassAbilityModal({
                 Selecione o Alvo:
               </p>
               <div className="grid grid-cols-4 gap-2">
-                {jogadores.map((j) => (
-                  <button
-                    key={j.uid}
-                    onClick={() => setSelectedTarget(j.uid)}
-                    className={`flex flex-col items-center p-2 rounded-lg border transition-all ${
-                      selectedTarget === j.uid
-                        ? "bg-purple-600 border-purple-400 scale-105 shadow-lg shadow-purple-900/50"
-                        : "bg-gray-800 border-gray-700 hover:bg-gray-700"
-                    }`}
-                  >
-                    <div className="w-8 h-8 rounded-full bg-gray-600 overflow-hidden mb-1">
-                      {j.avatar && j.avatar.startsWith("http") ? (
-                        <img
-                          src={j.avatar}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span className="flex items-center justify-center h-full text-xs">
-                          {j.avatar}
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-[10px] text-white truncate w-full text-center">
-                      {j.uid === meuUid ? "Você" : j.nome}
-                    </span>
-                  </button>
-                ))}
+                {jogadores
+                  .filter((j) => j.uid !== meuUid) // Prevent self-target
+                  .map((j) => (
+                    <button
+                      key={j.uid}
+                      onClick={() => setSelectedTarget(j.uid)}
+                      className={`flex flex-col items-center p-2 rounded-lg border transition-all ${
+                        selectedTarget === j.uid
+                          ? "bg-purple-600 border-purple-400 scale-105 shadow-lg shadow-purple-900/50"
+                          : "bg-gray-800 border-gray-700 hover:bg-gray-700"
+                      }`}
+                    >
+                      <div className="w-8 h-8 rounded-full bg-gray-600 overflow-hidden mb-1">
+                        {j.avatar && j.avatar.startsWith("http") ? (
+                          <img
+                            src={j.avatar}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span className="flex items-center justify-center h-full text-xs">
+                            {j.avatar}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[10px] text-white truncate w-full text-center">
+                        {j.uid === meuUid ? "Você" : j.nome}
+                      </span>
+                    </button>
+                  ))}
               </div>
             </div>
           )}

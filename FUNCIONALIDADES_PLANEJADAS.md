@@ -161,9 +161,13 @@ O objetivo é terminar o jogo com **mais PV** que os oponentes.
 
 ---
 
-### 🧟 Personagens e Habilidades (✅ Implementado)
+### 🧟 Personagens e Habilidades (⏳ Em Desenvolvimento)
 
 Cada jogador assume um papel que pode **mudar o rumo da partida**. As habilidades possuem **Custo em Doses** para serem ativadas.
+
+> **Observação:** Vou expandir o documento para incluir uma seção de Vozes do Apocalipse, com provocações específicas para cada um, focadas em suas histórias e traumas.
+> Adicionei as provocações baseadas no "Fardo" de cada um. Note como o Julian foca no desperdício de vida, a Helena na carência emocional, o Elias na lógica, a Clara no sádico calor e o Jorge no cansaço de quem já viu de tudo.
+> Essas frases podem aparecer em janelas de diálogo quando um jogador clica na habilidade ou até como mensagens automáticas no chat do jogo. O que achou do tom delas?
 
 #### 🩺 1. O MÉDICO DA ZONA MORTA
 
@@ -176,7 +180,13 @@ Cada jogador assume um papel que pode **mudar o rumo da partida**. As habilidade
   🍺 O Paciente bebe **1 dose**.
 - **Regra Extra:** Não pode curar o mesmo jogador duas rodadas seguidas.
 
-> 🧠 _Narrativa:_ “Vai doer. Se não doer, não funciona.”
+> 🧠 _Narrativa:_ “Vai doer. Se não doer, não funciona.” , "Eu já escolhi quem vive uma vez. Não me faça ter que escolher de novo."
+
+> Provocações (Ao curar):
+
+- "Seu batimento cardíaco é um desperdício de oxigênio que eu poderia ter usado neles."
+- "Não implore. Eu já ignorei gritos muito mais altos que os seus."
+- "Sinta esse ardor. É a única prova de que você ainda não é um cadáver."
 
 #### 🔪 2. O ASSASSINO DAS RUÍNAS
 
@@ -188,7 +198,13 @@ Cada jogador assume um papel que pode **mudar o rumo da partida**. As habilidade
   🍺 O Assassino bebe **2 doses**.
 - **Limitação:** Uso único por partida.
 
-> 🧠 _Narrativa:_ “Não é pessoal. É sobrevivência.”
+> 🧠 _Narrativa:_ "Não pisque. A última coisa que você verá será a minha falta de arrependimento.", “Não é pessoal. É sobrevivência.”
+
+> Provocações (Ao tirar PV/Roubo de Sangue):
+
+- "Me empreste um pouco da sua vida... eu já esqueci como é a sensação."
+- "Você tem medo da sombra? Eu tenho medo do que sobrou da luz."
+- "Maya teria a sua idade hoje. Mas ela foi mais corajosa ao morrer do que você ao viver."
 
 #### 🧠 3. O ESTRATEGISTA (O MENTOR)
 
@@ -200,7 +216,13 @@ Cada jogador assume um papel que pode **mudar o rumo da partida**. As habilidade
   🍺 O Estrategista bebe **1 dose**.
 - **Efeito:** Pode salvar alguém de um desafio pesado ou colocar um rival na linha de fogo.
 
-> 🧠 _Narrativa:_ “Quem controla a ordem, controla o caos.”
+> 🧠 _Narrativa:_ "O caos é apenas uma ordem que você ainda não compreendeu. Eu compreendo tudo.", “Quem controla a ordem, controla o caos.”
+
+> Provocações (Ao tirar PV/Alterar Ordem):
+
+- "Você é um erro de cálculo que eu finalmente decidi corrigir."
+- "Sua dor é irrelevante para o resultado final do meu plano."
+- "Saia da linha. Você está atrapalhando a visão da minha nova utopia."
 
 #### 🔥 4. A INCENDIÁRIA
 
@@ -211,7 +233,13 @@ Cada jogador assume um papel que pode **mudar o rumo da partida**. As habilidade
 - **Custo:**  
   🍺 A Incendiária bebe **2 doses**.
 
-> 🧠 _Narrativa:_ “Nada é mais justo do que duas péssimas opções.”
+> 🧠 _Narrativa:_ "O escuro está chegando para você. Deixe-me iluminar o seu caminho com o que restou de você.", “Nada é mais justo do que duas péssimas opções.”
+
+> Provocações (Ao tirar PV/Forçar Desafio):
+
+- "Você parece estar com frio... deixe-me te dar um abraço de gasolina."
+- "Cinzas não sentem remorso. Por que eu deveria sentir?"
+- "Grite mais alto! O som das chamas é tão solitário sem um acompanhamento."
 
 #### ☠️ 5. O SOBREVIVENTE (O IMORTAL)
 
@@ -223,13 +251,19 @@ Cada jogador assume um papel que pode **mudar o rumo da partida**. As habilidade
   🍺 Bebe **2 doses** (Automático).
 - **Regra:** Ativa **apenas uma vez por partida** automaticamente.
 
-> 🧠 _Narrativa:_ “Ainda não acabou.”
+> 🧠 _Narrativa:_ "Eu já morri mil vezes. Só esqueceram de me contar onde é o meu túmulo.", “Ainda não acabou.”
+
+> Provocações (Ao tirar PV):
+
+- "Eu já vi cidades melhores que você caírem. Você não é especial."
+- "Sinta o peso de cada dia que eu tive que enterrar um amigo."
+- "Beber para esquecer? Eu bebo para ter força de te aguentar por mais uma rodada."
 
 ---
 
 ### ☣️ Eventos do Caos (Os 7 Pecados)
 
-_Cartas Raras (5% chance) que interrompem o fluxo do jogo._
+_Cartas Raras (20% chance) que interrompem o fluxo do jogo._
 
 “Quando o mundo acabou, os pecados não morreram. Eles evoluíram.”
 
@@ -287,6 +321,24 @@ _Cartas Raras (5% chance) que interrompem o fluxo do jogo._
 - **Ambientação:** Corações com glitch, sussurros.
 
 ### Correções
+
+- **GULA**: Não está mostrando a opção de escolher entre segurança e risco. Todos devem escolher imediatamente. Caso tenham escolhido segurança, todos bebem 1 dose. Caso tenham escolhido risco, todos rolam o dado, que deve aparecer para todos os jogadores (vamos criar um sistema de dado para isso) esse dado só tem dois la .
+- **Luxúria:** Se um jogador for escolhido para ser o par, ele não pode ser escolhido novamente.
+  - O botão da luxúria está permanente na tela, mesmo depois de ter sido usado. Podendo votar novamente mesmo depois de ter sido usado.
+
+##### **Eventos Gerais:**
+
+- Poderia mostrar em qual evento o jogador está participando na hora que ele é sorteado.
+- Temos que melhorar a logica dos eventos.
+
+- Algumas vezes um evento por exemplo O Ditador está ativo e aparece um outro evento e acaba desativando os dois eventos.
+
+- Os evenntos não estão tendo uma funcionalidade correta, por exemplo, quando um evento é sorteado os botões não são adaptados para o evento, o que mostra é a interatividade normal do jogo, só aparece um botão para o administrador dizer se completou ou não, mas esses eventos deveriam ter uma interatividade própria e principalmente ser adaptados para o evento específico. Alguns eventos precisam que o sorteado escolha uma pessoa ou varias, outros precisam que todos os jogadores votem, outros precisam que todos os jogadores bebam uma dose, etc. E isso precisa ser feito de forma correta e adaptada para cada evento.
+
+- Então vamos melhorar a funcionalidade dos eventos, vamos fazer com que cada evento tenha uma interatividade própria e principalmente ser adaptados para o evento específico.
+
+- ao surgir o evento O Ditador, o jogador da vez vira o Ditador e cria uma regra física absurda, mas essa regra não é aplicada corretamente, pois os outros jogadores não são obrigados a seguir a regra.
+  Poderiamos ter algo para que o Ditador possa aplicar multas aos jogadores que não seguirem a regra.
 
 ---
 

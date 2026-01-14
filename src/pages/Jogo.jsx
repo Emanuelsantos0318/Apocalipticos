@@ -73,6 +73,7 @@ export default function Jogo() {
   const [showForceModal, setShowForceModal] = useState(null); // null, 'VOTE', 'NEVER'
   const [showRanking, setShowRanking] = useState(false);
   const [showAbilityModal, setShowAbilityModal] = useState(false);
+  const [customRole, setCustomRole] = useState(null); // Para eventos (Ex: Ditador)
 
   // Computed Values
   const currentPlayer = sala?.jogadorAtual;
@@ -173,6 +174,24 @@ export default function Jogo() {
     }
   };
 
+  // --- ENVY EFFECT ---
+  const isEnvyActive = sala?.activeEvents?.some((e) => e.id === "INVEJA");
+
+  // Use a pseudo-random shuffle based on room code to keep it consistent-ish or just mask
+  // Masking is safer for simplicity
+  const displayedJogadores = React.useMemo(() => {
+    if (!isEnvyActive) return jogadores;
+
+    return jogadores
+      .map((j) => ({
+        ...j,
+        nome: "???",
+        avatar: "🎭",
+        // Still keep points/stats visible, or hide stats too? Rankings usually show stats.
+      }))
+      .sort((a, b) => b.pontos - a.pontos); // Force re-sort if needed, but ranking component likely handles it.
+  }, [jogadores, isEnvyActive]);
+
   if (loading || !sala) {
     return <div className="text-white text-center p-8">Carregando jogo...</div>;
   }
@@ -206,10 +225,11 @@ export default function Jogo() {
               modo={sala.modo}
               currentPlayer={currentPlayer}
               isCurrentPlayer={isCurrentPlayer}
-              jogadores={jogadores}
+              jogadores={displayedJogadores} // Updated
               onLeave={handleLeaveGame}
               isHost={jogadores.find((j) => j.uid === meuUid)?.isHost}
               onFinishGame={() => gameActions.setShowFinishConfirmModal(true)}
+              sala={sala}
               // Removido props de musica redundantes
             />
 
@@ -288,7 +308,7 @@ export default function Jogo() {
                 {isVotingRound ? (
                   <div className="mt-6">
                     <VotingArea
-                      jogadores={jogadores}
+                      jogadores={isEnvyActive ? displayedJogadores : jogadores} // Use Masked Only For Votes if Envy active? Or standard? Masked makes sense based on prompt.
                       meuUid={meuUid}
                       onVote={voting.handleVote}
                       votos={voting.votos}
@@ -338,34 +358,98 @@ export default function Jogo() {
                     <p className="text-lg font-bold text-yellow-400 mb-2">
                       {sala.statusAcao === "aguardando_penalidade"
                         ? "Jogador aceitou a penalidade (bebida)."
-                        : "Aguardando confirmação do Admin..."}
+                        : "Aguardando confirmação..."}
                     </p>
-                    {jogadores.find((j) => j.uid === meuUid)?.isHost && (
+
+                    {/* CHAOS EVENTS: Show specific actions to Current Player or Host */}
+                    {sala.cartaAtual?.tipo === "CAOS" ? (
                       <div className="flex justify-center gap-4 mt-4">
-                        {sala.statusAcao === "aguardando_penalidade" ? (
-                          <button
-                            onClick={gameActions.handleAdminConfirmPenalty}
-                            className="px-6 py-2 bg-red-600 hover:bg-red-700 rounded font-bold"
-                          >
-                            Confirmar (Bebeu)
-                          </button>
-                        ) : (
+                        {/* Allow interaction if Current Player OR Host */}
+                        {(isCurrentPlayer ||
+                          jogadores.find((j) => j.uid === meuUid)?.isHost) && (
                           <>
-                            <button
-                              onClick={gameActions.handleAdminConfirm}
-                              className="px-6 py-2 bg-green-600 hover:bg-green-700 rounded font-bold"
-                            >
-                              Confirmar (Cumpriu)
-                            </button>
-                            <button
-                              onClick={gameActions.handleAdminReject}
-                              className="px-6 py-2 bg-red-600 hover:bg-red-700 rounded font-bold"
-                            >
-                              Rejeitar (Não Cumpriu)
-                            </button>
+                            {sala.cartaAtual.id === "GULA" && (
+                              <button
+                                onClick={gameActions.handleBanquet}
+                                className="px-6 py-2 bg-orange-600 hover:bg-orange-700 rounded font-bold flex items-center gap-2 animate-bounce"
+                              >
+                                <span className="text-xl">🍔</span> SERVIR
+                                BANQUETE
+                              </button>
+                            )}
+                            {sala.cartaAtual.id === "IRA" && (
+                              <button
+                                onClick={() => {
+                                  setCustomRole({
+                                    id: "carrasco",
+                                    name: "Senhor da Ira",
+                                    icon: "⚔️",
+                                    image:
+                                      "https://images.unsplash.com/photo-1599839575945-a9e5af0c3fa5?w=500&auto=format&fit=crop&q=60",
+                                    ability: {
+                                      name: "Desafiar para Duelo",
+                                      effect:
+                                        "Escolha alguém para duelar com você. Perdedor bebe em dobro!",
+                                      cost: "Gratuito",
+                                    },
+                                    needsTarget: true,
+                                  });
+                                  setShowAbilityModal(true);
+                                }}
+                                className="px-6 py-2 bg-red-800 hover:bg-red-900 rounded font-bold flex items-center gap-2"
+                              >
+                                <span className="text-xl">⚔️</span> DUELO
+                                (Escolher Alvo)
+                              </button>
+                            )}
+                            {(sala.cartaAtual.type === "GLOBAL_EFFECT" ||
+                              sala.cartaAtual.type === "PERSISTENT_EFFECT") &&
+                              sala.cartaAtual.id !== "IRA" && (
+                                <button
+                                  onClick={gameActions.handleAdminConfirm}
+                                  className="px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded font-bold flex items-center gap-2"
+                                >
+                                  <span className="text-xl">
+                                    {sala.cartaAtual.icon}
+                                  </span>{" "}
+                                  ATIVAR{" "}
+                                  {sala.cartaAtual.name
+                                    .split(" - ")[0]
+                                    .toUpperCase()}
+                                </button>
+                              )}
                           </>
                         )}
                       </div>
+                    ) : (
+                      // STANDARD: Admin Confirmation Only
+                      jogadores.find((j) => j.uid === meuUid)?.isHost && (
+                        <div className="flex justify-center gap-4 mt-4">
+                          {sala.statusAcao === "aguardando_penalidade" ? (
+                            <button
+                              onClick={gameActions.handleAdminConfirmPenalty}
+                              className="px-6 py-2 bg-red-600 hover:bg-red-700 rounded font-bold"
+                            >
+                              Confirmar (Bebeu)
+                            </button>
+                          ) : (
+                            <>
+                              <button
+                                onClick={gameActions.handleAdminConfirm}
+                                className="px-6 py-2 bg-green-600 hover:bg-green-700 rounded font-bold"
+                              >
+                                Confirmar (Cumpriu)
+                              </button>
+                              <button
+                                onClick={gameActions.handleAdminReject}
+                                className="px-6 py-2 bg-red-600 hover:bg-red-700 rounded font-bold"
+                              >
+                                Rejeitar (Não Cumpriu)
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      )
                     )}
                   </div>
                 ) : (
@@ -385,7 +469,7 @@ export default function Jogo() {
                 {isNeverRound && (
                   <>
                     <PlayerStatusGrid
-                      jogadores={jogadores}
+                      jogadores={displayedJogadores} // Updated
                       acoes={gameActions.acoesRodada}
                     />
                     {(isCurrentPlayer ||
@@ -446,12 +530,34 @@ export default function Jogo() {
                         Usar Habilidade
                       </button>
                     )}
+
+                    {/* SLOTH SKIP BUTTON */}
+                    {sala?.activeEvents?.some((e) => e.id === "PREGUICA") && (
+                      <button
+                        onClick={async () => {
+                          toast("😴 Você escolheu dormir...", { icon: "💤" });
+                          await gameActions.handlePenalidade(); // Penalidade padrão (beber)
+                          // Se `handlePenalidade` apenas seta status, precisamos confirmar ou usar um metodo direto
+                          // handlePenalidade seta statusAcao="aguardando_penalidade".
+                          // Precisamos de algo direto: Tira HP e Passa.
+                          // Vamos usar takeDamage direto? Não temos acesso fácil aqui sem exportar takeDamage do hook actions.
+                          // Mas temos handlePenalidade. O fluxo normal é: Recusar -> Admin Confirma.
+                          // Para "Preguiça" ser fluido, deveria ser automático?
+                          // Vamos manter o fluxo: Clica em Dormir -> "Aceitou Penalidade" -> Admin Confirma.
+                        }}
+                        className="flex items-center gap-2 px-6 py-2 bg-blue-900/50 border border-blue-500/30 hover:bg-blue-800 rounded-lg text-blue-300 font-bold transition-all text-sm uppercase tracking-wider"
+                      >
+                        <span className="text-xl">💤</span>
+                        Pular (Beber)
+                      </button>
+                    )}
                   </div>
                 ) : (
                   <p className="text-xl animate-pulse text-gray-300">
                     Aguardando{" "}
                     <span className="font-bold text-purple-400">
-                      {jogadores.find((j) => j.uid === currentPlayer)?.nome ||
+                      {displayedJogadores.find((j) => j.uid === currentPlayer)
+                        ?.nome || // Updated
                         "o jogador"}
                     </span>{" "}
                     sortear uma carta...
@@ -466,7 +572,8 @@ export default function Jogo() {
             <h1 className="text-xl font-bold mb-2 text-center text-purple-300 drop-shadow-md !p-[3%]">
               Ranking
             </h1>
-            <RankingJogadores jogadores={jogadores} meuUid={meuUid} />
+            <RankingJogadores jogadores={displayedJogadores} meuUid={meuUid} />{" "}
+            {/* Updated */}
           </div>
         </div>
 
@@ -490,7 +597,11 @@ export default function Jogo() {
               <h2 className="text-xl font-bold mb-4 text-center text-white">
                 Ranking
               </h2>
-              <RankingJogadores jogadores={jogadores} meuUid={meuUid} />
+              <RankingJogadores
+                jogadores={displayedJogadores}
+                meuUid={meuUid}
+              />{" "}
+              {/* Updated */}
             </div>
           </div>
         )}
@@ -537,12 +648,130 @@ export default function Jogo() {
 
         <ClassAbilityModal
           isOpen={showAbilityModal}
-          onClose={() => setShowAbilityModal(false)}
+          onClose={() => {
+            setShowAbilityModal(false);
+            setCustomRole(null); // Limpa role customizada ao fechar
+          }}
           userRoleKey={meuJogador?.role}
+          customRole={customRole}
           jogadores={jogadores}
           meuUid={meuUid}
-          onUseAbility={gameActions.handleUseAbility}
+          onUseAbility={(uid, roleId, targetUid) => {
+            if (roleId === "ditador") {
+              gameActions.handleMultar(targetUid);
+            } else if (roleId === "cupido") {
+              gameActions.handleLinkSoul(targetUid);
+            } else if (roleId === "carrasco") {
+              gameActions.handleDuel(uid, targetUid);
+            } else {
+              gameActions.handleUseAbility(uid, roleId, targetUid);
+            }
+          }}
         />
+
+        {/* BOTÃO DITADOR (ORGULHO) */}
+        {sala?.activeEvents?.some(
+          (e) => e.id === "ORGULHO" && e.owner === meuUid
+        ) && (
+          <button
+            onClick={() => {
+              setCustomRole({
+                id: "ditador",
+                name: "Ditador Supremo",
+                icon: "👑",
+                // Imagem placeholder estilosa
+                image:
+                  "https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=500&auto=format&fit=crop&q=60",
+                ability: {
+                  name: "Aplicar Multa",
+                  effect:
+                    "Puna quem desobeder suas regras! (Tira 5 Pontos de Vida)",
+                  cost: "Gratuito",
+                },
+                needsTarget: true,
+              });
+              setShowAbilityModal(true);
+            }}
+            className="fixed top-24 left-4 z-40 bg-yellow-600 hover:bg-yellow-500 text-white p-3 rounded-full shadow-lg border-2 border-yellow-300 animate-bounce flex items-center gap-2 font-bold uppercase tracking-wider"
+            title="APLICAR MULTA DO DITADOR"
+          >
+            <span className="text-xl">👑</span>
+            <span className="hidden md:inline">Multar</span>
+          </button>
+        )}
+
+        {/* BOTÃO CUPIDO (LUXÚRIA) */}
+        {sala?.activeEvents?.some(
+          (e) => e.id === "LUXURIA" && e.owner === meuUid && !e.linkedTo
+        ) && (
+          <button
+            onClick={() => {
+              setCustomRole({
+                id: "cupido",
+                name: "Cupido da Morte",
+                icon: "💔",
+                image:
+                  "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500&auto=format&fit=crop&q=60",
+                ability: {
+                  name: "Vincular Alma",
+                  effect: "Escolha um parceiro. O destino dele será o seu.",
+                  cost: "Gratuito",
+                },
+                needsTarget: true,
+              });
+              setShowAbilityModal(true);
+            }}
+            className="fixed top-36 left-4 z-40 bg-pink-600 hover:bg-pink-500 text-white p-3 rounded-full shadow-lg border-2 border-pink-300 animate-pulse flex items-center gap-2 font-bold uppercase tracking-wider"
+            title="VINCULAR PARCEIRO"
+          >
+            <span className="text-xl">💋</span>
+            <span className="hidden md:inline">Parceiro</span>
+          </button>
+        )}
+
+        {/* BOTÃO GULA (BANQUETE) */}
+        {sala?.activeEvents?.some(
+          (e) => e.id === "GULA" && e.owner === meuUid
+        ) && (
+          <button
+            onClick={gameActions.handleBanquet}
+            className="fixed top-48 left-4 z-40 bg-orange-600 hover:bg-orange-500 text-white p-3 rounded-full shadow-lg border-2 border-orange-300 animate-bounce flex items-center gap-2 font-bold uppercase tracking-wider"
+            title="SERVIR BANQUETE"
+          >
+            <span className="text-xl">🍔</span>
+            <span className="hidden md:inline">Banquete</span>
+          </button>
+        )}
+
+        {/* BOTÃO IRA (DUELO) */}
+        {sala?.activeEvents?.some(
+          (e) => e.id === "IRA" && e.owner === meuUid
+        ) && (
+          <button
+            onClick={() => {
+              setCustomRole({
+                id: "carrasco",
+                name: "Senhor da Ira",
+                icon: "⚔️",
+                image:
+                  "https://images.unsplash.com/photo-1599839575945-a9e5af0c3fa5?w=500&auto=format&fit=crop&q=60",
+                ability: {
+                  name: "Desafiar para Duelo",
+                  effect:
+                    "Escolha alguém para duelar com você. Perdedor bebe em dobro!",
+                  cost: "Gratuito",
+                },
+                needsTarget: true,
+              });
+              setShowAbilityModal(true);
+            }}
+            className="fixed top-60 left-4 z-40 bg-red-800 hover:bg-red-700 text-white p-3 rounded-full shadow-lg border-2 border-red-500 animate-pulse flex items-center gap-2 font-bold uppercase tracking-wider"
+            title="INICIAR DUELO"
+          >
+            <span className="text-xl">⚔️</span>
+            <span className="hidden md:inline">Duelo</span>
+          </button>
+        )}
 
         {/* BOTÃO DE MÚSICA (Floating) */}
         <button

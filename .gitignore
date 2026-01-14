@@ -12,8 +12,9 @@ dist
 dist-ssr
 *.local
 .env
-.FUNCIONALIDADES_PLANEJADAS.md
-.CLONOGRAMA.md
+DOCUMENTACAO_DO_SISTEMA.md
+LORE_DO_JOGO.md
+BEST_PRACTICES.md
 
 # Editor directories and files
 .vscode/*
