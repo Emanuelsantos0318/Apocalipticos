@@ -2,6 +2,29 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [Não Lançado] - 2026-01-14
+
+### Adicionado
+
+- **Sistema de Eventos do Caos (7 Pecados Capitais)**:
+  - **Gula**: Botão "Servir Banquete" (Dano global).
+  - **Ira**: Mecânica de Duelo com seleção de alvo.
+  - **Luxúria**: Vínculo de Alma (Dano compartilhado).
+  - **Preguiça**: Slow Mode (+Tempo) e opção de Pular turnos.
+  - **Orgulho**: Ditador com poder de Multar.
+  - **Ganância**: Blitz Mode (Timer reduzido).
+  - **Inveja**: Mascaramento da UI (Ranking oculto).
+- **Interatividade Específica**:
+  - Removido fluxo genérico de "Admin Confirma" para eventos do Caos.
+  - Jogador ativo (ou Host) agora controla botões específicos (ex: "Servir Banquete", "Desafiar para Duelo").
+
+### Corrigido
+
+- **Race Condition**: Corrigido bug onde novos eventos eram sobrescritos ao passar a vez (`useGameActions`).
+- **Luxúria**: Corrigido bug que permitia auto-seleção de parceiro.
+- **Reset de Jogo**: Caos agora é limpo corretamente ao reiniciar a partida.
+- **UI**: Corrigido crash ao tentar renderizar botões de Caos sem evento ativo.
+
 ## [Não Lançado] - 2026-01-10
 
 ### Adicionado
