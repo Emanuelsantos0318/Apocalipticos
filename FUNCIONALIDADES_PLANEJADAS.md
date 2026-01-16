@@ -140,6 +140,8 @@ Apocalípticos é um jogo de desafios e interações em grupo, onde os jogadores
 
 ### Correções
 
+- Quando temos muitos eventos ativos, a o header fica muito poluido e confuso, ele acabou impurrando as outras informações para fora da tela. Seria bom se os eventos fossem exibidos em uma lista ou de forma mais organizada.
+
 ⏳ **Interface do Lobby**: Melhorar a interface do lobby para que seja mais agradável e bonita. Principalmente o RoomHeader.jsx, está bem simples e feio.
 
 ## 4. Universo e Mecânicas RPG (Lore & Rules)
@@ -259,7 +261,28 @@ Cada jogador assume um papel que pode **mudar o rumo da partida**. As habilidade
 - "Sinta o peso de cada dia que eu tive que enterrar um amigo."
 - "Beber para esquecer? Eu bebo para ter força de te aguentar por mais uma rodada."
 
----
+#### 🍺 6. O BARMAN
+
+**História:** Dono do bar Apocalíptico, Durante a Grande Quarentena, ele transformou com a ajuda de Elias, o porão do bar em um santuário de destilação clandestina.
+
+- **Habilidade: "A Saideira"**  
+  Na sua vez, pode **Forçar um jogador** repetir o último desafio. Se o jogador negar, a penalidade (bebida e dano) é **dobrada**.
+- **Custo:**  
+  🍺 1 Dose (Barman) + 1 Dose (Jogador)
+- **Regra:** "Não pode forçar o mesmo alvo 2x seguidas."
+
+> 🧠 _Narrativa:_ "A única coisa mais tóxica que a névoa lá fora é o que eu acabei de colocar no seu copo.", "Relaxa, o primeiro gole é por conta da casa. O segundo é por conta do seu destino."
+
+**Provocações (Ao forçar desafio):**
+
+- "Bebe isso logo. No meu bunker a gente chamava essa mistura de 'Água de Batismo'."
+- "Tá com essa cara por quê? A névoa lá fora tá com um aspecto bem pior que esse drink.
+- "O próximo é por conta da casa... se você sobreviver até a próxima rodada."
+- "Cuidado com o gelo. Ele brilha no escuro, mas não morde... eu acho."
+
+##### Correções:
+
+## Parece que a habilidade do Barman não está funcionando corretamente.
 
 ### ☣️ Eventos do Caos (Os 7 Pecados)
 
@@ -296,7 +319,7 @@ _Cartas Raras (20% chance) que interrompem o fluxo do jogo._
 - **Lore:** Um suprimento contaminado foi encontrado.
 - **Decisão:** Todos devem escolher imediatamente:
   1.  **Segurança:** Beber 1 dose agora.
-  2.  **Risco:** Rolar o Dado. (50% Nada / 50% Bebe 3 Doses).
+  2.  **Risco:** Rolar uma moeda. (Se der cara 50% Nada / Se der coroa 50% Bebe 3 Doses).
 - **Ambientação:** Sons de mastigação distorcidos, mesa radioativa.
 
 #### 😡 5. IRA — SURTO DE VIOLÊNCIA (Evento Direcionado)
@@ -322,13 +345,21 @@ _Cartas Raras (20% chance) que interrompem o fluxo do jogo._
 
 ### Correções
 
-- **GULA**: Não está mostrando a opção de escolher entre segurança e risco. Todos devem escolher imediatamente. Caso tenham escolhido segurança, todos bebem 1 dose. Caso tenham escolhido risco, todos rolam o dado, que deve aparecer para todos os jogadores (vamos criar um sistema de dado para isso) esse dado só tem dois la .
+- **GULA**: Não está mostrando a opção de escolher entre segurança e risco. Todos devem escolher imediatamente. Caso tenham escolhido segurança, todos bebem 1 dose. Caso tenham escolhido risco, todos jogam uma moeda(o resultado é exclusivo para quem jogou a sua moeda, ou seja, se der cara não bebe, se der coroa bebe 3 doses), que deve aparecer para todos os jogadores (vamos criar um sistema moeda para isso).
+
+> Opção A (Segurança): Dividir o Pão 🍞
+> Efeito: Ninguém bebe. Todos recuperam 5 HP. (Bom para diplomacia).
+> Opção B (Risco): Banquete Tóxico 🤮
+> Efeito: Todos perdem 10 HP (2 doses). _Você ganha 30 Pontos por ver o circo pegar fogo._, mas todos devem escolher imediatamente. Como uma pessoa ver o circo pegar fogo? Me explique direito essa parte.
+
 - **Luxúria:** Se um jogador for escolhido para ser o par, ele não pode ser escolhido novamente.
   - O botão da luxúria está permanente na tela, mesmo depois de ter sido usado. Podendo votar novamente mesmo depois de ter sido usado.
 
 ##### **Eventos Gerais:**
 
-- Poderia mostrar em qual evento o jogador está participando na hora que ele é sorteado.
+- 📢 Identidade Visual
+  "Que evento é esse?": Vou adicionar um Badge/Etiqueta claro no topo da tela e no CardDisplay quando ele aparecer, indicando qual Evento do Caos está rolando agora, para ninguém ficar perdido.
+
 - Temos que melhorar a logica dos eventos.
 
 - Algumas vezes um evento por exemplo O Ditador está ativo e aparece um outro evento e acaba desativando os dois eventos.
@@ -371,6 +402,49 @@ _Cartas Raras (20% chance) que interrompem o fluxo do jogo._
 - **Itens Cosméticos:** Avatares exclusivos, skins de cartas.
 - **Baralhos Premium:** Pacotes temáticos (ex: "Baralho da Ira Hardcore").
 - **Efeitos Visuais:** Animações diferenciadas de vitória ou ações.
+
+- **Avatar IA (Premium):** Criação de personagem via IA com foto do usuário. A IA gera um avatar estilizado, cria uma lore baseada no nome e define atributos/penalidades únicos, introduzindo o personagem no jogo ($).
+
+> - Criar uma IA dentro do jogo com o comando pra quando o usuário for criar seu avatar, ele tem a opção prêmio de colocar sua foto lá por apenas 2 dólares, o usuário coloca sua foto lá e ele escolhe qual vai ser o nome do seu personagem. A IA vai gerar esse comando(que vamos criar um prompt para manter um padrão de estilo e qualidade) , alguém ela vai gerar pra ele ali toda estrutura de personagem, o poder do personagem conforme o nome em que ele colocou, a penalidade do personagem e vai introduzir esse personagem dentro do jogo particular da pessoa.
+
+```javascript
+NOME_DO_PERSONAGEM: {
+    id: "nome_do_personagem",
+    name: "O Nome Do Personagem",
+    icon: "",
+    image: "/assets/characters/nome_do_personagem.png",
+    description: "",
+    ability: {
+      name: "",
+      effect:
+        "",
+      cost: "",
+      cooldown: "",
+    },
+    lore: "",
+  },
+```
+
+> Agora seria bom ter um controle para que os personagens Criados não sejam salvos no mesmo lugar que os personagens normais. Para garantir a privacidade e segurança dos jogadores. Eles não devem ter acesso aos personagens dos outros jogadores. Eles devem ter acesso apenas aos seus próprios personagens.
+
+> Tecnicamente, quando formos implementar (provavelmente numa V3 ou expansão), usaremos:
+
+- Geração de Imagem: Uma API (como OpenAI DALL-E 3 ou Stable Diffusion) para transformar a foto do usuário num estilo "apocalíptico/grunge".
+- LLM (Texto): Para ler o nome + a "vibe" da foto e gerar a lore, o poder e a penalidade.
+
+1. **Estrutura JSON:** Está 100% compatível com o nosso `src/constants/roles.js`.
+
+- **Sugestão:** Apenas note que em `roles.js`, alguns personagens usam limit (uso único) e outros usam cooldown. O modelo da IA deve ser capaz de escolher qual dos dois usar dependendo se a habilidade for muito forte (limit) ou recorrente (cooldown).
+
+2. **Segurança e Privacidade (Ponto crucial que você levantou):**
+   > Não podemos misturar personagens gerados (que podem ser milhares) no arquivo global ou na lista pública.
+
+- **Solução Arquitetural:** Quando implementarmos, criaremos uma sub-coleção no Firestore: users/{userId}/custom_characters.
+- **Ao entrar numa sala, o jogo carregará:** Personagens Globais (Padrão) + Personagens do Usuário Logado. Assim, só você vê e pode escolher seu personagem exclusivo.
+
+3. **Prompt Engineering:**
+
+- A ideia de ter um prompt "template" é vital para que a IA não crie personagens que quebrem o jogo (ex: "Mata todos instantaneamente"). Teremos que definir limites no prompt, como: "A habilidade deve ter sempre um custo/penalidade equivalente ao benefício".
 
 ### Correções
 

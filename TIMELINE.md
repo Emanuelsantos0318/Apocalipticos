@@ -168,6 +168,28 @@ Botão “Jogar Novamente”
 
 Botão “Voltar à Home”
 
+## Fase de Monetização
+
+### 📍 Previsão: Janeiro 2026
+
+🔹 Criação de personagens personalizados.
+
+🔹 Loja com novas categorias de cartas e habilidades.
+
+Loja:
+
+Novas categorias de cartas
+
+Novas habilidades
+
+Novos personagens
+
+Novos efeitos visuais
+
+Novos efeitos sonoros
+
+🔹 Sistema de pagamento.
+
 ## 🧪 Fase 13 – Testes, Ajustes e Polimento
 
 ### 📍 Previsão: Janeiro 2026

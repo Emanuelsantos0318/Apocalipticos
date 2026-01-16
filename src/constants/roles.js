@@ -1,9 +1,9 @@
 export const ROLES = {
   MEDIC: {
     id: "medico",
-    name: "O Médico da Zona Morta",
+    name: "A Médica da Zona Morta",
     icon: "🩺",
-    image: "/assets/characters/medico.png",
+    image: "/assets/characters/medica_Itala.jpeg",
     description: "Cura feridas, mas tudo tem um preço.",
     ability: {
       name: "Tratamento de Risco",
@@ -11,7 +11,7 @@ export const ROLES = {
       cost: "1 Dose (Médico) + 1 Dose (Paciente)",
       cooldown: "Não pode curar o mesmo alvo 2x seguidas.",
     },
-    lore: "Antigo socorrista. Aprendeu que salvar vidas sempre cobra um preço.",
+    lore: "Antiga socorrista. Aprendeu que salvar vidas sempre cobra um preço.",
   },
   ASSASSIN: {
     id: "assassino",
@@ -31,7 +31,7 @@ export const ROLES = {
     id: "estrategista",
     name: "O Estrategista Careca",
     icon: "🧠",
-    image: "/assets/characters/estrategista.jpg",
+    image: "/assets/characters/estrategista_Emanuel.jpeg",
     description: "Controla o fluxo do jogo.",
     ability: {
       name: "Plano de Contingência",
@@ -68,6 +68,21 @@ export const ROLES = {
       limit: "Uso único (Automático).",
     },
     lore: "Já deveria estar morto. Ninguém sabe como ainda respira.",
+  },
+  BARMAN: {
+    id: "barman",
+    name: "O Barman",
+    icon: "🍺",
+    image: "/assets/characters/barman_Mateus.jpeg",
+    description: "O dono do bar.",
+    ability: {
+      name: "A Saideira",
+      effect:
+        "Força um jogador a repetir o último desafio ou beber o dobro da punição atual.",
+      cost: "1 Dose (Barman) + 1 Dose (Paciente)",
+      cooldown: "Não pode curar o mesmo alvo 2x seguidas.",
+    },
+    lore: "O dono do bar. Sabe de tudo e todos.",
   },
 };
 
