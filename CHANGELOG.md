@@ -2,6 +2,22 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [Não Lançado] - 2026-01-17
+
+### Corrigido (Eventos do Caos)
+
+- **Gula (Banquete)**:
+  - Corrigido travamento por erro de leitura de lista de jogadores (`sala.jogadores` fix).
+  - Implementada votação funcional (Safety vs Risk) e Coin Flip.
+- **Luxúria (Pacto)**:
+  - Corrigido bug onde o jogo travava após selecionar o parceiro (falta de `passarVez`).
+  - Corrigido erro de "Habilidade Desconhecida" (`parceiro_luxuria`).
+  - Criado evento dinamicamente caso não exista na lista de `activeEvents`.
+- **Runtime Errors**:
+  - Adicionadas proteções contra crashes em `GameHeader` (nome do evento) e `ChaosEventOverlay`.
+- **Timer**:
+  - Desativada penalidade padrão de tempo para eventos do Caos (evita "Aceitou Penalidade" indesejado).
+
 ## [Não Lançado] - 2026-01-14
 
 ### Adicionado

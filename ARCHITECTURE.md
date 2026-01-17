@@ -12,6 +12,7 @@ O **Apocalipticos** é uma aplicação **Single Page Application (SPA)** constru
 src/
 ├── components/      # Componentes visuais (UI)
 │   ├── game/        # Componentes específicos da tela de jogo (Timer, Cartas, Ações)
+│   │   └── chaos/   # Overlay e Lógica Visual dos Eventos do Caos (ChaosEventOverlay)
 │   ├── lobby/       # Componentes do Lobby
 │   └── ...
 ├── context/         # Gerenciamento de estado global
@@ -43,7 +44,13 @@ src/
     - Votos são salvos na subcoleção `salas/{codigo}/votos`.
     - O cliente monitora essa coleção e calcula o resultado quando todos votam.
 
-6.  **Botão Sair: No canto superior direito da tela do jogo, tem um ícone de "Sair".**
+6.  **Eventos do Caos (RPG)**:
+
+    - Cartas do tipo "CAOS" ativam o `ChaosEventOverlay`.
+    - Estados complexos (Votação, Moeda, Duelo) são persistidos no campo `activeEvents` da sala.
+    - Mecânicas persistentes (ex: Luxúria, Orgulho) continuam ativas por N rodadas, modificando regras em `useGameActions`.
+
+7.  **Botão Sair: No canto superior direito da tela do jogo, tem um ícone de "Sair".**
     - Confirmação: Ao clicar, o jogo pergunta "Tem certeza?".
     - Sucessão de Poder:
     - Se um jogador comum sair, ele só é removido.

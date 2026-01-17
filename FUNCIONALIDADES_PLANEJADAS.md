@@ -140,7 +140,9 @@ Apocalípticos é um jogo de desafios e interações em grupo, onde os jogadores
 
 ### Correções
 
-- Quando temos muitos eventos ativos, a o header fica muito poluido e confuso, ele acabou impurrando as outras informações para fora da tela. Seria bom se os eventos fossem exibidos em uma lista ou de forma mais organizada.
+- **Botões dos eventos:** Todos os botões dos eventos precisam serem refeitos para que fiquem mais bonitos e agradáveis, para que não fiquem deslocados na tela, temos que melhorar a UX/UI desses botões. Até porque tudo que temos na versão de desktop deve ser refletido na versão de mobile sem que perca qualidade. Então temos que estudar como deixar tudo que temos na tela de jogo funcional e bonito. Sem comprometer a experiência do usuário.
+
+- **Header:** Quando temos muitos eventos ativos, a o header fica muito poluido e confuso, ele acabou impurrando as outras informações para fora da tela. Seria bom se os eventos fossem exibidos em uma lista ou de forma mais organizada.
 
 ⏳ **Interface do Lobby**: Melhorar a interface do lobby para que seja mais agradável e bonita. Principalmente o RoomHeader.jsx, está bem simples e feio.
 
@@ -157,9 +159,14 @@ O objetivo é terminar o jogo com **mais PV** que os oponentes.
 
 - **Dano e Cura:** Cartas e habilidades podem tirar ou restaurar PV.
 - **Modo Crítico (0 PV):**
+
   - Se um jogador chegar a **0 PV**, ele **NÃO é eliminado**. Ele entra em **Modo Crítico**.
   - **Penalidade Dupla:** Enquanto estiver com 0 ou menos, qualquer punição (bebida ou perda de pontos) é **multiplicada por 2**.
   - **Recuperação:** É possível sair do modo crítico se for curado (ex: pelo Médico ou carta de recompensa).
+
+  #### Correção
+
+  - O modo crítico não está funcionando corretamente. Quando um jogador chega a 0 PV, no ranking em telas pequenas ele aparece como 30 PV, mas deveria aparecer como 0 PV e com um ícone de caveira ao lado do nome. E depois de um tempo jogando ele volta a aparecer como 30 PV. Tanto no ranking quanto na tela de jogo. Mesmo sem ter recebido nenhuma cura.
 
 ---
 
@@ -309,10 +316,11 @@ _Cartas Raras (20% chance) que interrompem o fluxo do jogo._
 
 #### 🎭 3. INVEJA — TROCA DE CORPOS (Evento Global)
 
-- **Efeito:** Avatares e Nomes são **embaralhados** na tela. Você vê o nome de outro jogador no seu lugar.
+- **Efeito:** Avatares e Nomes são **embaralhados** na tela. Você vê o nome de outro jogador no seu lugar durante quatro rodadas.
 - **Caos:** Votações e interações ficam confusas (você acha que vota em X, mas vota em Y).
 - **Revelação:** Só no fim da rodada a tela "glitcha" e revela a verdade.
 - **Penalidade:** Quem receber mais votos bebe **2 doses** (mesmo se foi por engano).
+  > Isso seria um evento de votação? Fiquei em dúvida como implementar.
 
 #### 🍔 4. GULA — BANQUETE TÓXICO (Evento Imediato)
 
@@ -343,17 +351,24 @@ _Cartas Raras (20% chance) que interrompem o fluxo do jogo._
 - **Traição:** Se um votar no outro ou usar habilidade contra, o vínculo quebra e **ambos bebem 2 doses**.
 - **Ambientação:** Corações com glitch, sussurros.
 
+> A habilidade de **traição** do evento Luxúria está bugada. Não percibir funcionar. O será que ainda não foi implementado?
+
 ### Correções
 
-- **GULA**: Não está mostrando a opção de escolher entre segurança e risco. Todos devem escolher imediatamente. Caso tenham escolhido segurança, todos bebem 1 dose. Caso tenham escolhido risco, todos jogam uma moeda(o resultado é exclusivo para quem jogou a sua moeda, ou seja, se der cara não bebe, se der coroa bebe 3 doses), que deve aparecer para todos os jogadores (vamos criar um sistema moeda para isso).
+- ✅ **GULA**: Não está mostrando a opção de escolher entre segurança e risco. Todos devem escolher imediatamente. Caso tenham escolhido segurança, todos bebem 1 dose. Caso tenham escolhido risco, todos jogam uma moeda(o resultado é exclusivo para quem jogou a sua moeda, ou seja, se der cara não bebe, se der coroa bebe 3 doses), que deve aparecer para todos os jogadores (vamos criar um sistema moeda para isso).
 
 > Opção A (Segurança): Dividir o Pão 🍞
 > Efeito: Ninguém bebe. Todos recuperam 5 HP. (Bom para diplomacia).
 > Opção B (Risco): Banquete Tóxico 🤮
 > Efeito: Todos perdem 10 HP (2 doses). _Você ganha 30 Pontos por ver o circo pegar fogo._, mas todos devem escolher imediatamente. Como uma pessoa ver o circo pegar fogo? Me explique direito essa parte.
 
-- **Luxúria:** Se um jogador for escolhido para ser o par, ele não pode ser escolhido novamente.
-  - O botão da luxúria está permanente na tela, mesmo depois de ter sido usado. Podendo votar novamente mesmo depois de ter sido usado.
+> Como eu tinha dito alí nas Funcionalidades planejadas, fica a intender que podem ter as duas escolhas simultâneas, por exemplo, dos 5 jogadores 3 escolheram Segurança e 2 Risco, como tivemos maior quantidade de Segurança então todos bebem 1 dose. Caso contrario rola a moeda(idividualmente) se der cara não bebe nada, se der coroa a pessoa que girou a moeda bebe 3 doses. Então para finalizar, uma moeda deve aparecer para todos!
+
+- ✅ **Luxúria:** Se um jogador for escolhido para ser o par, ele não pode ser escolhido novamente.
+
+- ✅ O botão da luxúria está permanente na tela, mesmo depois de ter sido usado. Podendo votar novamente mesmo depois de ter sido usado.
+
+- **Inveja:** Não esta sendo feita a troca de avatares e nomes. E nem está valendo nas 4 rodadas.
 
 ##### **Eventos Gerais:**
 
@@ -370,6 +385,8 @@ _Cartas Raras (20% chance) que interrompem o fluxo do jogo._
 
 - ao surgir o evento O Ditador, o jogador da vez vira o Ditador e cria uma regra física absurda, mas essa regra não é aplicada corretamente, pois os outros jogadores não são obrigados a seguir a regra.
   Poderiamos ter algo para que o Ditador possa aplicar multas aos jogadores que não seguirem a regra.
+
+- **Botões dos eventos:** Todos os botões dos eventos precisam serem refeitos para que fiquem mais bonitos e agradáveis, para que não fiquem deslocados na tela, temos que melhorar a UX/UI desses botões.
 
 ---
 
