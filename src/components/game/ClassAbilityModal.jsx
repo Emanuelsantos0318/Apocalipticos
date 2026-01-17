@@ -10,6 +10,7 @@ export default function ClassAbilityModal({
   jogadores,
   meuUid,
   onUseAbility,
+  activeEvents, // New prop for filtering
 }) {
   const [selectedTarget, setSelectedTarget] = useState(null);
 
@@ -89,7 +90,25 @@ export default function ClassAbilityModal({
               </p>
               <div className="grid grid-cols-4 gap-2">
                 {jogadores
-                  .filter((j) => j.uid !== meuUid) // Prevent self-target
+                  .filter((j) => {
+                    const isSelf = j.uid === meuUid;
+
+                    // LUST FILTER: Remove players already linked
+                    const isLustAction = role.id === "parceiro_luxuria";
+                    let isUnavailable = false;
+
+                    if (isLustAction && activeEvents) {
+                      const lustEvents = activeEvents.filter(
+                        (e) => e.id === "LUXURIA"
+                      );
+                      const linkedPlayers = lustEvents
+                        .map((e) => [e.owner, e.linkedTo])
+                        .flat();
+                      isUnavailable = linkedPlayers.includes(j.uid);
+                    }
+
+                    return !isSelf && !isUnavailable;
+                  })
                   .map((j) => (
                     <button
                       key={j.uid}

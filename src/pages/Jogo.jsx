@@ -24,6 +24,7 @@ import ChoiceModal from "../components/game/ChoiceModal";
 import ConfirmModal from "../components/modals/ConfirmModal";
 import PowerUpBar from "../components/game/PowerUpBar";
 import ClassAbilityModal from "../components/game/ClassAbilityModal";
+import ChaosEventOverlay from "../components/game/chaos/ChaosEventOverlay";
 
 import { CARD_TYPES } from "../constants/constants";
 import { Volume2, VolumeX, Skull, Zap } from "lucide-react";
@@ -117,7 +118,7 @@ export default function Jogo() {
     ) {
       if (isVotingRound) {
         voting.calcularResultadoVotacao(voting.votos);
-      } else if (isCurrentPlayer) {
+      } else if (isCurrentPlayer && sala?.cartaAtual?.tipo !== "CAOS") {
         gameActions.handlePenalidade();
       }
     }
@@ -344,7 +345,7 @@ export default function Jogo() {
                     {voting.resultadoVotacao && isCurrentPlayer && (
                       <div className="text-center mt-6">
                         <button
-                          onClick={gameActions.passarVez}
+                          onClick={() => gameActions.passarVez()}
                           className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-bold animate-bounce"
                         >
                           Próxima Rodada
@@ -361,108 +362,72 @@ export default function Jogo() {
                         : "Aguardando confirmação..."}
                     </p>
 
-                    {/* CHAOS EVENTS: Show specific actions to Current Player or Host */}
-                    {sala.cartaAtual?.tipo === "CAOS" ? (
+                    {/* CHAOS EVENTS OVERLAY */}
+                    <ChaosEventOverlay
+                      sala={sala}
+                      jogadores={jogadores}
+                      meuUid={meuUid}
+                      gameActions={gameActions}
+                      setCustomRole={setCustomRole}
+                      setShowAbilityModal={setShowAbilityModal}
+                    />
+
+                    {/* STANDARD: Admin Confirmation (Allowed for Chaos too to unblock stuck state) */}
+                    {jogadores.find((j) => j.uid === meuUid)?.isHost && (
                       <div className="flex justify-center gap-4 mt-4">
-                        {/* Allow interaction if Current Player OR Host */}
-                        {(isCurrentPlayer ||
-                          jogadores.find((j) => j.uid === meuUid)?.isHost) && (
+                        {sala.statusAcao === "aguardando_penalidade" ? (
+                          <button
+                            onClick={gameActions.handleAdminConfirmPenalty}
+                            className="px-6 py-2 bg-red-600 hover:bg-red-700 rounded font-bold"
+                          >
+                            Confirmar (Bebeu)
+                          </button>
+                        ) : (
                           <>
-                            {sala.cartaAtual.id === "GULA" && (
-                              <button
-                                onClick={gameActions.handleBanquet}
-                                className="px-6 py-2 bg-orange-600 hover:bg-orange-700 rounded font-bold flex items-center gap-2 animate-bounce"
-                              >
-                                <span className="text-xl">🍔</span> SERVIR
-                                BANQUETE
-                              </button>
-                            )}
-                            {sala.cartaAtual.id === "IRA" && (
-                              <button
-                                onClick={() => {
-                                  setCustomRole({
-                                    id: "carrasco",
-                                    name: "Senhor da Ira",
-                                    icon: "⚔️",
-                                    image:
-                                      "https://images.unsplash.com/photo-1599839575945-a9e5af0c3fa5?w=500&auto=format&fit=crop&q=60",
-                                    ability: {
-                                      name: "Desafiar para Duelo",
-                                      effect:
-                                        "Escolha alguém para duelar com você. Perdedor bebe em dobro!",
-                                      cost: "Gratuito",
-                                    },
-                                    needsTarget: true,
-                                  });
-                                  setShowAbilityModal(true);
-                                }}
-                                className="px-6 py-2 bg-red-800 hover:bg-red-900 rounded font-bold flex items-center gap-2"
-                              >
-                                <span className="text-xl">⚔️</span> DUELO
-                                (Escolher Alvo)
-                              </button>
-                            )}
-                            {(sala.cartaAtual.type === "GLOBAL_EFFECT" ||
-                              sala.cartaAtual.type === "PERSISTENT_EFFECT") &&
-                              sala.cartaAtual.id !== "IRA" && (
-                                <button
-                                  onClick={gameActions.handleAdminConfirm}
-                                  className="px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded font-bold flex items-center gap-2"
-                                >
-                                  <span className="text-xl">
-                                    {sala.cartaAtual.icon}
-                                  </span>{" "}
-                                  ATIVAR{" "}
-                                  {sala.cartaAtual.name
-                                    .split(" - ")[0]
-                                    .toUpperCase()}
-                                </button>
-                              )}
+                            <button
+                              onClick={gameActions.handleAdminConfirm}
+                              className="px-6 py-2 bg-green-600 hover:bg-green-700 rounded font-bold"
+                            >
+                              Confirmar{" "}
+                              {sala.cartaAtual?.tipo === "CAOS"
+                                ? "(Ativar)"
+                                : "(Cumpriu)"}
+                            </button>
+                            <button
+                              onClick={gameActions.handleAdminReject}
+                              className="px-6 py-2 bg-red-600 hover:bg-red-700 rounded font-bold"
+                            >
+                              {sala.cartaAtual?.tipo === "CAOS"
+                                ? "Cancelar"
+                                : "Rejeitar (Não Cumpriu)"}
+                            </button>
                           </>
                         )}
                       </div>
-                    ) : (
-                      // STANDARD: Admin Confirmation Only
-                      jogadores.find((j) => j.uid === meuUid)?.isHost && (
-                        <div className="flex justify-center gap-4 mt-4">
-                          {sala.statusAcao === "aguardando_penalidade" ? (
-                            <button
-                              onClick={gameActions.handleAdminConfirmPenalty}
-                              className="px-6 py-2 bg-red-600 hover:bg-red-700 rounded font-bold"
-                            >
-                              Confirmar (Bebeu)
-                            </button>
-                          ) : (
-                            <>
-                              <button
-                                onClick={gameActions.handleAdminConfirm}
-                                className="px-6 py-2 bg-green-600 hover:bg-green-700 rounded font-bold"
-                              >
-                                Confirmar (Cumpriu)
-                              </button>
-                              <button
-                                onClick={gameActions.handleAdminReject}
-                                className="px-6 py-2 bg-red-600 hover:bg-red-700 rounded font-bold"
-                              >
-                                Rejeitar (Não Cumpriu)
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      )
                     )}
                   </div>
                 ) : (
-                  // Ações Normais (PlayerActions)
-                  showActions && (
-                    <PlayerActions
-                      onComplete={gameActions.handleComplete}
-                      onPenalidade={gameActions.handlePenalidade}
-                      onEuJa={gameActions.handleEuJa}
-                      onEuNunca={gameActions.handleEuNunca}
-                      cardType={sala.cartaAtual.tipo}
+                  // Ações Normais ou Chaos Actions
+                  <>
+                    <ChaosEventOverlay
+                      sala={sala}
+                      jogadores={jogadores}
+                      meuUid={meuUid}
+                      gameActions={gameActions}
+                      setCustomRole={setCustomRole}
+                      setShowAbilityModal={setShowAbilityModal}
                     />
-                  )
+
+                    {showActions && sala.cartaAtual.tipo !== "CAOS" && (
+                      <PlayerActions
+                        onComplete={gameActions.handleComplete}
+                        onPenalidade={gameActions.handlePenalidade}
+                        onEuJa={gameActions.handleEuJa}
+                        onEuNunca={gameActions.handleEuNunca}
+                        cardType={sala.cartaAtual.tipo}
+                      />
+                    )}
+                  </>
                 )}
 
                 {/* Botão de Próxima Rodada para Eu Nunca */}
@@ -478,7 +443,7 @@ export default function Jogo() {
                         {Object.keys(gameActions.acoesRodada).length ===
                         jogadores.length ? (
                           <button
-                            onClick={gameActions.passarVez}
+                            onClick={() => gameActions.passarVez()}
                             className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 rounded-xl font-bold text-white shadow-lg flex items-center gap-2 mx-auto"
                           >
                             Próxima Rodada
@@ -659,7 +624,7 @@ export default function Jogo() {
           onUseAbility={(uid, roleId, targetUid) => {
             if (roleId === "ditador") {
               gameActions.handleMultar(targetUid);
-            } else if (roleId === "cupido") {
+            } else if (roleId === "cupido" || roleId === "parceiro_luxuria") {
               gameActions.handleLinkSoul(targetUid);
             } else if (roleId === "carrasco") {
               gameActions.handleDuel(uid, targetUid);
@@ -667,9 +632,10 @@ export default function Jogo() {
               gameActions.handleUseAbility(uid, roleId, targetUid);
             }
           }}
+          activeEvents={sala?.activeEvents} // PASSING EVENTS FOR FILTERING
         />
 
-        {/* BOTÃO DITADOR (ORGULHO) */}
+        {/* BOTÃO DITADOR (ORGULHO) - Mantido aqui por ser role persistente */}
         {sala?.activeEvents?.some(
           (e) => e.id === "ORGULHO" && e.owner === meuUid
         ) && (
@@ -679,7 +645,6 @@ export default function Jogo() {
                 id: "ditador",
                 name: "Ditador Supremo",
                 icon: "👑",
-                // Imagem placeholder estilosa
                 image:
                   "https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=500&auto=format&fit=crop&q=60",
                 ability: {
@@ -697,79 +662,6 @@ export default function Jogo() {
           >
             <span className="text-xl">👑</span>
             <span className="hidden md:inline">Multar</span>
-          </button>
-        )}
-
-        {/* BOTÃO CUPIDO (LUXÚRIA) */}
-        {sala?.activeEvents?.some(
-          (e) => e.id === "LUXURIA" && e.owner === meuUid && !e.linkedTo
-        ) && (
-          <button
-            onClick={() => {
-              setCustomRole({
-                id: "cupido",
-                name: "Cupido da Morte",
-                icon: "💔",
-                image:
-                  "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500&auto=format&fit=crop&q=60",
-                ability: {
-                  name: "Vincular Alma",
-                  effect: "Escolha um parceiro. O destino dele será o seu.",
-                  cost: "Gratuito",
-                },
-                needsTarget: true,
-              });
-              setShowAbilityModal(true);
-            }}
-            className="fixed top-36 left-4 z-40 bg-pink-600 hover:bg-pink-500 text-white p-3 rounded-full shadow-lg border-2 border-pink-300 animate-pulse flex items-center gap-2 font-bold uppercase tracking-wider"
-            title="VINCULAR PARCEIRO"
-          >
-            <span className="text-xl">💋</span>
-            <span className="hidden md:inline">Parceiro</span>
-          </button>
-        )}
-
-        {/* BOTÃO GULA (BANQUETE) */}
-        {sala?.activeEvents?.some(
-          (e) => e.id === "GULA" && e.owner === meuUid
-        ) && (
-          <button
-            onClick={gameActions.handleBanquet}
-            className="fixed top-48 left-4 z-40 bg-orange-600 hover:bg-orange-500 text-white p-3 rounded-full shadow-lg border-2 border-orange-300 animate-bounce flex items-center gap-2 font-bold uppercase tracking-wider"
-            title="SERVIR BANQUETE"
-          >
-            <span className="text-xl">🍔</span>
-            <span className="hidden md:inline">Banquete</span>
-          </button>
-        )}
-
-        {/* BOTÃO IRA (DUELO) */}
-        {sala?.activeEvents?.some(
-          (e) => e.id === "IRA" && e.owner === meuUid
-        ) && (
-          <button
-            onClick={() => {
-              setCustomRole({
-                id: "carrasco",
-                name: "Senhor da Ira",
-                icon: "⚔️",
-                image:
-                  "https://images.unsplash.com/photo-1599839575945-a9e5af0c3fa5?w=500&auto=format&fit=crop&q=60",
-                ability: {
-                  name: "Desafiar para Duelo",
-                  effect:
-                    "Escolha alguém para duelar com você. Perdedor bebe em dobro!",
-                  cost: "Gratuito",
-                },
-                needsTarget: true,
-              });
-              setShowAbilityModal(true);
-            }}
-            className="fixed top-60 left-4 z-40 bg-red-800 hover:bg-red-700 text-white p-3 rounded-full shadow-lg border-2 border-red-500 animate-pulse flex items-center gap-2 font-bold uppercase tracking-wider"
-            title="INICIAR DUELO"
-          >
-            <span className="text-xl">⚔️</span>
-            <span className="hidden md:inline">Duelo</span>
           </button>
         )}
 

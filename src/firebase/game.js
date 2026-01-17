@@ -40,7 +40,7 @@ export async function sortearCarta(
 
   // 1. Chance de Evento do Caos (20%)
   // Apenas se NÃO estivermos buscando um tipo específico (sorteio normal)
-  if (!tipo && Math.random() < 0.9) {
+  if (!tipo && Math.random() < 0.2) {
     const eventos = CHAOS_EVENTS;
     const eventoSorteado = eventos[Math.floor(Math.random() * eventos.length)];
 

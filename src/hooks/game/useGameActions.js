@@ -424,47 +424,174 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
   };
 
   const handleLinkSoul = async (targetUid) => {
-    if (!sala?.activeEvents) return;
+    // if (!sala?.activeEvents) return; // Removed to allow init
 
-    const lustEventIndex = sala.activeEvents.findIndex(
+    let newEvents = [...(sala.activeEvents || [])];
+    const lustEventIndex = newEvents.findIndex(
       (e) => e.id === "LUXURIA" && e.owner === meuUid
     );
-    if (lustEventIndex === -1) return;
 
-    const newEvents = [...sala.activeEvents];
-    newEvents[lustEventIndex] = {
-      ...newEvents[lustEventIndex],
-      linkedTo: targetUid,
-    };
+    if (lustEventIndex === -1) {
+      // Event doesn't exist yet, create it
+      newEvents.push({
+        id: "LUXURIA",
+        name: "Luxúria - Pacto Proibido",
+        icon: "💋",
+        color: "bg-pink-600",
+        duration: 99,
+        owner: meuUid,
+        linkedTo: targetUid,
+        type: "PERSISTENT_EFFECT",
+        createdAt: Date.now(),
+      });
+    } else {
+      // Update existing
+      newEvents[lustEventIndex] = {
+        ...newEvents[lustEventIndex],
+        linkedTo: targetUid,
+      };
+    }
 
     try {
-      await updateDoc(doc(db, "salas", codigo), { activeEvents: newEvents });
+      await updateDoc(doc(db, "salas", codigo), {
+        activeEvents: newEvents,
+        statusAcao: null,
+      });
       toast.success("Alma VINCULADA! 💋");
       playSuccess();
+
+      // Advance turn
+      await updatePlayerStats("completou");
+      await passarVez();
     } catch (error) {
       console.error("Erro ao vincular alma:", error);
       toast.error("Erro ao realizar pacto.");
     }
   };
 
-  const handleBanquet = async () => {
-    try {
-      // Gula: Todos tomam 5 de dano (Simulando "todos bebem")
-      const damages = jogadores.map((j) => takeDamage(j.uid, 5, false, false)); // false propagate to avoid loop chaos here
+  const resolveChaosVoting = async () => {
+    if (!sala.activeEventState) return;
+
+    const votes = Object.values(sala.activeEventState.votes || {});
+    const safetyCount = votes.filter((v) => v === "SAFETY").length;
+    const riskCount = votes.filter((v) => v === "RISK").length;
+
+    // RULE: If Safety wins (Safety > Risk), everyone takes small damage.
+    // If Risk wins (Risk >= Safety), we proceed to Coin Flip.
+    if (safetyCount > riskCount) {
+      await updateDoc(doc(db, "salas", codigo), {
+        "activeEventState.phase": "RESULT_SAFETY",
+      });
+
+      // Apply Safety Effect: 5 DMG (1 Dose) to everyone
+      const damages = jogadores.map((j) => takeDamage(j.uid, 5, false, false));
       await Promise.all(damages);
 
-      toast.success("🍔 BANQUETE TÓXICO SERVIDO! Todos bebem!", {
+      toast("🍞 A maioria escolheu SEGURANÇA. Todos bebem 1 dose!", {
+        icon: "🛡️",
+        duration: 5000,
+      });
+      playFail();
+
+      // End Event after delay
+      setTimeout(async () => {
+        await updatePlayerStats("completou");
+        await updateDoc(doc(db, "salas", codigo), {
+          activeEventState: deleteField(),
+          statusAcao: null,
+        });
+        await passarVez();
+      }, 5000);
+    } else {
+      // Risk Wins -> Proceed to Coin Flip Phase
+      await updateDoc(doc(db, "salas", codigo), {
+        "activeEventState.phase": "COIN_FLIP",
+      });
+      toast("🪙 O RISCO venceu! Preparem a moeda...", {
+        icon: "😈",
         duration: 4000,
       });
-      playSuccess();
-
-      // Gula completa a rodada
-      await updatePlayerStats("completou");
-      await updateDoc(doc(db, "salas", codigo), { statusAcao: null });
-      await passarVez();
-    } catch (error) {
-      console.error("Erro no banquete:", error);
+      playFlip();
     }
+  };
+
+  const handleChaosVote = async (option) => {
+    // Option: 'SAFETY' | 'RISK'
+    try {
+      const currentVotes = sala.activeEventState?.votes || {};
+      const newVotes = { ...currentVotes, [meuUid]: option };
+
+      await updateDoc(doc(db, "salas", codigo), {
+        "activeEventState.votes": newVotes,
+        "activeEventState.eventId": "GULA", // Ensure ID is set
+        "activeEventState.phase": "VOTING",
+      });
+
+      // Check availability
+      if (Object.keys(newVotes).length === jogadores.length) {
+        await resolveChaosVoting();
+      }
+    } catch (error) {
+      console.error("Error voting:", error);
+    }
+  };
+
+  const handleCoinFlipResult = async (result, flipperUid) => {
+    // result: 'HEADS' (Cara - Safe) | 'TAILS' (Coroa - 3 Doses)
+    try {
+      const currentFlips = sala.activeEventState?.flips || {};
+      const newFlips = { ...currentFlips, [flipperUid]: result };
+
+      const updates = {
+        "activeEventState.flips": newFlips,
+      };
+
+      if (result === "TAILS") {
+        // Player got Coroa -> Bebe 3 Doses (15 DMG)
+        await takeDamage(flipperUid, 15, false, false);
+        toast(
+          `🪙 ${
+            jogadores.find((j) => j.uid === flipperUid)?.nome
+          } tirou COROA! ☠️ -15 HP`,
+          { icon: "💀", duration: 5000 }
+        );
+      } else {
+        toast(
+          `🪙 ${
+            jogadores.find((j) => j.uid === flipperUid)?.nome
+          } tirou CARA! 😇 Salvo!`,
+          { icon: "✨", duration: 4000 }
+        );
+      }
+
+      await updateDoc(doc(db, "salas", codigo), updates);
+
+      // Check if everyone has flipped
+      if (Object.keys(newFlips).length === jogadores.length) {
+        setTimeout(async () => {
+          await updatePlayerStats("completou");
+          await updateDoc(doc(db, "salas", codigo), {
+            activeEventState: deleteField(),
+            statusAcao: null,
+          });
+          await passarVez();
+        }, 4000);
+      }
+    } catch (error) {
+      console.error("Coin flip error:", error);
+    }
+  };
+
+  const handleBanquet = async () => {
+    // Legacy support or Init Voting?
+    // Let's transform this into INIT VOTING
+    await updateDoc(doc(db, "salas", codigo), {
+      activeEventState: {
+        eventId: "GULA",
+        phase: "VOTING",
+        votes: {},
+      },
+    });
   };
 
   const handleDuel = async (targetUid1, targetUid2) => {
@@ -516,5 +643,7 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
     handleLinkSoul,
     handleBanquet,
     handleDuel,
+    handleChaosVote,
+    handleCoinFlipResult,
   };
 }

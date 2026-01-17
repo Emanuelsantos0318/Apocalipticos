@@ -137,6 +137,49 @@ export function useRPG(codigo, sala = null) {
     try {
       const casterRef = doc(db, "salas", codigo, "jogadores", casterUid);
 
+      // --- CHECK FOR BETRAYAL (TRAIÇÃO - LUXÚRIA) ---
+      if (sala?.activeEvents && targetUid && targetUid !== casterUid) {
+        const lustEvent = sala.activeEvents.find((e) => e.id === "LUXURIA");
+        if (
+          lustEvent &&
+          lustEvent.linkedTo &&
+          ((lustEvent.owner === casterUid &&
+            lustEvent.linkedTo === targetUid) ||
+            (lustEvent.owner === targetUid && lustEvent.linkedTo === casterUid))
+        ) {
+          // Hostile roles that trigger betrayal
+          if (
+            ["assassino", "incendiaria", "barman", "carrasco"].includes(roleId)
+          ) {
+            toast("💔 TRAIÇÃO DETECTADA! O Pacto foi quebrado!", {
+              icon: "🔪",
+              duration: 5000,
+            });
+
+            // 1. Apply Penalty (2 Doses = 10 HP) to BOTH
+            await takeDamage(casterUid, 10, false, false);
+            await takeDamage(targetUid, 10, false, false);
+
+            // 2. Break the Bond (Update activeEvents remove linkedTo)
+            // We need gameActions context or update activeEvents directly here?
+            // useRPG is inside useGameActions usually, but updateDoc on room works.
+            // We need to find the event index.
+            const newEvents = sala.activeEvents.map((e) => {
+              if (e.id === "LUXURIA") {
+                const { linkedTo, ...rest } = e; // Remove linkedTo
+                return rest;
+              }
+              return e;
+            });
+            await updateDoc(doc(db, "salas", codigo), {
+              activeEvents: newEvents,
+            });
+
+            return; // Stop standard ability execution
+          }
+        }
+      }
+
       switch (roleId) {
         case "medico":
           // Cura 1 PV, Custo: Médico bebe 1, Paciente bebe 1
@@ -183,6 +226,19 @@ export function useRPG(codigo, sala = null) {
           });
           await updateDoc(casterRef, { "stats.bebidas": increment(2) });
           toast.success("Incendiária botou fogo no jogo! 🔥");
+          break;
+
+        case "barman":
+          // Força um jogador a repetir o último desafio ou beber o dobro da punição atual.
+          // Tem que mostrar o ultimo desafio que o jogador fez.
+          if (!targetUid)
+            return toast.error("Selecione quem vai repetir o último desafio!");
+          await updateDoc(doc(db, "salas", codigo), {
+            jogadorAtual: targetUid,
+            "config.punicaoDobrada": true,
+          });
+          await updateDoc(casterRef, { "stats.bebidas": increment(2) });
+          toast.success("Barman botou fogo no jogo! 🔥");
           break;
 
         default:

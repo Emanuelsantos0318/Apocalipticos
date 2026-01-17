@@ -117,11 +117,11 @@ export const GameHeader = ({
                 <div
                   key={i}
                   className={`p-2 rounded-lg text-white ${
-                    ev.color || "bg-red-600"
+                    ev.color || "bg-gray-600"
                   } flex items-center gap-2 shadow-lg border border-white/20`}
-                  title={`${ev.name} (${ev.duration} rodadas) - Por: ${
-                    ownerPlayer?.nome || "?"
-                  }`}
+                  title={`${ev.name || "Evento"} (${
+                    ev.duration || "?"
+                  } rodadas) - Por: ${ownerPlayer?.nome || "?"}`}
                 >
                   {ownerPlayer && (
                     <div className="w-6 h-6 rounded-full overflow-hidden border border-white/50">
@@ -140,13 +140,13 @@ export const GameHeader = ({
                   )}
                   <div className="flex flex-col leading-tight">
                     <div className="flex items-center gap-1">
-                      <span className="text-lg">{ev.icon}</span>
+                      <span className="text-lg">{ev.icon || "❓"}</span>
                       <span className="text-[10px] font-bold uppercase hidden md:inline">
-                        {ev.name.split(" ")[0]}
+                        {(ev.name || "Evento").split(" ")[0]}
                       </span>
                     </div>
                     <span className="text-[8px] opacity-80 text-center bg-black/20 rounded px-1">
-                      {ev.duration} rodadas
+                      {ev.duration || "?"} rodadas
                     </span>
                   </div>
                 </div>
