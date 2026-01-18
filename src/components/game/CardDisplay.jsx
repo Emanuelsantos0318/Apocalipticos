@@ -14,7 +14,15 @@ const TYPE_STYLES = {
   CAOS: "bg-gray-900 border-red-600 shadow-red-900/100 animate-pulse", // Estilo do Caos
 };
 
-export default function CardDisplay({ carta, timeLeft }) {
+export default function CardDisplay({ carta, timeLeft, activeEvents }) {
+  // Filter relevant global events to show (persistent/global)
+  const activeChaos =
+    activeEvents?.filter(
+      (e) =>
+        (e.type === "GLOBAL_EFFECT" || e.type === "PERSISTENT_EFFECT") &&
+        e.duration > 0,
+    ) || [];
+
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -25,27 +33,43 @@ export default function CardDisplay({ carta, timeLeft }) {
         transition={{ type: "spring", stiffness: 200, damping: 20 }}
         className={`${
           TYPE_STYLES[carta.tipo] || "bg-gray-600 border-gray-400"
-        } border-4 rounded-xl p-6 mb-6 shadow-2xl transform-gpu backface-hidden`}
+        } border-4 rounded-xl p-6 mb-6 shadow-2xl transform-gpu backface-hidden relative overflow-hidden`}
       >
-        <div className="flex justify-between items-start mb-4">
+        {/* EVENT BADGE OVERLAY */}
+        {activeChaos.length > 0 && (
+          <div className="absolute top-0 left-0 w-full flex flex-col items-center pointer-events-none z-10">
+            {activeChaos.map((ev, i) => (
+              <div
+                key={i}
+                className={`w-full text-center py-1 text-[10px] uppercase font-bold tracking-widest text-white shadow-md animate-pulse ${
+                  ev.color || "bg-gray-900"
+                }`}
+              >
+                ⚡ {ev.icon} {ev.name} ({ev.duration} Rodadas) ⚡
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="flex justify-between items-start mb-4 mt-6">
           <span className="text-sm uppercase font-bold tracking-wider opacity-80">
             {carta.tipo === CARD_TYPES.TRUTH
               ? "Verdade"
               : carta.tipo === CARD_TYPES.DARE
-              ? "Desafio"
-              : carta.tipo === CARD_TYPES.NEVER
-              ? "Eu Nunca"
-              : carta.tipo === CARD_TYPES.FRIENDS
-              ? "Amigos de Merda"
-              : carta.tipo === CARD_TYPES.DECISIONS
-              ? "Decisões de Merda"
-              : carta.tipo === CARD_TYPES.DO_OR_DRINK
-              ? "Faz ou Bebe"
-              : carta.tipo === CARD_TYPES.THIS_OR_THAT
-              ? "Isso ou Aquilo"
-              : carta.tipo === "CAOS"
-              ? "⚡ EVENTO DO CAOS ⚡"
-              : "Carta"}
+                ? "Desafio"
+                : carta.tipo === CARD_TYPES.NEVER
+                  ? "Eu Nunca"
+                  : carta.tipo === CARD_TYPES.FRIENDS
+                    ? "Amigos de Merda"
+                    : carta.tipo === CARD_TYPES.DECISIONS
+                      ? "Decisões de Merda"
+                      : carta.tipo === CARD_TYPES.DO_OR_DRINK
+                        ? "Faz ou Bebe"
+                        : carta.tipo === CARD_TYPES.THIS_OR_THAT
+                          ? "Isso ou Aquilo"
+                          : carta.tipo === "CAOS"
+                            ? "⚡ EVENTO DO CAOS ⚡"
+                            : "Carta"}
           </span>
           <div className="flex items-center gap-2">
             <div
@@ -58,6 +82,17 @@ export default function CardDisplay({ carta, timeLeft }) {
         </div>
 
         <div className="text-center py-4">
+          {carta.tipo === "CAOS" && (
+            <div className="mb-6 animate-in zoom-in duration-500">
+              <div className="text-6xl mb-3 filter drop-shadow-lg animate-bounce">
+                {carta.icon || "🔥"}
+              </div>
+              <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-yellow-500 uppercase tracking-widest drop-shadow-sm">
+                {carta.name}
+              </h2>
+            </div>
+          )}
+
           <p className="text-2xl font-bold mb-4 drop-shadow-md">
             {carta.pergunta || carta.texto}
           </p>

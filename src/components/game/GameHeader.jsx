@@ -81,7 +81,7 @@ export const GameHeader = ({
               </h2>
               <div
                 className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest ${getModeColor(
-                  modo
+                  modo,
                 )} text-white shadow-sm`}
               >
                 {getModeLabel(modo)}
@@ -108,46 +108,25 @@ export const GameHeader = ({
           </div>
         </div>
 
-        {/* EVENTOS DO CAOS ATIVOS */}
+        {/* EVENTOS DO CAOS ATIVOS (Scrollable Container) */}
         {sala?.activeEvents && sala.activeEvents.length > 0 && (
-          <div className="flex gap-2 animate-pulse">
+          <div className="flex gap-2 w-full md:w-auto overflow-x-auto max-w-[300px] pb-2 custom-scrollbar">
             {sala.activeEvents.map((ev, i) => {
               const ownerPlayer = jogadores.find((j) => j.uid === ev.owner);
               return (
                 <div
                   key={i}
-                  className={`p-2 rounded-lg text-white ${
+                  className={`flex-shrink-0 p-1.5 rounded-lg text-white ${
                     ev.color || "bg-gray-600"
-                  } flex items-center gap-2 shadow-lg border border-white/20`}
-                  title={`${ev.name || "Evento"} (${
-                    ev.duration || "?"
-                  } rodadas) - Por: ${ownerPlayer?.nome || "?"}`}
+                  } flex items-center gap-1 shadow-sm border border-white/20 text-[10px] min-w-[100px]`}
+                  title={`${ev.name} (${ev.duration} rodadas)`}
                 >
-                  {ownerPlayer && (
-                    <div className="w-6 h-6 rounded-full overflow-hidden border border-white/50">
-                      {ownerPlayer.avatar?.startsWith("http") ? (
-                        <img
-                          src={ownerPlayer.avatar}
-                          alt={ownerPlayer.nome}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gray-800 flex items-center justify-center text-[10px]">
-                          {ownerPlayer.avatar}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  <div className="flex flex-col leading-tight">
-                    <div className="flex items-center gap-1">
-                      <span className="text-lg">{ev.icon || "❓"}</span>
-                      <span className="text-[10px] font-bold uppercase hidden md:inline">
-                        {(ev.name || "Evento").split(" ")[0]}
-                      </span>
-                    </div>
-                    <span className="text-[8px] opacity-80 text-center bg-black/20 rounded px-1">
-                      {ev.duration || "?"} rodadas
+                  <span className="text-sm">{ev.icon}</span>
+                  <div className="flex flex-col leading-none">
+                    <span className="font-bold truncate max-w-[80px]">
+                      {ev.name.split(" ")[0]}
                     </span>
+                    <span className="opacity-75">{ev.duration} trn</span>
                   </div>
                 </div>
               );
@@ -157,9 +136,9 @@ export const GameHeader = ({
 
         {/* CENTRO: Fila de Turnos */}
         <div className="flex items-center justify-center gap-2 md:gap-4 flex-1">
-          {/* Anterior (Pequeno) */}
-          <div className="hidden md:flex flex-col items-center opacity-50 scale-75 grayscale">
-            <div className="w-10 h-10 rounded-full bg-gray-700 mb-1 overflow-hidden">
+          {/* Anterior (Compacto Mobile) */}
+          <div className="flex flex-col items-center opacity-50 scale-75 md:scale-75 grayscale hover:grayscale-0 transition-all">
+            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-700 mb-1 overflow-hidden border border-gray-600">
               {playerPrev?.avatar && (
                 <img
                   src={playerPrev.avatar}
@@ -167,7 +146,7 @@ export const GameHeader = ({
                 />
               )}
             </div>
-            <span className="text-xs text-gray-400 truncate max-w-[60px]">
+            <span className="text-[10px] md:text-xs text-gray-400 truncate max-w-[50px] md:max-w-[60px]">
               {playerPrev?.nome}
             </span>
           </div>
@@ -226,16 +205,17 @@ export const GameHeader = ({
                       playerCurrent.hp <= 10
                         ? "bg-red-500"
                         : playerCurrent.hp <= 20
-                        ? "bg-yellow-500"
-                        : "bg-green-500"
+                          ? "bg-yellow-500"
+                          : "bg-green-500"
                     } transition-all duration-300`}
                     style={{
                       width: `${Math.max(
                         0,
                         Math.min(
                           100,
-                          (playerCurrent.hp / (playerCurrent.maxHp || 30)) * 100
-                        )
+                          (playerCurrent.hp / (playerCurrent.maxHp || 30)) *
+                            100,
+                        ),
                       )}%`,
                     }}
                   ></div>
@@ -247,9 +227,9 @@ export const GameHeader = ({
             </div>
           </div>
 
-          {/* Próximo (Pequeno) */}
-          <div className="hidden md:flex flex-col items-center opacity-50 scale-75 grayscale">
-            <div className="w-10 h-10 rounded-full bg-gray-700 mb-1 overflow-hidden">
+          {/* Próximo (Compacto Mobile) */}
+          <div className="flex flex-col items-center opacity-50 scale-75 md:scale-75 grayscale hover:grayscale-0 transition-all">
+            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-700 mb-1 overflow-hidden border border-gray-600">
               {playerNext?.avatar && (
                 <img
                   src={playerNext.avatar}
@@ -257,7 +237,7 @@ export const GameHeader = ({
                 />
               )}
             </div>
-            <span className="text-xs text-gray-400 truncate max-w-[60px]">
+            <span className="text-[10px] md:text-xs text-gray-400 truncate max-w-[50px] md:max-w-[60px]">
               {playerNext?.nome}
             </span>
           </div>

@@ -43,7 +43,7 @@ export default function Jogo() {
   // 1. Dados da Sala e Jogadores
   const { sala, jogadores, timeLeft, setTimeLeft, loading } = useGameRoom(
     codigo,
-    meuUid
+    meuUid,
   );
 
   // 2. Ações de Jogo (Cartas, Escolhas, Admin, Eu Nunca)
@@ -52,7 +52,7 @@ export default function Jogo() {
     sala,
     jogadores,
     meuUid,
-    setTimeLeft
+    setTimeLeft,
   );
 
   // 3. Votação (Amigos de Merda)
@@ -66,7 +66,7 @@ export default function Jogo() {
     meuUid,
     meuJogador,
     jogadores,
-    gameActions
+    gameActions,
   );
 
   // Estados locais UI
@@ -137,7 +137,7 @@ export default function Jogo() {
     if (gameActions.showChoiceModal && gameActions.choiceTimeLeft > 0) {
       const timer = setTimeout(
         () => gameActions.setChoiceTimeLeft((prev) => prev - 1),
-        1000
+        1000,
       );
       return () => clearTimeout(timer);
     } else if (
@@ -236,13 +236,18 @@ export default function Jogo() {
 
             {sala.cartaAtual ? (
               <>
-                <CardDisplay carta={sala.cartaAtual} timeLeft={timeLeft} />
+                <CardDisplay
+                  carta={sala.cartaAtual}
+                  timeLeft={timeLeft}
+                  activeEvents={sala.activeEvents}
+                />
 
-                {/* Visualizar Power-ups */}
+                {/* Visualizar Power-ups (Não mostra em Eventos do Caos) */}
                 {isCurrentPlayer &&
                   !gameActions.actionTaken &&
                   !isVotingRound &&
-                  !isNeverRound && (
+                  !isNeverRound &&
+                  sala.cartaAtual.tipo !== "CAOS" && (
                     <PowerUpBar
                       powerups={meuJogador?.powerups}
                       onUse={(type) => {
@@ -637,7 +642,7 @@ export default function Jogo() {
 
         {/* BOTÃO DITADOR (ORGULHO) - Mantido aqui por ser role persistente */}
         {sala?.activeEvents?.some(
-          (e) => e.id === "ORGULHO" && e.owner === meuUid
+          (e) => e.id === "ORGULHO" && e.owner === meuUid,
         ) && (
           <button
             onClick={() => {
