@@ -71,7 +71,7 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
         sala.modo,
         categorias,
         null,
-        sala.cartasUsadas || []
+        sala.cartasUsadas || [],
       );
 
       if (reset) {
@@ -124,7 +124,7 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
         sala.modo,
         categorias,
         tipoEscolhido,
-        sala.cartasUsadas || []
+        sala.cartasUsadas || [],
       );
 
       // Check for Blitz Mode (GREED)
@@ -335,7 +335,27 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
           owner: sala.jogadorAtual,
         };
 
-        // Pass new list to passarVez to avoid stale state overwrite
+        if (event.id === "INVEJA") {
+          // Gerar Máscara de Inveja (Shuffle)
+          const profiles = jogadores.map((j) => ({
+            nome: j.nome,
+            avatar: j.avatar,
+          }));
+
+          // Fisher-Yates Shuffle
+          for (let i = profiles.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [profiles[i], profiles[j]] = [profiles[j], profiles[i]];
+          }
+
+          const mask = {};
+          jogadores.forEach((j, index) => {
+            mask[j.uid] = profiles[index];
+          });
+
+          newEvent.mask = mask;
+        }
+
         const currentEvents = sala.activeEvents || [];
         extraUpdates.activeEvents = [...currentEvents, newEvent];
 
@@ -403,7 +423,7 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
         meuUid,
         "EU_NUNCA",
         eu?.nome,
-        eu?.avatar
+        eu?.avatar,
       );
       toast.success("😇 Salvo!");
     } catch (error) {
@@ -428,7 +448,7 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
 
     let newEvents = [...(sala.activeEvents || [])];
     const lustEventIndex = newEvents.findIndex(
-      (e) => e.id === "LUXURIA" && e.owner === meuUid
+      (e) => e.id === "LUXURIA" && e.owner === meuUid,
     );
 
     if (lustEventIndex === -1) {
@@ -553,14 +573,14 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
           `🪙 ${
             jogadores.find((j) => j.uid === flipperUid)?.nome
           } tirou COROA! ☠️ -15 HP`,
-          { icon: "💀", duration: 5000 }
+          { icon: "💀", duration: 5000 },
         );
       } else {
         toast(
           `🪙 ${
             jogadores.find((j) => j.uid === flipperUid)?.nome
           } tirou CARA! 😇 Salvo!`,
-          { icon: "✨", duration: 4000 }
+          { icon: "✨", duration: 4000 },
         );
       }
 
@@ -594,23 +614,104 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
     });
   };
 
-  const handleDuel = async (targetUid1, targetUid2) => {
+  const handleBetrayal = async () => {
     try {
-      const p1 = jogadores.find((j) => j.uid === targetUid1)?.nome || "P1";
-      const p2 = jogadores.find((j) => j.uid === targetUid2)?.nome || "P2";
+      const lustEvent = sala.activeEvents?.find((e) => e.id === "LUXURIA");
+      if (!lustEvent || !lustEvent.linkedTo) return;
 
-      toast(`⚔️ DUELO INICIADO: ${p1} vs ${p2}!`, {
-        icon: "😠",
+      const { owner, linkedTo } = lustEvent;
+      // Identify Partner
+      const partnerUid = meuUid === owner ? linkedTo : owner;
+
+      toast("💔 VOCÊ TRAIU O PACTO! Ambos sofrerão...", { icon: "🔪" });
+
+      // 1. Dano Mútuo (10 HP)
+      await takeDamage(meuUid, 10, false, false);
+      await takeDamage(partnerUid, 10, false, false);
+
+      // 2. Quebrar o Vínculo
+      const newEvents = sala.activeEvents.map((e) => {
+        if (e.id === "LUXURIA") {
+          const { linkedTo, ...rest } = e;
+          return rest;
+        }
+        return e;
+      });
+
+      await updateDoc(doc(db, "salas", codigo), {
+        activeEvents: newEvents,
+      });
+
+      playSuccess();
+    } catch (error) {
+      console.error("Erro na traição:", error);
+    }
+  };
+
+  const handleWrathSelection = async (targetUid1, targetUid2) => {
+    try {
+      if (!targetUid1 || !targetUid2) {
+        toast.error("Selecione DOIS oponentes!");
+        return;
+      }
+
+      await updateDoc(doc(db, "salas", codigo), {
+        activeEventState: {
+          eventId: "IRA",
+          phase: "DUEL",
+          targets: [targetUid1, targetUid2],
+        },
+      });
+      toast.success("⚔️ O DUELO VAI COMEÇAR!", { icon: "🔥" });
+    } catch (error) {
+      console.error("Erro ao iniciar Duelo:", error);
+    }
+  };
+
+  const handleWrathDecision = async (loserUid) => {
+    try {
+      const state = sala.activeEventState;
+      if (!state || !state.targets.includes(loserUid)) return;
+
+      const winnerUid = state.targets.find((uid) => uid !== loserUid);
+      const winnerName = jogadores.find((j) => j.uid === winnerUid)?.nome;
+      const loserName = jogadores.find((j) => j.uid === loserUid)?.nome;
+
+      // PENALIDADES
+      // Perdedor: Bebe em Dobro (Vamos assumir 2 doses = 10 dano base. Dobro = 20?)
+      // A regra diz: "Quem perder, bebe em dobro" + "escolhe quem bebe mais 1 dose extra".
+      // Vamos aplicar:
+      // 1. Perdedor base: 2 Doses (standard duel cost? Rules say "bebe em dobro" implies double normal penalty). Normal is 1. So 2 doses.
+      // 2. Extra dose chosen by judge: +1 Dose.
+      // Total Loser Penalty: 3 Doses (15 HP)?
+      // Or 2 Doses (Double) + 1 Extra = 3 Doses.
+
+      await takeDamage(loserUid, 15, false, false); // 3 Doses
+
+      toast(`💀 ${loserName} PERDEU e bebe 3 doses!`, {
+        icon: "🩸",
         duration: 5000,
       });
+
+      if (winnerName) {
+        toast(`🏆 ${winnerName} VENCEU o duelo!`, {
+          icon: "👑",
+          duration: 5000,
+        });
+      }
       playSuccess();
 
-      // Ira completa a rodada
-      await updatePlayerStats("completou");
-      await updateDoc(doc(db, "salas", codigo), { statusAcao: null });
-      await passarVez();
+      // Finalizar Carta
+      setTimeout(async () => {
+        await updatePlayerStats("completou");
+        await updateDoc(doc(db, "salas", codigo), {
+          activeEventState: deleteField(),
+          statusAcao: null,
+        });
+        await passarVez();
+      }, 3000);
     } catch (error) {
-      console.error("Erro no duelo:", error);
+      console.error("Erro ao decidir Duelo:", error);
     }
   };
 
@@ -642,7 +743,9 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
     handleMultar,
     handleLinkSoul,
     handleBanquet,
-    handleDuel,
+    handleWrathSelection,
+    handleWrathDecision,
+    handleBetrayal,
     handleChaosVote,
     handleCoinFlipResult,
   };
