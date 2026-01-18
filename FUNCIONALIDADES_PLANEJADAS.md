@@ -6,6 +6,50 @@ Apocalípticos é um jogo de desafios e interações em grupo, onde os jogadores
 
 ## 1. Estrutura e Navegação
 
+### Tela Incial que tem uma discrição do que é o jogo.
+
+- Landing Page com discrição do que é o jogo.
+  - Logo "Apocalípticos" (estilo neon/grunge).
+  - O que é o jogo?
+    - Uma imagem seguida de um texto que explica o que é o jogo.
+    - Botão "Jogar" (leva para a tela inicial do jogo). Primeiro aparece a logo, depois o texto e depois o botão.
+  - Como jogar?
+    - Um texto que explica como jogar.
+  - Categorias
+    - Um texto que explica as categorias.
+  - Modos de jogo
+    - Um texto que explica os modos de jogo.
+- Botão "Jogar" (leva para a tela inicial do jogo). Segundo no final da página.
+- Botão "Login" e "Cadastro".
+- Botão "Sobre nós" e "Redes sociais".
+- Footer com links para redes sociais e informações do jogo.
+
+### 👨🏾‍🦳 Tela de Perfil
+
+- **Funções iniciais:**
+  1. Adicionar/redefinir senha
+  2. Adicionar/vincular email
+  3. Adicionar/alterar nome
+  4. Adicionar/alterar foto de perfil
+  5. Adicionar/alterar data de nascimento
+  6. Adicionar/alterar gênero
+  7. Configurações de Privacidade e Segurança
+  - Permissões de compartilhamento de dados
+  - Bloquear usuários
+  - Denunciar usuários
+  8. Configuraçoes de pagamento
+  - Adicionar/remover método de pagamento
+  - Ver histórico de pagamentos
+  - Configurações de assinatura
+  9. Configurações de notificação
+  10. Configurações de idioma
+  11. Configurações de tema
+  12. Configurações de som
+  13. Configurações de idioma
+  14. Configurações de Conta
+  - Excluir conta
+  - Sair da conta
+
 ### 📱 Tela Inicial (Home)
 
 **Login & Identificação**
@@ -13,10 +57,6 @@ Apocalípticos é um jogo de desafios e interações em grupo, onde os jogadores
 - **Login Persistente:** Funcionalidade para manter usuários logados (Google/Email) e evitar perda de sessão ao recarregar.
 - **Modo Anônimo:** Permitir jogar sem cadastro, mas com limitações de histórico.
 - **Perfil de usuário:** Salvar nome, avatar, etc.
-- **Funções iniciais:** Alterar senha, Alterar email, Alterar nome
-  1. Alterar senha
-  2. Alterar email
-  3. Alterar nome
 
 **Design e Funcionalidades**
 
@@ -138,11 +178,14 @@ Apocalípticos é um jogo de desafios e interações em grupo, onde os jogadores
 
 ⏳ **Efeitos Sonoros**: Adicionar efeitos sonoros e animações avançadas.
 
+⏳ **Eventos do Caos**: Melhorar a UX/UI dos eventos do caos.
+
+- **Cartas do Caos:** Agora exibem Ícone e Título corretamente no cartão (✅ Corrigido).
+
 ### Correções
 
-- **Botões dos eventos:** Todos os botões dos eventos precisam serem refeitos para que fiquem mais bonitos e agradáveis, para que não fiquem deslocados na tela, temos que melhorar a UX/UI desses botões. Até porque tudo que temos na versão de desktop deve ser refletido na versão de mobile sem que perca qualidade. Então temos que estudar como deixar tudo que temos na tela de jogo funcional e bonito. Sem comprometer a experiência do usuário.
-
-- **Header:** Quando temos muitos eventos ativos, a o header fica muito poluido e confuso, ele acabou impurrando as outras informações para fora da tela. Seria bom se os eventos fossem exibidos em uma lista ou de forma mais organizada.
+- ✅ **Header:** Otimizado com scroll horizontal para eventos e responsividade ajustada (Next/Prev visíveis no mobile).
+- ✅ **Botões dos eventos:** Refeitos com estilo visual próprio e restritos ao jogador da vez.
 
 ⏳ **Interface do Lobby**: Melhorar a interface do lobby para que seja mais agradável e bonita. Principalmente o RoomHeader.jsx, está bem simples e feio.
 
@@ -159,13 +202,11 @@ O objetivo é terminar o jogo com **mais PV** que os oponentes.
 
 - **Dano e Cura:** Cartas e habilidades podem tirar ou restaurar PV.
 - **Modo Crítico (0 PV):**
-
   - Se um jogador chegar a **0 PV**, ele **NÃO é eliminado**. Ele entra em **Modo Crítico**.
   - **Penalidade Dupla:** Enquanto estiver com 0 ou menos, qualquer punição (bebida ou perda de pontos) é **multiplicada por 2**.
   - **Recuperação:** É possível sair do modo crítico se for curado (ex: pelo Médico ou carta de recompensa).
 
   #### Correção
-
   - O modo crítico não está funcionando corretamente. Quando um jogador chega a 0 PV, no ranking em telas pequenas ele aparece como 30 PV, mas deveria aparecer como 0 PV e com um ícone de caveira ao lado do nome. E depois de um tempo jogando ele volta a aparecer como 30 PV. Tanto no ranking quanto na tela de jogo. Mesmo sem ter recebido nenhuma cura.
 
 ---
@@ -334,7 +375,7 @@ _Cartas Raras (20% chance) que interrompem o fluxo do jogo._
 
 - **Efeito:** O jogador da vez perde o controle e escolhe **2 oponentes**.
 - **Confronto:** Esses dois duelam (bebem 1 dose cada).
-- **Finalização:** O jogador da vez escolhe qual dos dois bebe +1 dose extra.
+- **Finalização:** O jogador da vez escolhe qual dos dois bebe +1 dose extra. (✅ Implementado)
 - **Ambientação:** Tela tremendo, sons de metal e gritos.
 
 #### 😴 6. PREGUIÇA — ABRIGO ADORMECIDO (Evento Global)
@@ -348,12 +389,14 @@ _Cartas Raras (20% chance) que interrompem o fluxo do jogo._
 
 - **Efeito:** Jogador da vez escolhe 2 pessoas para formar um par.
 - **Vínculo:** Até o fim do jogo, tudo que um sofre, o outro sofre metade (bebida/dano).
-- **Traição:** Se um votar no outro ou usar habilidade contra, o vínculo quebra e **ambos bebem 2 doses**.
+- **Traição:** Se um votar no outro ou usar habilidade contra, o vínculo quebra e **ambos bebem 2 doses**. ( Botão "Trair" Em análise 🟡)
 - **Ambientação:** Corações com glitch, sussurros.
 
-> A habilidade de **traição** do evento Luxúria está bugada. Não percibir funcionar. O será que ainda não foi implementado?
+> A habilidade de **traição** foi corrigida e agora possui botão dedicado "Quebrar Pacto".
 
 ### Correções
+
+- Outra coisa quando aparece os eventos do caos, os PowerUpActions aparecem, o que não pode acontecer.
 
 - ✅ **GULA**: Não está mostrando a opção de escolher entre segurança e risco. Todos devem escolher imediatamente. Caso tenham escolhido segurança, todos bebem 1 dose. Caso tenham escolhido risco, todos jogam uma moeda(o resultado é exclusivo para quem jogou a sua moeda, ou seja, se der cara não bebe, se der coroa bebe 3 doses), que deve aparecer para todos os jogadores (vamos criar um sistema moeda para isso).
 
@@ -386,7 +429,7 @@ _Cartas Raras (20% chance) que interrompem o fluxo do jogo._
 - ao surgir o evento O Ditador, o jogador da vez vira o Ditador e cria uma regra física absurda, mas essa regra não é aplicada corretamente, pois os outros jogadores não são obrigados a seguir a regra.
   Poderiamos ter algo para que o Ditador possa aplicar multas aos jogadores que não seguirem a regra.
 
-- **Botões dos eventos:** Todos os botões dos eventos precisam serem refeitos para que fiquem mais bonitos e agradáveis, para que não fiquem deslocados na tela, temos que melhorar a UX/UI desses botões.
+- **Botões dos eventos:** (✅ Refeitos) Todos os botões dos eventos foram refeitos e centralizados no ChaosEventOverlay.
 
 ---
 

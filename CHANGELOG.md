@@ -2,6 +2,28 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [Não Lançado] - 2026-01-18
+
+### Refinado (Eventos do Caos)
+
+- **Ira (Duelo)**:
+  - Implementada nova mecânica de Duelo: Seleção de 2 oponentes -> Duelo -> Punição Mútuo/Extra.
+  - Interface dedicada "VS" com avatares grandes.
+- **Luxúria (Traição)**:
+  - Adicionado botão explícito "Trair (Quebrar Pacto)" para parceiros vinculados.
+  - Implementada punição mútua (10 Dano) ao trair.
+- **Visualização & UI**:
+  - **Cartas do Caos**: Agora exibem Título e Ícone corretamente no cartão (antes só mostravam descrição).
+  - **Header do Jogo**:
+    - Lista de Eventos Ativos agora é compacta e rolável (horizontal scroll) para evitar poluição visual.
+    - Avatares "Anterior" e "Próximo" agora visíveis no Mobile (versão compacta).
+  - **Privacidade**: Interações do Caos agora aparecem estritamente para o jogador da vez.
+  - **Power-Ups**: Ocultos durante Eventos do Caos para evitar conflitos.
+
+### Corrigido
+
+- **Botões "Fantasmas"**: Corrigido bug onde botões de admin/interação apareciam para observadores.
+
 ## [Não Lançado] - 2026-01-17
 
 ### Corrigido (Eventos do Caos)
@@ -174,7 +196,6 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 ### Refatorado
 
 - **Sistema de Som (`useSounds`)**:
-
   - Implementado controle genérico de música de fundo (`toggleMusic`).
   - Sincronização de estado entre componentes (`playingBgMusic`).
   - Botão de volume na tela de Jogo agora controla independentemente a música da partida.
