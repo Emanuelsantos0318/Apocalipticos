@@ -9,7 +9,7 @@ const CHARACTERS = [
     name: "Seringa (A Médica)",
     role: "Curar (+1 PV)",
     realName: "Ítala Santos",
-    fardo: "O Doutor do Happy Hour",
+    fardo: "A Doutora do Happy Hour",
     color: "text-blue-400",
     bg: "bg-blue-900/20",
     border: "border-blue-500/30",
@@ -165,12 +165,17 @@ export default function LandingPage() {
     <div className="min-h-screen bg-gray-900 text-white overflow-x-hidden font-sans selection:bg-red-500 selection:text-white">
       {/* NAVBAR */}
       <nav className="fixed top-0 left-0 w-full z-50 bg-black/80 backdrop-blur-md border-b border-white/10 px-6 py-4 flex justify-between items-center">
-        <div className="h-16 md:h-24 flex items-center">
+        <div className="h-14 md:h-16 flex items-center gap-2">
           <img
-            src="/assets/logo2.png"
+            src="/logo-apocalipticos.svg"
             alt="APOCALÍPTICOS"
-            className="h-full w-auto object-contain drop-shadow-[0_0_25px_rgba(220,38,38,0.8)] scale-125 md:scale-150 origin-left"
+            className="h-full w-auto object-contain drop-shadow-[0_0_25px_rgba(220,38,38,0.8)] scale-125 md:scale-150 origin-left p-2"
           />
+          <div>
+            <h1 className="text-2xl font-bold font-bebas-neue-regular ml-4">
+              APOCALÍPTICOS
+            </h1>
+          </div>
         </div>
         <div className="flex gap-4">
           <button
