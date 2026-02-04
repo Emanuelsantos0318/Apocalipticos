@@ -95,7 +95,9 @@ Apocalípticos é um jogo de desafios e interações em grupo, onde os jogadores
 
 - Alterar o avatar pela carta ou transforma a carta também em avatar. Eu particulamente prefiro como está, com aquelas figuras que tinhamos feito, deixa mais personalizado e caso repita o personagem teria uma perfil diferente do outro, mas parece que meu colega quer a foto do personagem que o usuário escolheu.
 
-- ⏳ Adicionar uma Borda Colorida no avatar dependendo da classe (Ex: Vermelho pro Assassino, Branco pro Médico).
+- ✅ **Adicionar uma Borda Colorida no avatar dependendo da classe** (Ex: Vermelho pro Assassino, Branco pro Médico). OBS: A Borda já existe no componente de Avatar, vamos considerar ok.
+
+- ✅ **Sair da Sala:** Ao sair da sala a musica de sair da sala só está sendo tocada quando o Admin sai, e não quando qualquer jogador sai. -> Corrigido e Verificado.
 
 ### 🎮 Tela de Jogo
 
@@ -118,6 +120,7 @@ Apocalípticos é um jogo de desafios e interações em grupo, onde os jogadores
 ### Correções
 
 - ✅ **GameHeader**: Mudar o formato do jogadores da vez e adicionar o nome do jogador atual, o anterior e o próximo. E centralizar tudo.
+- ✅ **Sair da Sala:** Ao sair da sala a musica de sair da sala só está sendo tocada quando o Admin sai, e não quando qualquer jogador sai.
 
 ---
 
@@ -144,7 +147,7 @@ Apocalípticos é um jogo de desafios e interações em grupo, onde os jogadores
 
 - **Decisoes de Merda:** O admin não está confirmando que o jogador cumpriu a tarefa.
 
-- **Ao selecionar novo jogo:** não está resetando os dados do jogo como a vida dos jogadores.
+- ✅ **Ao selecionar novo jogo:** não está resetando os dados do jogo como a vida dos jogadores.
 
 ### ⏳ Pendências
 
@@ -411,7 +414,7 @@ _Cartas Raras (20% chance) que interrompem o fluxo do jogo._
 
 - ✅ O botão da luxúria está permanente na tela, mesmo depois de ter sido usado. Podendo votar novamente mesmo depois de ter sido usado.
 
-- **Inveja:** Não esta sendo feita a troca de avatares e nomes. E nem está valendo nas 4 rodadas.
+- ✅ **Inveja:** Não esta sendo feita a troca de avatares e nomes. E nem está valendo nas 4 rodadas. -> Corrigido conflito de lógica.
 
 ##### **Eventos Gerais:**
 
@@ -514,5 +517,7 @@ NOME_DO_PERSONAGEM: {
 ### Correções
 
 ## 7. Refatorações
+
+- Landing Page: Acredito que ela tem informações desnecessarias, poderiamos refatorar ela para que ela seja mais simples e direta.
 
 ## 8. Best Practices

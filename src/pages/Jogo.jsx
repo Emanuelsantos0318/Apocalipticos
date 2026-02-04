@@ -166,7 +166,7 @@ export default function Jogo() {
     try {
       await sairDaSala(codigo, user.uid);
       toast.success("Você saiu da sala.");
-      navigate("/");
+      navigate("/app");
     } catch (error) {
       console.error("Erro ao sair da sala:", error);
       toast.error("Erro ao sair da sala.");
@@ -174,24 +174,6 @@ export default function Jogo() {
       setShowLeaveModal(false);
     }
   };
-
-  // --- ENVY EFFECT ---
-  const isEnvyActive = sala?.activeEvents?.some((e) => e.id === "INVEJA");
-
-  // Use a pseudo-random shuffle based on room code to keep it consistent-ish or just mask
-  // Masking is safer for simplicity
-  const displayedJogadores = React.useMemo(() => {
-    if (!isEnvyActive) return jogadores;
-
-    return jogadores
-      .map((j) => ({
-        ...j,
-        nome: "???",
-        avatar: "🎭",
-        // Still keep points/stats visible, or hide stats too? Rankings usually show stats.
-      }))
-      .sort((a, b) => b.pontos - a.pontos); // Force re-sort if needed, but ranking component likely handles it.
-  }, [jogadores, isEnvyActive]);
 
   if (loading || !sala) {
     return <div className="text-white text-center p-8">Carregando jogo...</div>;
@@ -226,7 +208,7 @@ export default function Jogo() {
               modo={sala.modo}
               currentPlayer={currentPlayer}
               isCurrentPlayer={isCurrentPlayer}
-              jogadores={displayedJogadores} // Updated
+              jogadores={jogadores} // Updated
               onLeave={handleLeaveGame}
               isHost={jogadores.find((j) => j.uid === meuUid)?.isHost}
               onFinishGame={() => gameActions.setShowFinishConfirmModal(true)}
@@ -314,7 +296,7 @@ export default function Jogo() {
                 {isVotingRound ? (
                   <div className="mt-6">
                     <VotingArea
-                      jogadores={isEnvyActive ? displayedJogadores : jogadores} // Use Masked Only For Votes if Envy active? Or standard? Masked makes sense based on prompt.
+                      jogadores={jogadores} // Use Masked Only For Votes if Envy active? Or standard? Masked makes sense based on prompt.
                       meuUid={meuUid}
                       onVote={voting.handleVote}
                       votos={voting.votos}
@@ -439,7 +421,7 @@ export default function Jogo() {
                 {isNeverRound && (
                   <>
                     <PlayerStatusGrid
-                      jogadores={displayedJogadores} // Updated
+                      jogadores={jogadores} // Updated
                       acoes={gameActions.acoesRodada}
                     />
                     {(isCurrentPlayer ||
@@ -526,8 +508,7 @@ export default function Jogo() {
                   <p className="text-xl animate-pulse text-gray-300">
                     Aguardando{" "}
                     <span className="font-bold text-purple-400">
-                      {displayedJogadores.find((j) => j.uid === currentPlayer)
-                        ?.nome || // Updated
+                      {jogadores.find((j) => j.uid === currentPlayer)?.nome || // Updated
                         "o jogador"}
                     </span>{" "}
                     sortear uma carta...
@@ -542,7 +523,7 @@ export default function Jogo() {
             <h1 className="text-xl font-bold mb-2 text-center text-purple-300 drop-shadow-md !p-[3%]">
               Ranking
             </h1>
-            <RankingJogadores jogadores={displayedJogadores} meuUid={meuUid} />{" "}
+            <RankingJogadores jogadores={jogadores} meuUid={meuUid} />{" "}
             {/* Updated */}
           </div>
         </div>
@@ -567,10 +548,7 @@ export default function Jogo() {
               <h2 className="text-xl font-bold mb-4 text-center text-white">
                 Ranking
               </h2>
-              <RankingJogadores
-                jogadores={displayedJogadores}
-                meuUid={meuUid}
-              />{" "}
+              <RankingJogadores jogadores={jogadores} meuUid={meuUid} />{" "}
               {/* Updated */}
             </div>
           </div>
@@ -662,7 +640,7 @@ export default function Jogo() {
               });
               setShowAbilityModal(true);
             }}
-            className="fixed top-24 left-4 z-40 bg-yellow-600 hover:bg-yellow-500 text-white p-3 rounded-full shadow-lg border-2 border-yellow-300 animate-bounce flex items-center gap-2 font-bold uppercase tracking-wider"
+            className="fixed bottom-24 left-4 z-40 bg-yellow-600 hover:bg-yellow-500 text-white p-3 rounded-full shadow-lg border-2 border-yellow-300 animate-bounce flex items-center gap-2 font-bold uppercase tracking-wider"
             title="APLICAR MULTA DO DITADOR"
           >
             <span className="text-xl">👑</span>

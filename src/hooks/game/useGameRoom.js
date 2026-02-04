@@ -60,6 +60,7 @@ export function useGameRoom(codigo, meuUid) {
         const saiu = prevJogadoresRef.current.filter(
           (p) => !currentUids.includes(p.uid),
         );
+
         saiu.forEach((p) => {
           // Só avisa se não for "Eu" que saí (para evitar flood se eu sair)
           if (p.uid !== meuUid) {

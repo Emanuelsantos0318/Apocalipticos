@@ -33,7 +33,7 @@ export default function CardDisplay({ carta, timeLeft, activeEvents }) {
         transition={{ type: "spring", stiffness: 200, damping: 20 }}
         className={`${
           TYPE_STYLES[carta.tipo] || "bg-gray-600 border-gray-400"
-        } border-4 rounded-xl p-6 mb-6 shadow-2xl transform-gpu backface-hidden relative overflow-hidden`}
+        } border-4 rounded-xl p-4 mb-6 shadow-2xl transform-gpu backface-hidden relative overflow-hidden`}
       >
         {/* EVENT BADGE OVERLAY */}
         {activeChaos.length > 0 && (
@@ -51,7 +51,7 @@ export default function CardDisplay({ carta, timeLeft, activeEvents }) {
           </div>
         )}
 
-        <div className="flex justify-between items-start mb-4 mt-6">
+        <div className="flex justify-between items-start mb-3 mt-2">
           <span className="text-sm uppercase font-bold tracking-wider opacity-80">
             {carta.tipo === CARD_TYPES.TRUTH
               ? "Verdade"

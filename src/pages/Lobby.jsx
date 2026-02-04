@@ -118,7 +118,7 @@ export default function Lobby() {
     if (!user) return;
     try {
       await sairDaSala(codigo, user.uid);
-      navigate("/");
+      navigate("/app");
     } catch (error) {
       console.error("Erro ao sair da sala:", error);
     }

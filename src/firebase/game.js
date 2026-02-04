@@ -27,8 +27,22 @@ export async function sortearCarta(
   cartasUsadas = [],
 ) {
   const cartasRef = collection(db, "cartas");
+  // Hierarquia de Modos:
+  // - NORMAL: Apenas Normal
+  // - MAIS18: Normal + Mais18
+  // - DIFICIL: Normal + Dificil
+  let allowedModes = [modo];
+
+  // Normal sempre está incluído nos outros modos para evitar falta de cartas
+  if (modo !== "normal") {
+    allowedModes.push("normal");
+  }
+
+  // Remove duplicatas e valores nulos
+  allowedModes = [...new Set(allowedModes)].filter(Boolean);
+
   let constraints = [
-    where("modo", "==", modo),
+    where("modo", "in", allowedModes),
     where("categoria", "in", categorias),
   ];
 
