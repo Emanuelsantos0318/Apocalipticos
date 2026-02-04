@@ -14,7 +14,7 @@ export function useRPG(codigo, sala = null) {
     targetUid,
     amount,
     isCriticalMultiplier = true,
-    propagate = true
+    propagate = true,
   ) => {
     if (!codigo || !targetUid) return;
 
@@ -31,9 +31,9 @@ export function useRPG(codigo, sala = null) {
       const finalDamage =
         isCritical && isCriticalMultiplier ? amount * 2 : amount;
 
-      // Novo HP
-      let newHp = (data.hp || 30) - finalDamage;
-      let newIsCritical = newHp <= 0;
+      // Novo HP (Mínimo 0)
+      let newHp = Math.max(0, (data.hp ?? 30) - finalDamage);
+      let newIsCritical = newHp === 0;
       const updates = {};
 
       // Lógica SOBREVIVENTE: Último Fôlego

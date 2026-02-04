@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { doc, onSnapshot, collection } from "firebase/firestore";
 import { db } from "../../firebase/config";
 import { useNavigate } from "react-router-dom";
@@ -14,7 +14,7 @@ import { useSounds } from "../../hooks/useSounds";
 export function useGameRoom(codigo, meuUid) {
   const navigate = useNavigate();
   const { playSair } = useSounds();
-  
+
   const [sala, setSala] = useState(null);
   const [jogadores, setJogadores] = useState([]);
   const [timeLeft, setTimeLeft] = useState(30);
@@ -58,14 +58,14 @@ export function useGameRoom(codigo, meuUid) {
       if (prevJogadoresRef.current.length > 0) {
         const currentUids = lista.map((p) => p.uid);
         const saiu = prevJogadoresRef.current.filter(
-          (p) => !currentUids.includes(p.uid)
+          (p) => !currentUids.includes(p.uid),
         );
         saiu.forEach((p) => {
-           // Só avisa se não for "Eu" que saí (para evitar flood se eu sair)
-           if (p.uid !== meuUid) {
-             toast.error(`${p.nome} saiu da sala.`);
-             playSair();
-           }
+          // Só avisa se não for "Eu" que saí (para evitar flood se eu sair)
+          if (p.uid !== meuUid) {
+            toast.error(`${p.nome} saiu da sala.`);
+            playSair();
+          }
         });
       }
 
@@ -75,5 +75,38 @@ export function useGameRoom(codigo, meuUid) {
     return () => unsub();
   }, [codigo, meuUid, playSair]);
 
-  return { sala, jogadores, timeLeft, setTimeLeft, loading };
+  // --- ENVY EVENT LOGIC (Identity Swap) ---
+  const displayedJogadores = useMemo(() => {
+    const envyEvent = sala?.activeEvents?.find((e) => e.id === "INVEJA");
+    const envyMask = envyEvent?.mask;
+
+    if (!envyEvent || !envyMask) return jogadores;
+
+    return jogadores.map((p) => {
+      if (envyMask[p.uid]) {
+        return {
+          ...p,
+          nome: envyMask[p.uid].nome,
+          avatar: envyMask[p.uid].avatar,
+          // Mantemos UID original para que as ações funcionem no alvo REAL,
+          // mas o usuário vê o nome/avatar FALSO.
+          // Inveja: "Você acha que vota em X (Fake), mas vota em Y (Real)" ->
+          // Se eu vejo o Avatar do Matheus (que na verdade é o João), e clico nele...
+          // Eu estou clicando no CARD do JOÃO (UID do João).
+          // Mas eu VEJO o Matheus. Então eu acho que estou votando no Matheus.
+          // Mas estou votando no João.
+          // Isso está correto com a descrição da Inveja.
+        };
+      }
+      return p;
+    });
+  }, [jogadores, sala]); // Recalcula se jogadores ou sala mudar
+
+  return {
+    sala,
+    jogadores: displayedJogadores,
+    timeLeft,
+    setTimeLeft,
+    loading,
+  };
 }

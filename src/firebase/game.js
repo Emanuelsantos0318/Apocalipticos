@@ -24,7 +24,7 @@ export async function sortearCarta(
   modo,
   categorias,
   tipo = null,
-  cartasUsadas = []
+  cartasUsadas = [],
 ) {
   const cartasRef = collection(db, "cartas");
   let constraints = [
@@ -64,7 +64,7 @@ export async function sortearCarta(
     // Fallback: se não achar do tipo específico, tenta achar qualquer uma (e ignora filtro, pois vai falhar)
     if (tipo) {
       console.warn(
-        `Nenhuma carta do tipo ${tipo} encontrada. Tentando fallback...`
+        `Nenhuma carta do tipo ${tipo} encontrada. Tentando fallback...`,
       );
       return sortearCarta(modo, categorias, null, cartasUsadas);
     }
@@ -73,7 +73,7 @@ export async function sortearCarta(
 
   // Filtrar cartas já usadas
   let cartasDisponiveis = cartas.filter(
-    (cart) => !cartasUsadas.includes(cart.id)
+    (cart) => !cartasUsadas.includes(cart.id),
   );
   let reset = false;
 
@@ -147,6 +147,6 @@ export async function updatePlayerRole(salaId, uid, roleId) {
       status: [], // buffs/debuffs
       roleUsed: false, // para habilidades de uso único
     },
-    { merge: true }
+    { merge: true },
   );
 }

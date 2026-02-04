@@ -2,6 +2,29 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [Não Lançado] - 2026-02-03
+
+### Adicionado (Landing Page)
+
+- **Seção de História Expandida**:
+  - Implementado layout de 5 cartões detalhando a Lore completa:
+    1. **A Grande Traição** (Projeto Aurora).
+    2. **Pós-Quarentena Rubra** (Isolamento em Bunkers).
+    3. **O Bar Apocalíptico** (Zona Neutra).
+    4. **Os Apocalípticos** (Resistência e Vício).
+    5. **Protocolo de Sanidade** (Mecânica de Jogo).
+  - Design responsivo com ícones e hover effects.
+- **Identidade Visual**:
+  - Atualizada a Navbar para usar a nova **Logo "Apocalípticos"** (Imagem) com efeitos de brilho e escala.
+  - Refinada a tipografia da **Hero Section** para suportar frases de efeito mais longas sem quebrar o layout.
+- **Personagens**:
+  - Refatorada a seção de personagens para incluir Lore detalhada e seleção interativa.
+
+### Corrigido
+
+- **Hero Typography**: Ajustado tamanho de fonte (`text-4xl` a `text-6xl`) para evitar sobreposição de textos longos.
+- **Navbar**: Substituído texto CSS por imagem de alta qualidade para garantir fidelidade à marca.
+
 ## [Não Lançado] - 2026-01-18
 
 ### Refinado (Eventos do Caos)

@@ -1,10 +1,11 @@
 import { motion, AnimatePresence } from "framer-motion";
 import React from "react";
+import { Skull } from "lucide-react";
 
 export default function RankingJogadores({ jogadores, meuUid }) {
   // Ordenar jogadores por pontos (maior para menor)
   const jogadoresOrdenados = [...jogadores].sort(
-    (a, b) => (b.pontos || 0) - (a.pontos || 0)
+    (a, b) => (b.pontos || 0) - (a.pontos || 0),
   );
 
   return (
@@ -50,8 +51,8 @@ export default function RankingJogadores({ jogadores, meuUid }) {
                         index === 0
                           ? "bg-yellow-400 text-yellow-900"
                           : index === 1
-                          ? "bg-gray-300 text-gray-900"
-                          : "bg-amber-600 text-amber-100"
+                            ? "bg-gray-300 text-gray-900"
+                            : "bg-amber-600 text-amber-100"
                       }`}
                     >
                       {index + 1}
@@ -70,9 +71,10 @@ export default function RankingJogadores({ jogadores, meuUid }) {
                       {jogador.uid === meuUid ? "Você" : jogador.nome}
                     </span>
                     {jogador.isCritical && (
-                      <span className="text-[10px] bg-red-900/50 text-red-200 px-1 rounded border border-red-500/50 animate-pulse">
-                        CRÍTICO
-                      </span>
+                      <Skull
+                        size={14}
+                        className="text-red-500 animate-pulse ml-1"
+                      />
                     )}
                   </div>
 
@@ -80,26 +82,26 @@ export default function RankingJogadores({ jogadores, meuUid }) {
                   <div className="w-full h-1.5 2xl:h-2.5 bg-gray-700/50 rounded-full overflow-hidden relative">
                     <div
                       className={`h-full rounded-full transition-all duration-500 ease-out ${
-                        (jogador.hp || 30) <= 10
+                        (jogador.hp ?? 30) <= 10
                           ? "bg-red-500"
-                          : (jogador.hp || 30) <= 20
-                          ? "bg-yellow-500"
-                          : "bg-green-500"
+                          : (jogador.hp ?? 30) <= 20
+                            ? "bg-yellow-500"
+                            : "bg-green-500"
                       }`}
                       style={{
                         width: `${Math.max(
                           0,
                           Math.min(
                             100,
-                            ((jogador.hp || 30) / (jogador.maxHp || 30)) * 100
-                          )
+                            ((jogador.hp ?? 30) / (jogador.maxHp || 30)) * 100,
+                          ),
                         )}%`,
                       }}
                     />
                   </div>
                   <div className="flex justify-between text-[10px] 2xl:text-xs text-gray-400 mt-0.5">
                     <span>
-                      HP: {jogador.hp || 30}/{jogador.maxHp || 30}
+                      HP: {jogador.hp ?? 30}/{jogador.maxHp || 30}
                     </span>
                   </div>
                 </div>

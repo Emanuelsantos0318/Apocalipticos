@@ -8,11 +8,11 @@ Apocalípticos é um jogo de desafios e interações em grupo, onde os jogadores
 
 ### Tela Incial que tem uma discrição do que é o jogo.
 
-- Landing Page com discrição do que é o jogo.
-  - Logo "Apocalípticos" (estilo neon/grunge).
-  - O que é o jogo?
-    - Uma imagem seguida de um texto que explica o que é o jogo.
-    - Botão "Jogar" (leva para a tela inicial do jogo). Primeiro aparece a logo, depois o texto e depois o botão.
+- Landing Page com discrição do que é o jogo. (✅ Implementado)
+  - ✅ Logo "Apocalípticos" (Imagem adicionada).
+  - ✅ O que é o jogo? (Seção de História Expandida).
+    - ✅ Uma imagem seguida de um texto que explica o que é o jogo.
+    - ✅ Botão "Jogar" (leva para a tela inicial do jogo).
   - Como jogar?
     - Um texto que explica como jogar.
   - Categorias
@@ -468,18 +468,23 @@ _Cartas Raras (20% chance) que interrompem o fluxo do jogo._
 > - Criar uma IA dentro do jogo com o comando pra quando o usuário for criar seu avatar, ele tem a opção prêmio de colocar sua foto lá por apenas 2 dólares, o usuário coloca sua foto lá e ele escolhe qual vai ser o nome do seu personagem. A IA vai gerar esse comando(que vamos criar um prompt para manter um padrão de estilo e qualidade) , alguém ela vai gerar pra ele ali toda estrutura de personagem, o poder do personagem conforme o nome em que ele colocou, a penalidade do personagem e vai introduzir esse personagem dentro do jogo particular da pessoa.
 
 ```javascript
+// Estrutura das cartas dos Personagens
+
 NOME_DO_PERSONAGEM: {
     id: "nome_do_personagem",
     name: "O Nome Do Personagem",
-    icon: "",
+    icon: "icon_personagem",
+    color: "text-blue-400",
+    bg: "bg-blue-900/20",
+    border: "border-blue-500/30",
     image: "/assets/characters/nome_do_personagem.png",
-    description: "",
+    description: "Historia dele",
     ability: {
-      name: "",
+      name: "Nome_da_habilidade",
       effect:
-        "",
-      cost: "",
-      cooldown: "",
+        "Efeito da habilidade",
+      cost: "Custo da habilidade",
+      cooldown: "Cooldown da habilidade",
     },
     lore: "",
   },
@@ -509,3 +514,5 @@ NOME_DO_PERSONAGEM: {
 ### Correções
 
 ## 7. Refatorações
+
+## 8. Best Practices

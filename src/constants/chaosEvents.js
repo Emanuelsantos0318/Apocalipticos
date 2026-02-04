@@ -27,7 +27,7 @@ export const CHAOS_EVENTS = [
     description:
       "Os nomes e avatares foram trocados! Cuidado em quem você vota.",
     type: "GLOBAL_EFFECT",
-    duration: 1,
+    duration: 4,
     icon: "🎭",
     color: "bg-green-600",
     slug: "envy_swap",
@@ -60,7 +60,7 @@ export const CHAOS_EVENTS = [
     description:
       "Tudo acontece em câmera lenta. Timer de 45s, pode pular a vez (custo: 1 dose).",
     type: "GLOBAL_EFFECT",
-    duration: 1,
+    duration: 2,
     icon: "😴",
     color: "bg-blue-400",
     slug: "sloth_slow",
