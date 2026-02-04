@@ -2,6 +2,20 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [Não Lançado] - 2026-02-04
+
+### Refinado (Responsividade & UX)
+
+- **Mobile First**:
+  - **Navbar**: Logo redimensionada e texto oculto em mobile para evitar poluição visual.
+  - **Hero Section**: Botões "Começar o Caos" e "Como Jogar" ajustados (`text-lg`) para caber em telas pequenas.
+  - **Story Cards**: Padding interno otimizado para leitura em dispositivos móveis.
+- **Navegação**:
+  - Botão **"Como Jogar"** agora realiza scroll suave (smooth scroll) para o rodapé da página.
+- **Correções Visuais**:
+  - Aumentado espaçamento superior (`pt-40`) da Hero Section para evitar que o título fique atrás da Navbar fixa.
+  - Corrigido typo "APOCALIÍPTICOS" -> "APOCALÍPTICOS".
+
 ## [Não Lançado] - 2026-02-03
 
 ### Adicionado (Landing Page)

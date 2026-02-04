@@ -161,19 +161,26 @@ export default function LandingPage() {
     }
   };
 
+  const handleHowToPlayClick = () => {
+    const element = document.getElementById("how-to-play");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 text-white overflow-x-hidden font-sans selection:bg-red-500 selection:text-white">
       {/* NAVBAR */}
       <nav className="fixed top-0 left-0 w-full z-50 bg-black/80 backdrop-blur-md border-b border-white/10 px-6 py-4 flex justify-between items-center">
-        <div className="h-14 md:h-16 flex items-center gap-2">
+        <div className="h-12 md:h-16 flex items-center gap-2">
           <img
             src="/logo-apocalipticos.svg"
             alt="APOCALÍPTICOS"
-            className="h-full w-auto object-contain drop-shadow-[0_0_25px_rgba(220,38,38,0.8)] scale-125 md:scale-150 origin-left p-2"
+            className="h-full w-auto object-contain drop-shadow-[0_0_20px_rgba(220,38,38,0.8)] scale-110 md:scale-150 origin-left p-1 md:p-2"
           />
-          <div>
-            <h1 className="text-2xl font-bold font-bebas-neue-regular ml-4">
-              APOCALÍPTICOS
+          <div className="ml-4 hidden md:block">
+            <h1 className="text-2xl font-bold font-rubik text-orange-500 p-2 text-shadow-[0_0_15px_rgba(220,164,52,0.6)]">
+              APOCALIÍPTICOS
             </h1>
           </div>
         </div>
@@ -188,7 +195,7 @@ export default function LandingPage() {
       </nav>
 
       {/* HERO SECTION */}
-      <section className="relative h-screen flex flex-col items-center justify-center text-center px-4 pt-20">
+      <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-4 pt-25 pb-12">
         {/* Background Effect */}
         <div className="absolute inset-0 overflow-hidden z-0">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-red-600/20 rounded-full blur-[120px] animate-pulse"></div>
@@ -201,7 +208,7 @@ export default function LandingPage() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: "circOut" }}
           >
-            <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tighter drop-shadow-2xl leading-tight">
+            <h1 className="text-4xl md:text-6xl font-black mb-6 mt-6 tracking-tighter drop-shadow-2xl leading-tight">
               <span className="block text-white mb-2">
                 O mundo acabou… mas a sede não.
               </span>
@@ -229,11 +236,14 @@ export default function LandingPage() {
           >
             <button
               onClick={handlePlayClick}
-              className="px-12 py-6 bg-red-600 hover:bg-red-700 text-white text-2xl font-black rounded-xl transition-transform hover:scale-105 shadow-[0_0_30px_rgba(220,38,38,0.6)]"
+              className="px-8 py-4 md:px-12 md:py-6 bg-red-600 hover:bg-red-700 text-white text-lg md:text-2xl font-black rounded-xl transition-transform hover:scale-105 shadow-[0_0_30px_rgba(220,38,38,0.6)]"
             >
               COMEÇAR O CAOS
             </button>
-            <button className="px-12 py-6 bg-transparent border-2 border-white/20 hover:border-white text-white text-2xl font-bold rounded-xl transition-colors">
+            <button
+              onClick={handleHowToPlayClick}
+              className="px-8 py-4 md:px-12 md:py-6 bg-transparent border-2 border-white/20 hover:border-white text-white text-lg md:text-2xl font-bold rounded-xl transition-colors"
+            >
               COMO JOGAR
             </button>
           </motion.div>
@@ -255,7 +265,7 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Card 1: A Grande Traição (Project Aurora) */}
-            <div className="bg-gray-900/50 p-8 rounded-2xl border border-gray-800 hover:border-red-900/50 transition-colors group">
+            <div className="bg-gray-900/50 p-6 md:p-8 rounded-2xl border border-gray-800 hover:border-red-900/50 transition-colors group">
               <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
                 🚀
               </div>
@@ -273,7 +283,7 @@ export default function LandingPage() {
             </div>
 
             {/* Card 2: Pós-Quarentena (Isolation) */}
-            <div className="bg-gray-900/50 p-8 rounded-2xl border border-gray-800 hover:border-yellow-900/50 transition-colors group">
+            <div className="bg-gray-900/50 p-6 md:p-8 rounded-2xl border border-gray-800 hover:border-yellow-900/50 transition-colors group">
               <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
                 🏚️
               </div>
@@ -289,7 +299,7 @@ export default function LandingPage() {
             </div>
 
             {/* Card 3: O Bar Apocalíptico (Sanctuary) */}
-            <div className="bg-gray-900/50 p-8 rounded-2xl border border-gray-800 hover:border-green-900/50 transition-colors group">
+            <div className="bg-gray-900/50 p-6 md:p-8 rounded-2xl border border-gray-800 hover:border-green-900/50 transition-colors group">
               <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
                 🍺
               </div>
@@ -305,7 +315,7 @@ export default function LandingPage() {
             </div>
 
             {/* Card 4: Os Apocalípticos (Resistance) - NEW */}
-            <div className="bg-gray-900/50 p-8 rounded-2xl border border-gray-800 hover:border-purple-900/50 transition-colors group lg:col-span-2">
+            <div className="bg-gray-900/50 p-6 md:p-8 rounded-2xl border border-gray-800 hover:border-purple-900/50 transition-colors group lg:col-span-2">
               <div className="text-4xl mb-4 group-hover:scale-105 transition-transform duration-300">
                 ☢️
               </div>
@@ -322,7 +332,7 @@ export default function LandingPage() {
             </div>
 
             {/* Card 5: O Protocolo (The Cure) */}
-            <div className="bg-gray-900/50 p-8 rounded-2xl border border-gray-800 hover:border-blue-900/50 transition-colors group">
+            <div className="bg-gray-900/50 p-6 md:p-8 rounded-2xl border border-gray-800 hover:border-blue-900/50 transition-colors group">
               <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
                 🥃
               </div>
@@ -551,7 +561,7 @@ export default function LandingPage() {
           <div className="mt-16">
             <button
               onClick={handlePlayClick}
-              className="px-10 py-5 bg-white text-black hover:bg-gray-200 font-black text-xl rounded-full transition-transform hover:scale-105"
+              className="px-8 py-4 md:px-10 md:py-5 bg-white text-black hover:bg-gray-200 font-black text-lg md:text-xl rounded-full transition-transform hover:scale-105"
             >
               ENTRAR NO BUNKER
             </button>

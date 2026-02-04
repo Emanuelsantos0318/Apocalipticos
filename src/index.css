@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@theme {
+  --font-bebas: "Bebas Neue", sans-serif;
+  --font-archivo: "Archivo Black", sans-serif;
+  --font-rubik: "Rubik Distressed", sans-serif;
+}
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -13,6 +19,8 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  color: rgba(250, 164, 52, 0.8);
 }
 
 a {
@@ -33,10 +41,10 @@ body {
   overflow-x: hidden;
 }
 
-h1 {
+/* h1 {
   padding: 8%;
   color: white;
-}
+} */
 #home button {
   border-radius: 8px;
   border: 1px solid transparent;
