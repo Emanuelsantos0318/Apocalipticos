@@ -1,30 +1,29 @@
 export const latestUpdate = {
-  version: "2026-01-10", // Data da versão para controle de cache
-  title: "O Sistema RPG Chegou! ⚔️�",
+  version: "2026-02-04", // Data da versão para controle de cache
+  title: "Caos Perfeito & Navegação 🧭",
   intro:
-    "Escolha sua classe e lute pela sobrevivência com as novas mecânicas de Habilidade e HP!",
+    "Ajustes finos nos eventos do Caos e melhorias na navegação para ninguém se perder no apocalipse.",
   changes: [
     {
-      title: "🎭 5 Classes Únicas",
+      title: "🎭 Inveja Real",
       description:
-        "Jogue como Médico, Assassino, Estrategista, Incendiária ou Sobrevivente. Cada papel tem um poder especial que muda o rumo do jogo.",
+        "Agora a troca de identidade do evento 'Inveja' funciona de verdade! Seu nome e avatar serão trocados visualmente com outro jogador.",
     },
     {
-      title: "🔐 Autenticação Robusta",
+      title: "� Ditador Acessível",
       description:
-        "Agora você pode vincular sua conta Google para salvar seu progresso e jogar em qualquer dispositivo. Contas anônimas também são salvas automaticamente!",
+        "O botão de aplicar multa do Ditador foi movido para a parte inferior da tela, facilitando o uso no celular sem atrapalhar o jogo.",
     },
     {
-      title: "❤️ Sistema de Vida & Crítico",
+      title: "🚪 Saída Ajustada",
       description:
-        "Todos começam com 30 PV. Recusar desafios tira vida! Se chegar a 0, você entra em Modo Crítico e toma Dano Dobrado.",
+        "O botão 'Sair da Sala' agora redireciona corretamente para a Home e o som de alerta toca para quem ficou na partida.",
     },
     {
-      title: "⚡ Habilidades Táticas",
+      title: "🃏 Mais Cartas",
       description:
-        "Use o novo botão 'Habilidade' para curar amigos, roubar vida, pular a vez de rivais ou dobrar a punição de alguém.",
+        "Os modos 'Difícil' e '+18' agora incluem também as cartas do modo Normal, aumentando a variedade e reduzindo repetições.",
     },
   ],
-  footer:
-    "Use suas habilidades com sabedoria... ou morra tentando! 💀 Divirta-se com as novidades e cuidado com os amigos de merda!",
+  footer: "O Caos está mais limpo e mortal do que nunca. Boa sorte! 💀",
 };
