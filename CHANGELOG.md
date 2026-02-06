@@ -1,4 +1,4 @@
-# Changelog
+# ⚙️ Changelog
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
@@ -339,10 +339,6 @@ Correções Críticas:
 Novas Funcionalidades:
 
 - Contador de Bebidas: Agora sabemos quem bebeu mais! 🍺
-
-# Changelog
-
-Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
 ## [Não Lançado] - 2025-11-27
 
