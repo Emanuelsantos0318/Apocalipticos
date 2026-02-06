@@ -416,6 +416,10 @@ _Cartas Raras (20% chance) que interrompem o fluxo do jogo._
 
 - ✅ **Inveja:** Não esta sendo feita a troca de avatares e nomes. E nem está valendo nas 4 rodadas. -> Corrigido conflito de lógica.
 
+- ⏳ **Ditador:** Ao aplicar a multa, o jogador está recebendo a penalidade da habilidade do personagem e não está recebendo a penalidade do evento.
+- ⏳ **Luxúria:** Quando um jogador toma uma penalidade as mensagens de penalidade devem aparecer para os dois jogadores envolvidos. Atualmente está aparecendo apenas para o jogador que tomou a penalidade, e o outro não recebe a mensagem.
+- Sobre a traição da luxúria, quais são os requisitos para que a traição seja possível? E onde ela aparece? Eu joguei e não vi a traição.
+
 ##### **Eventos Gerais:**
 
 - 📢 Identidade Visual
@@ -521,3 +525,9 @@ NOME_DO_PERSONAGEM: {
 - Landing Page: Acredito que ela tem informações desnecessarias, poderiamos refatorar ela para que ela seja mais simples e direta.
 
 ## 8. Best Practices
+
+## 9. Performance
+
+> Apenas comandos para eu não esquecer.
+
+Execute a skill global de performance web e me traga a analise deste projeto
