@@ -24,10 +24,15 @@ import ChoiceModal from "../components/game/ChoiceModal";
 import ConfirmModal from "../components/modals/ConfirmModal";
 import PowerUpBar from "../components/game/PowerUpBar";
 import ClassAbilityModal from "../components/game/ClassAbilityModal";
+// Componentes Refatorados [NEW]
+import RevengeSelectorModal from "../components/game/RevengeSelectorModal";
+import ActionStatusBoard from "../components/game/ActionStatusBoard";
+import GameStartControls from "../components/game/GameStartControls";
+import DictatorControls from "../components/game/DictatorControls";
 import ChaosEventOverlay from "../components/game/chaos/ChaosEventOverlay";
 
 import { CARD_TYPES } from "../constants/constants";
-import { Volume2, VolumeX, Skull, Zap } from "lucide-react";
+import { Volume2, VolumeX, Zap } from "lucide-react"; // Skull removed (used in RevengeSelectorModal)
 
 export default function Jogo() {
   const { codigo } = useParams();
@@ -241,56 +246,14 @@ export default function Jogo() {
                     />
                   )}
 
-                {/* Modal de Seleção de Vingança */}
-                {powerUps.showRevengeSelector && (
-                  <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-gray-900 border border-red-500 rounded-xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200">
-                      <h3 className="text-xl font-bold text-red-500 mb-4 flex items-center gap-2">
-                        <Skull size={24} />
-                        ESCOLHA SUA VÍTIMA
-                      </h3>
-                      <p className="text-gray-300 mb-6 text-sm">
-                        Quem vai beber no seu lugar? 😈
-                      </p>
-                      <div className="grid grid-cols-2 gap-3 max-h-60 overflow-y-auto custom-scrollbar">
-                        {jogadores
-                          .filter((j) => j.uid !== meuUid)
-                          .map((j) => (
-                            <button
-                              key={j.uid}
-                              onClick={() =>
-                                powerUps.handleConfirmRevenge(j.uid)
-                              }
-                              className="flex items-center gap-3 p-3 rounded-lg bg-gray-800 hover:bg-red-900/40 border border-gray-700 hover:border-red-500 transition-all group"
-                            >
-                              <div className="w-10 h-10 rounded-full bg-gray-700 overflow-hidden">
-                                {j.avatar?.startsWith("http") ? (
-                                  <img
-                                    src={j.avatar}
-                                    alt={j.nome}
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
-                                  <span className="w-full h-full flex items-center justify-center text-lg">
-                                    {j.avatar}
-                                  </span>
-                                )}
-                              </div>
-                              <span className="font-bold text-gray-200 group-hover:text-red-200 truncate">
-                                {j.nome}
-                              </span>
-                            </button>
-                          ))}
-                      </div>
-                      <button
-                        onClick={() => powerUps.setShowRevengeSelector(false)}
-                        className="mt-6 w-full py-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-white font-bold transition-colors"
-                      >
-                        Cancelar
-                      </button>
-                    </div>
-                  </div>
-                )}
+                {/* Modal de Seleção de Vingança [REFACTORED] */}
+                <RevengeSelectorModal
+                  isOpen={powerUps.showRevengeSelector}
+                  jogadores={jogadores}
+                  meuUid={meuUid}
+                  onConfirm={powerUps.handleConfirmRevenge}
+                  onCancel={() => powerUps.setShowRevengeSelector(false)}
+                />
 
                 {/* Área de Votação (Amigos de Merda) */}
                 {isVotingRound ? (
@@ -341,58 +304,16 @@ export default function Jogo() {
                     )}
                   </div>
                 ) : sala.statusAcao ? (
-                  // Status de Ação (Aguardando Confirmação)
-                  <div className="mt-6 p-4 bg-yellow-900/40 border border-yellow-500/50 rounded-lg text-center backdrop-blur-sm">
-                    <p className="text-lg font-bold text-yellow-400 mb-2">
-                      {sala.statusAcao === "aguardando_penalidade"
-                        ? "Jogador aceitou a penalidade (bebida)."
-                        : "Aguardando confirmação..."}
-                    </p>
-
-                    {/* CHAOS EVENTS OVERLAY */}
-                    <ChaosEventOverlay
-                      sala={sala}
-                      jogadores={jogadores}
-                      meuUid={meuUid}
-                      gameActions={gameActions}
-                      setCustomRole={setCustomRole}
-                      setShowAbilityModal={setShowAbilityModal}
-                    />
-
-                    {/* STANDARD: Admin Confirmation (Allowed for Chaos too to unblock stuck state) */}
-                    {jogadores.find((j) => j.uid === meuUid)?.isHost && (
-                      <div className="flex justify-center gap-4 mt-4">
-                        {sala.statusAcao === "aguardando_penalidade" ? (
-                          <button
-                            onClick={gameActions.handleAdminConfirmPenalty}
-                            className="px-6 py-2 bg-red-600 hover:bg-red-700 rounded font-bold"
-                          >
-                            Confirmar (Bebeu)
-                          </button>
-                        ) : (
-                          <>
-                            <button
-                              onClick={gameActions.handleAdminConfirm}
-                              className="px-6 py-2 bg-green-600 hover:bg-green-700 rounded font-bold"
-                            >
-                              Confirmar{" "}
-                              {sala.cartaAtual?.tipo === "CAOS"
-                                ? "(Ativar)"
-                                : "(Cumpriu)"}
-                            </button>
-                            <button
-                              onClick={gameActions.handleAdminReject}
-                              className="px-6 py-2 bg-red-600 hover:bg-red-700 rounded font-bold"
-                            >
-                              {sala.cartaAtual?.tipo === "CAOS"
-                                ? "Cancelar"
-                                : "Rejeitar (Não Cumpriu)"}
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                  // Status de Ação (Aguardando Confirmação) [REFACTOR]
+                  <ActionStatusBoard
+                    sala={sala}
+                    jogadores={jogadores}
+                    meuUid={meuUid}
+                    gameActions={gameActions}
+                    setCustomRole={setCustomRole}
+                    setShowAbilityModal={setShowAbilityModal}
+                    isHost={jogadores.find((j) => j.uid === meuUid)?.isHost}
+                  />
                 ) : (
                   // Ações Normais ou Chaos Actions
                   <>
@@ -461,59 +382,18 @@ export default function Jogo() {
                 <Timer timeLeft={timeLeft} totalTime={30} />
               </>
             ) : (
-              // START GAME BUTTON
+              // START GAME BUTTON [REFACTOR]
               <div className="text-center py-12">
-                {isCurrentPlayer ? (
-                  <div className="flex flex-col items-center gap-4">
-                    <button
-                      onClick={gameActions.handleSortearCarta}
-                      className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 rounded-xl text-xl font-bold animate-bounce shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-all hover:scale-105"
-                    >
-                      SORTEAR CARTA 🃏
-                    </button>
-
-                    {/* Botão de Habilidade de Classe */}
-                    {meuJogador?.role && (
-                      <button
-                        onClick={() => setShowAbilityModal(true)}
-                        className="flex items-center gap-2 px-6 py-2 bg-gray-800 border border-purple-500/30 hover:bg-gray-700 hover:border-purple-400 rounded-lg text-purple-300 font-bold transition-all text-sm uppercase tracking-wider"
-                      >
-                        <Zap size={16} />
-                        Usar Habilidade
-                      </button>
-                    )}
-
-                    {/* SLOTH SKIP BUTTON */}
-                    {sala?.activeEvents?.some((e) => e.id === "PREGUICA") && (
-                      <button
-                        onClick={async () => {
-                          toast("😴 Você escolheu dormir...", { icon: "💤" });
-                          await gameActions.handlePenalidade(); // Penalidade padrão (beber)
-                          // Se `handlePenalidade` apenas seta status, precisamos confirmar ou usar um metodo direto
-                          // handlePenalidade seta statusAcao="aguardando_penalidade".
-                          // Precisamos de algo direto: Tira HP e Passa.
-                          // Vamos usar takeDamage direto? Não temos acesso fácil aqui sem exportar takeDamage do hook actions.
-                          // Mas temos handlePenalidade. O fluxo normal é: Recusar -> Admin Confirma.
-                          // Para "Preguiça" ser fluido, deveria ser automático?
-                          // Vamos manter o fluxo: Clica em Dormir -> "Aceitou Penalidade" -> Admin Confirma.
-                        }}
-                        className="flex items-center gap-2 px-6 py-2 bg-blue-900/50 border border-blue-500/30 hover:bg-blue-800 rounded-lg text-blue-300 font-bold transition-all text-sm uppercase tracking-wider"
-                      >
-                        <span className="text-xl">💤</span>
-                        Pular (Beber)
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  <p className="text-xl animate-pulse text-gray-300">
-                    Aguardando{" "}
-                    <span className="font-bold text-purple-400">
-                      {jogadores.find((j) => j.uid === currentPlayer)?.nome || // Updated
-                        "o jogador"}
-                    </span>{" "}
-                    sortear uma carta...
-                  </p>
-                )}
+                <GameStartControls
+                  isCurrentPlayer={isCurrentPlayer}
+                  currentPlayerName={
+                    jogadores.find((j) => j.uid === currentPlayer)?.nome
+                  }
+                  gameActions={gameActions}
+                  meuJogador={meuJogador}
+                  sala={sala}
+                  onOpenAbilityModal={() => setShowAbilityModal(true)}
+                />
               </div>
             )}
           </div>
@@ -618,35 +498,12 @@ export default function Jogo() {
           activeEvents={sala?.activeEvents} // PASSING EVENTS FOR FILTERING
         />
 
-        {/* BOTÃO DITADOR (ORGULHO) - Mantido aqui por ser role persistente */}
-        {sala?.activeEvents?.some(
-          (e) => e.id === "ORGULHO" && e.owner === meuUid,
-        ) && (
-          <button
-            onClick={() => {
-              setCustomRole({
-                id: "ditador",
-                name: "Ditador Supremo",
-                icon: "👑",
-                image:
-                  "https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=500&auto=format&fit=crop&q=60",
-                ability: {
-                  name: "Aplicar Multa",
-                  effect:
-                    "Puna quem desobeder suas regras! (Tira 5 Pontos de Vida)",
-                  cost: "Gratuito",
-                },
-                needsTarget: true,
-              });
-              setShowAbilityModal(true);
-            }}
-            className="fixed bottom-24 left-4 z-40 bg-yellow-600 hover:bg-yellow-500 text-white p-3 rounded-full shadow-lg border-2 border-yellow-300 animate-bounce flex items-center gap-2 font-bold uppercase tracking-wider"
-            title="APLICAR MULTA DO DITADOR"
-          >
-            <span className="text-xl">👑</span>
-            <span className="hidden md:inline">Multar</span>
-          </button>
-        )}
+        {/* BOTÃO DITADOR (ORGULHO) [REFACTOR] */}
+        <DictatorControls
+          activeEvents={sala?.activeEvents}
+          meuUid={meuUid}
+          onOpenAbilityModal={setShowAbilityModal}
+        />
 
         {/* BOTÃO DE MÚSICA (Floating) */}
         <button
