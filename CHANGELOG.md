@@ -2,6 +2,26 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [Não Lançado] - 2026-02-05
+
+### Adicionado (SEO & Otimização)
+
+- **Skill de Auditoria**: Implementada infraestrutura de auditoria automatizada para SEO e Performance.
+- **SEO**:
+  - Adicionada `meta description` e tags Open Graph (`og:image`, `og:url` corrigida para Netlify).
+  - Melhorada semântica HTML da Home (hierarquia `h2/h3`, links `<a>` em vez de `divs clickáveis`).
+- **Performance**:
+  - Implementado **Code Splitting** com `React.lazy` para carregamento sob demanda das páginas (Home, Lobby, Jogo).
+
+### Refatorado (Manutenibilidade)
+
+- **Jogo.jsx**:
+  - Extraído componente `RevengeSelectorModal` (Seleção de vingança).
+  - Extraído componente `ActionStatusBoard` (Painel de confirmação do Admin).
+  - Extraído componente `GameStartControls` (Botões de início de turno).
+  - Extraído componente `DictatorControls` (Ações do evento Orgulho).
+  - Redução significativa de linhas no componente principal.
+
 ## [Não Lançado] - 2026-02-04
 
 ### Refinado (Responsividade & UX)
