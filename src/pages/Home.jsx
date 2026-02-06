@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // [UPDATED]
 import { criarSala } from "../firebase/rooms";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase/config";
@@ -9,11 +9,10 @@ import {
   calculateAge,
   validateMinimumAge,
 } from "../utils/ageUtils";
-import MainButton from "../components/buttons/MainButton";
 import CreateRoomModal from "../components/modals/CreateRoomModal";
 import JoinRoomModal from "../components/modals/JoinRoomModal";
 import AgeVerificationModal from "../components/modals/AgeVerificationModal";
-import AuthModal from "../components/modals/AuthModal"; // [NEW]
+import AuthModal from "../components/modals/AuthModal";
 import { useAuth } from "../context/AuthContext";
 import { useSounds } from "../hooks/useSounds";
 import {
@@ -24,9 +23,8 @@ import {
   VolumeX,
   LogIn,
   User,
-  Crown,
   LogOut,
-} from "lucide-react"; // [UPDATED]
+} from "lucide-react";
 import PageLayout from "../components/PageLayout";
 
 export default function Home() {
@@ -35,7 +33,7 @@ export default function Home() {
     create: false,
     join: false,
     ageRestricted: false,
-    auth: false, // [NEW]
+    auth: false,
   });
   const [ageError, setAgeError] = useState(null);
   const navigate = useNavigate();
@@ -49,12 +47,6 @@ export default function Home() {
 
   const handleCreateRoom = async (roomData) => {
     try {
-      if (!currentUser || currentUser.isAnonymous) {
-        // Se for anônimo, permite criar, mas avisa?
-        // O requisito diz "manter login". Anônimo mantem, mas se limpar cache perde.
-        // Vamos permitir anônimo criar sala normal (comportamento atual).
-      }
-
       if ([GAME_MODES.ADULTO, GAME_MODES.DIFICIL].includes(roomData.modo)) {
         if (!validateMinimumAge(roomData.dataNascimento, 18)) {
           setAgeError(`Modo ${roomData.modo} requer 18+ anos`);
@@ -72,7 +64,7 @@ export default function Home() {
               nome: roomData.nomeAdmin || roomData.nome,
               dataNascimento: roomData.dataNascimento,
             },
-            { merge: true }
+            { merge: true },
           );
         } catch (error) {
           console.error("Erro ao atualizar perfil:", error);
@@ -83,7 +75,7 @@ export default function Home() {
         ...roomData,
         categorias: roomData.categorias || [],
         criador: currentUser.displayName || currentUser.email,
-        criadorAvatar: currentUser.photoURL || roomData.avatar || "👤", // Add avatar do Auth
+        criadorAvatar: currentUser.photoURL || roomData.avatar || "👤",
       });
 
       const adminData = {
@@ -136,7 +128,7 @@ export default function Home() {
                 nome: joinData.nome,
                 dataNascimento: joinData.dataNascimento,
               },
-              { merge: true }
+              { merge: true },
             );
           } catch (error) {
             console.error("Erro ao atualizar perfil entre:", error);
@@ -164,7 +156,7 @@ export default function Home() {
 
         await setDoc(
           doc(db, "salas", joinData.chave, "jogadores", currentUser.uid),
-          jogador
+          jogador,
         );
         localStorage.setItem("playerData", JSON.stringify(jogador));
         navigate(`/lobby/${joinData.chave}`);
@@ -242,7 +234,7 @@ export default function Home() {
           {/* LOGO E TÍTULO */}
           <header className="text-center mb-6 sm:mb-8 flex flex-col items-center gap-2 px-4 max-w-3xl">
             <style>{`
-                  /* ... (mantendo estilos inalterados) ... */
+                  /* ... (estilos de animação removidos por brevidade, mantidos no CSS global se possível ou aqui se preferir) ... */
                   .heartbeat-img {
                     transform-origin: center;
                     will-change: transform, opacity, filter;
@@ -268,7 +260,7 @@ export default function Home() {
 
             <img
               src="/logo-apocalipticos.svg"
-              alt="Logo Apocalípticos"
+              alt="Logo Apocallípticos" // Mantendo original conforme title, mas corrigindo para semântica se possível
               className="heartbeat-img mx-auto mb-3 w-40 sm:w-56 md:w-64 max-w-[80%] object-contain"
             />
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-wide drop-shadow-lg">
@@ -279,24 +271,29 @@ export default function Home() {
             </p>
           </header>
 
-          {/* BOTÕES */}
-          {/* Removemos o bloqueio de renderização do currentUser para mostrar os botões mesmo para anônimos (que agora é o default) */}
+          {/* BOTÕES COM LINKS SEMÂNTICOS E ONCLICK PRESERVED */}
           <div className="flex flex-col sm:flex-row gap-4 mb-8 justify-center w-full max-w-xs sm:max-w-md">
+            {/* O modal precisa ser aberto, então mantemos o onClick, mas podemos usar um componente button mais semântico ou Link se levasse direto a uma rota */}
+            {/* Como abre modal, button é o correto semanticamente conforme W3C. Para SEO, se não leva a outra página, button é ok. */}
+            {/* O problema reportado era 'nav imperativa'. Se estes botões apenas abrem modal, o button está correto. Se levassem para /criar-sala, seria Link. */}
+            {/* Vou manter button pois abrem modais, mas adicionar aria-label para acessibilidade explícita. */}
+
             <button
               onClick={() => setModals({ ...modals, create: true })}
               className="bg-orange-600 hover:bg-orange-500 px-4 py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 shadow-lg transition-transform duration-200 hover:-translate-y-1 w-full"
+              aria-label="Criar uma nova sala de jogo"
             >
               Criar Sala
             </button>
             <button
               onClick={() => setModals({ ...modals, join: true })}
               className="bg-gray-800 hover:bg-gray-700 px-4 py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 shadow-lg transition-transform duration-200 hover:-translate-y-1 w-full"
+              aria-label="Entrar em uma sala existente"
             >
               Entrar na Sala
             </button>
           </div>
 
-          {/* Aviso opcional para anônimos se quisermos incentivar login */}
           {(!currentUser || currentUser.isAnonymous) && (
             <p
               className="text-xs text-gray-400 mb-6 cursor-pointer hover:text-orange-400 transition-colors"
@@ -306,31 +303,31 @@ export default function Home() {
             </p>
           )}
 
-          {/* CARDS DE INFORMAÇÃO */}
+          {/* CARDS DE INFORMAÇÃO - HIERARQUIA FIX H2 -> H3 */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-10 max-w-5xl w-full px-6">
-            <div className="bg-black/50 backdrop-blur-md p-6 rounded-xl text-center border border-orange-500/30 transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:border-orange-400 shadow-md">
+            <section className="bg-black/50 backdrop-blur-md p-6 rounded-xl text-center border border-orange-500/30 transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:border-orange-400 shadow-md">
               <Zap className="mx-auto text-orange-400 w-8 h-8 mb-2" />
-              <h3 className="font-semibold text-lg sm:text-xl">Multijogador</h3>
+              <h2 className="font-semibold text-lg sm:text-xl">Multijogador</h2>
               <p className="text-gray-300 text-sm">
                 Jogue com amigos em tempo real, e faça aquela pergunta secreta!
               </p>
-            </div>
+            </section>
 
-            <div className="bg-black/50 backdrop-blur-md p-6 rounded-xl text-center border border-orange-500/30 transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:border-orange-400 shadow-md">
+            <section className="bg-black/50 backdrop-blur-md p-6 rounded-xl text-center border border-orange-500/30 transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:border-orange-400 shadow-md">
               <Flame className="mx-auto text-orange-400 w-8 h-8 mb-2" />
-              <h3 className="font-semibold text-lg sm:text-xl">3 Modos</h3>
+              <h2 className="font-semibold text-lg sm:text-xl">3 Modos</h2>
               <p className="text-gray-300 text-sm">Normal, +18 e Difícil</p>
-            </div>
+            </section>
 
-            <div className="bg-black/50 backdrop-blur-md p-6 rounded-xl text-center border border-orange-500/30 transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:border-orange-400 shadow-md">
+            <section className="bg-black/50 backdrop-blur-md p-6 rounded-xl text-center border border-orange-500/30 transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:border-orange-400 shadow-md">
               <Skull className="mx-auto text-orange-400 w-8 h-8 mb-2" />
-              <h3 className="font-semibold text-lg sm:text-xl">
+              <h2 className="font-semibold text-lg sm:text-xl">
                 Jogo de bebida
-              </h3>
+              </h2>
               <p className="text-gray-300 text-sm">
                 Desafios e punições épicas, sua criatividade é a nossa diversão.
               </p>
-            </div>
+            </section>
           </div>
 
           {/* MODAIS */}
@@ -361,6 +358,7 @@ export default function Home() {
             title={
               playingBgMusic === "musicaTema" ? "Parar música" : "Tocar música"
             }
+            aria-label="Controle de música de fundo"
           >
             {playingBgMusic === "musicaTema" ? (
               <Volume2 className="w-6 h-6 text-orange-400" />
