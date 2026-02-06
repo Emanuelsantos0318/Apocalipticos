@@ -4,15 +4,17 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import RoomProvider from "./context/RoomProvider";
 import App from "./App";
-import Home from "./pages/Home";
-import Lobby from "./pages/Lobby";
-import Jogo from "./pages/Jogo";
 import ErrorPage from "./pages/ErrorPage";
 import "./index.css";
 import VideoBackground from "./assets/VideoBackground";
 import { Toaster } from "react-hot-toast";
+import LoadingScreen from "./components/LoadingScreen";
 
-import LandingPage from "./pages/landing/LandingPage";
+// Lazy loading das páginas
+const LandingPage = React.lazy(() => import("./pages/landing/LandingPage"));
+const Home = React.lazy(() => import("./pages/Home"));
+const Lobby = React.lazy(() => import("./pages/Lobby"));
+const Jogo = React.lazy(() => import("./pages/Jogo"));
 
 const router = createBrowserRouter([
   {
@@ -60,12 +62,40 @@ const router = createBrowserRouter([
         </RoomProvider>
       </AuthProvider>
     ),
-    errorElement: <ErrorPage />, // Tratamento global de erros
+    errorElement: <ErrorPage />,
     children: [
-      { index: true, element: <LandingPage /> },
-      { path: "app", element: <Home /> },
-      { path: "lobby/:codigo", element: <Lobby /> },
-      { path: "jogo/:codigo", element: <Jogo /> },
+      {
+        index: true,
+        element: (
+          <React.Suspense fallback={<LoadingScreen theme="apocalypse" />}>
+            <LandingPage />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: "app",
+        element: (
+          <React.Suspense fallback={<LoadingScreen theme="apocalypse" />}>
+            <Home />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: "lobby/:codigo",
+        element: (
+          <React.Suspense fallback={<LoadingScreen theme="apocalypse" />}>
+            <Lobby />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: "jogo/:codigo",
+        element: (
+          <React.Suspense fallback={<LoadingScreen theme="apocalypse" />}>
+            <Jogo />
+          </React.Suspense>
+        ),
+      },
     ],
   },
 ]);
