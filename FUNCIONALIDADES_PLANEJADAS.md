@@ -177,6 +177,8 @@ Apocalípticos é um jogo de desafios e interações em grupo, onde os jogadores
 
 **Temas Dinâmicos**: O fundo da tela poderia mudar sutilmente dependendo do modo de jogo (ex: mais sombrio no modo "Difícil", mais neon no "+18").
 
+- Mudar o background para cada modo de jogo.
+
 ⏳ **Fontes**: Se você encontrar fontes mais adequadas para isso pode usar a vontade, essa que tem lá é apenas para testes.
 
 ⏳ **Efeitos Sonoros**: Adicionar efeitos sonoros e animações avançadas.
@@ -419,6 +421,8 @@ _Cartas Raras (20% chance) que interrompem o fluxo do jogo._
 - ⏳ **Ditador:** Ao aplicar a multa, o jogador está recebendo a penalidade da habilidade do personagem e não está recebendo a penalidade do evento.
 - ⏳ **Luxúria:** Quando um jogador toma uma penalidade as mensagens de penalidade devem aparecer para os dois jogadores envolvidos. Atualmente está aparecendo apenas para o jogador que tomou a penalidade, e o outro não recebe a mensagem.
 - Sobre a traição da luxúria, quais são os requisitos para que a traição seja possível? E onde ela aparece? Eu joguei e não vi a traição.
+
+- **Ira:** A logica que passei que o jogador da vez escolhe 2 pessoas para formar um par deve ser mantida. Mas vamos adicionar uma condicional para quando só tiver 2 jogadores(contando o jogador da vez), ele deve se auto formar par com o outro jogador.
 
 ##### **Eventos Gerais:**
 

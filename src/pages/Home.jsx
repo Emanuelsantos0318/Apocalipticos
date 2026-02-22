@@ -259,11 +259,13 @@ export default function Home() {
              `}</style>
 
             <img
-              src="/logo-apocalipticos.svg"
+              src="/logo-apocalipticos1.svg"
+              width="256"
+              height="256"
               alt="Logo Apocallípticos" // Mantendo original conforme title, mas corrigindo para semântica se possível
               className="heartbeat-img mx-auto mb-3 w-40 sm:w-56 md:w-64 max-w-[80%] object-contain"
             />
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-wide drop-shadow-lg">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold font-rubik text-orange-500 text-shadow-[0_0_15px_rgba(220,164,52,0.6)] tracking-wide drop-shadow-lg">
               Apocallípticos
             </h1>
             <p className="title text-gray-300 mt-2 text-sm sm:text-base md:text-lg leading-relaxed">

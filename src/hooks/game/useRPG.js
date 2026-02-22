@@ -66,11 +66,17 @@ export function useRPG(codigo, sala = null) {
           if (targetUid === linkedTo) partnerUid = owner;
 
           if (partnerUid) {
+            // Atualiza mensagem global antes de dar dano
+            await updateDoc(doc(db, "salas", codigo), {
+              systemMessage: {
+                text: "💔 O Pacto da Luxúria exige sacrifício compartilhado...",
+                icon: "💋",
+                timestamp: Date.now(),
+              },
+            });
+
             // Delay pequeno para efeito dramático
             setTimeout(() => {
-              toast("💔 O Pacto da Luxúria exige sacrifício compartilhado...", {
-                icon: "💋",
-              });
               takeDamage(partnerUid, amount, isCriticalMultiplier, false); // False para evitar loop
             }, 1500);
           }

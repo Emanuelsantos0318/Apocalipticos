@@ -1,87 +1,65 @@
 ### 🚀 Relatório de Auditoria de Desempenho
 
 **Resumo Executivo:**
-A pontuação de desempenho estática é **65/100**. O projeto possui uma boa base com React e Vite, mas falha em otimizações críticas de ativos (SVG de 800KB!) e estratégia de carregamento (sem Code Splitting). A complexidade do componente principal `Jogo.jsx` também sugere riscos de renderização.
+**Pontuação Estimada: 85/100**
+O projeto está bem estruturado, com boas práticas modernas como **Code Splitting** (já implementado) e uso de bibliotecas leves (`lucide-react`). O principal ponto de atenção é a **estratégia de carregamento de imagens** para evitar CLS (Cumulative Layout Shift) e a otimização de recursos estáticos grandes.
 
 ---
 
 ### 🔴 Problemas Críticos (Alto Impacto)
 
-_Problemas que irão degradar visivelmente a experiência do usuário ou causar a falha do aplicativo._
-
-**1. SVG Gigante (Bloqueio de Renderização)**
-
-- **Local:** `public/logo-apocalipticos.svg` (800KB)
-- **O Problema:** Um arquivo SVG de 800KB é excessivamente grande e será baixado no carregamento inicial da Home, atrasando o LCP (Largest Contentful Paint). SVGs típicos de logo não devem passar de 10KB.
-- **Correção:** Otimizar o SVG usando ferramentas como SVGOMG ou converter para WebP se for uma ilustração complexa.
-
-**2. Ausência de Code Splitting (Bundle Size)**
-
-- **Local:** `src/main.jsx`
-- **O Problema:** Todas as rotas (`Home`, `Lobby`, `Jogo`) são importadas estaticamente. Isso significa que o usuário baixa o código do Jogo inteiro apenas para ver a Landing Page.
-- **Correção:**
-
-```javascript
-// src/main.jsx
-import React, { Suspense, lazy } from "react";
-// ...
-const Home = lazy(() => import("./pages/Home"));
-const Lobby = lazy(() => import("./pages/Lobby"));
-const Jogo = lazy(() => import("./pages/Jogo"));
-
-// No router:
-{ path: "jogo/:codigo", element: <Suspense fallback={<Loading />}><Jogo /></Suspense> },
-```
-
-**3. Complexidade Excessiva no Jogo (Renderização)**
-
-- **Local:** `src/pages/Jogo.jsx` (693 linhas)
-- **O Problema:** O componente excede o limite recomendado de 300 linhas. Ele gerencia lógica de timer, música, modais, e UI tudo em um arquivo. Qualquer atualização de estado (ex: timer) pode causar re-renderização de toda a árvore de componentes filhos se não estiver memoizada.
-- **Correção:** Extrair lógicas para hooks menores e dividir a UI em subcomponentes mais isolados (ex: `GameModals`, `GameControls`).
+_Nenhum problema crítico bloqueante foi encontrado na análise estática._
 
 ---
 
 ### 🟡 Avisos e oportunidades de otimização (impacto médio)
 
-_Problemas que aumentam o tempo de carregamento ou dívida técnica._
+**1. Estabilidade Visual (CLS) em Imagens**
 
-1. **Imagens sem formatos modernos**
+- **Local:** `src/pages/Home.jsx` e `src/pages/landing/LandingPage.jsx`
+- **O Problema:** As imagens (logos, avatares) contam apenas com classes CSS para dimensionamento. Sem atributos `width` e `height` explícitos no HTML, o navegador não consegue reservar espaço antes do carregamento do CSS/Imagem, causando saltos de layout (CLS) em conexões lentas.
+- **Correção:** Adicionar atributos `width` e `height` (proporcionais) nas tags `<img>`.
 
-- **Local:** `public/banner2.jpg` (127KB)
-- **O Problema:** Uso de JPEG legado.
-- **Correção:** Converter para WebP ou AVIF para reduzir tamanho em ~30%.
+```jsx
+// Exemplo em Home.jsx
+<img
+  src="/logo-apocalipticos.svg"
+  width="256"
+  height="256"
+  className="w-40 sm:w-56..." // CSS sobrescreve, mas proporção é mantida
+/>
+```
 
-2. **Prop Drilling no componente Jogo**
+**2. Background LCP (Largest Contentful Paint)**
 
-- **Local:** `src/pages/Jogo.jsx` -> `GameHeader`, `CardDisplay`, `PlayerActions`
-- **O Problema:** Muitos dados (`sala`, `jogadores`, `gameActions`) são passados via props para múltiplos níveis.
-- **Correção:** Considerar usar o `GameContext` (já existente ou expandir o `RoomProvider`) para evitar passar tantas props manualmente.
+- **Local:** `src/pages/Home.jsx`
+- **O Problema:** A imagem de fundo `/bg-apocalipticos.jpg` é carregada via CSS (`backgroundImage`). Isso faz com que o navegador só descubra a imagem depois de baixar e analisar o CSS (ou componente), atrasando o LCP.
+- **Correção:** Adicionar um `<link rel="preload">` no `index.html` ou usar um componente `img` com `object-fit: cover` posicionado absolutamente (mais amigável ao "Lazy Loading" nativo se não for LCP, ou "Eager" se for).
 
-3. **Falta de Compressão no Build**
+```html
+<!-- No index.html -->
+<link rel="preload" as="image" href="/bg-apocalipticos.jpg" />
+```
 
-- **Local:** `vite.config.js`
-- **O Problema:** Configuração padrão não inclúi plugins de compressão (Gzip/Brotli) para os assets estáticos.
-- **Correção:** Adicionar `vite-plugin-compression`.
+**3. Otimização de Imagens (Formato Próxima Geração)**
+
+- **Local:** Todo o projeto
+- **O Problema:** Uso de formatos PNG/JPG padrão (`/assets/characters/medica_Itala.jpeg`).
+- **Correção:** Converter assets estáticos para **WebP** ou **AVIF** para reduzir o tamanho do payload em até 30-50%.
 
 ---
 
 ### 🟢 Melhores práticas detectadas
 
-- **Uso de Fontes:** As fontes do Google estão sendo carregadas com `preconnect`, o que acelera a conexão inicial.
-- **Gerenciamento de Timer Local:** O uso de `setTimeout` local no `Jogo.jsx` para o timer visual (independente do servidor) é uma boa estratégia para evitar lag de rede na UI, embora exija sincronização cuidadosa.
-- **Cleanups de Efeitos:** Os `useEffect` analisados (principalmente de música e timers) possuem funções de limpeza (`return () => clearTimeout(...)`) corretas.
+1.  **Code Splitting (Divisão de Código):** Implementado corretamente no `main.jsx` usando `React.lazy`. Isso garante que o usuário só baixe o código da página que está acessando (Landing, Home, Lobby ou Jogo).
+2.  **Tree Shaking de Ícones:** Importação correta da `lucide-react` (destructuring), permitindo que o bundler remova ícones não utilizados.
+3.  **Meta Tags de SEO:** As tags Open Graph e Description adicionadas recentemente melhoram a performance de compartilhamento e descoberta.
+4.  **Feedback de Carregamento:** Uso consistente de `Suspense` e telas de `Loading` evita telas brancas da morte durante a navegação.
 
 ---
 
 ### 🔮 Impacto previsto nas métricas
 
-_Como não posso executar o Lighthouse, aqui está minha previsão de análise estática:_
-
-**Risco de LCP:** [Alto]
-Devido ao `logo-apocalipticos.svg` de 800KB na página inicial.
-
-**Risco de CLS:** [Médio]
-As imagens de background e logo podem causar shifts se não tiverem width/height explícitos no CSS/HTML antes do carregamento.
-
-**Risco de tamanho do pacote:** [Alto]
-Sem code splitting, o bundle inicial (`index.js`) será desnecessariamente grande.
+Risco de LCP: **Médio** (Devido à imagem de fundo via CSS).
+Risco de CLS: **Médio** (Falta de dimensões explícitas nas imagens).
+Risco de tamanho do pacote: **Baixo** (Graças ao Code Splitting e bibliotecas otimizadas).

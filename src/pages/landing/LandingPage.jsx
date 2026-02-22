@@ -14,7 +14,7 @@ const CHARACTERS = [
     bg: "bg-blue-900/20",
     border: "border-blue-500/30",
     icon: "🩺",
-    image: "/assets/characters/medica_Itala.jpeg",
+    image: "/assets/characters/medica_Itala.webp",
     ability: {
       name: "Triagem de Emergência",
       effect:
@@ -40,7 +40,7 @@ Ela ainda ouve o som das mãos batendo nas portas de vidro temperado. Hoje, ela 
     bg: "bg-purple-900/20",
     border: "border-purple-500/30",
     icon: "🔪",
-    image: "/assets/characters/assassina.png",
+    image: "/assets/characters/assassina.webp",
     ability: {
       name: "Golpe Silencioso",
       effect:
@@ -63,7 +63,7 @@ Ela sabe quem furou a quarentena, quem roubou o estoque de suprimentos e quem tr
     bg: "bg-yellow-900/20",
     border: "border-yellow-500/30",
     icon: "🧠",
-    image: "/assets/characters/estrategista_Emanuel.jpeg",
+    image: "/assets/characters/estrategista_Emanuel.webp",
     ability: {
       name: "Plano Mestre",
       effect:
@@ -86,7 +86,7 @@ Elias projetou os bunkers, mas agora ele projeta as melhores festas. Ele é obce
     bg: "bg-orange-900/20",
     border: "border-orange-500/30",
     icon: "🔥",
-    image: "/assets/characters/incendiaria.png",
+    image: "/assets/characters/incendiaria.webp",
     ability: {
       name: "Caos Controlado",
       effect:
@@ -110,7 +110,7 @@ Para Clara, o fogo é vida. Ela queima tudo o que é velho porque acredita que a
     bg: "bg-green-900/20",
     border: "border-green-500/30",
     icon: "☠️",
-    image: "/assets/characters/sobrevivente.png",
+    image: "/assets/characters/sobrevivente.webp",
     ability: {
       name: "Último Fôlego",
       effect:
@@ -133,7 +133,7 @@ Ele carrega as memórias do "mundo de antes" — o gosto de um café real, o som
     bg: "bg-pink-900/20",
     border: "border-pink-500/30",
     icon: "🍸",
-    image: "/assets/characters/barman_Mateus.jpeg",
+    image: "/assets/characters/barman_Mateus.webp",
     ability: {
       name: "Rodada da Casa",
       effect: "Obriga um jogador a beber 2 doses. Se recusar, perde 2 PV.",
@@ -171,10 +171,12 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gray-900 text-white overflow-x-hidden font-sans selection:bg-red-500 selection:text-white">
       {/* NAVBAR */}
-      <nav className="fixed top-0 left-0 w-full z-50 bg-black/80 backdrop-blur-md border-b border-white/10 px-6 py-4 flex justify-between items-center">
-        <div className="h-12 md:h-16 flex items-center gap-2">
+      <nav className="fixed top-0 left-0 w-full z-50 bg-black/80 backdrop-blur-md border-b border-white/10 px-4 py-3 md:px-6 md:py-4 flex justify-between items-center">
+        <div className="h-10 md:h-16 flex items-center gap-2">
           <img
             src="/logo-apocalipticos.svg"
+            width="64"
+            height="64"
             alt="APOCALÍPTICOS"
             className="h-full w-auto object-contain drop-shadow-[0_0_20px_rgba(220,38,38,0.8)] scale-110 md:scale-150 origin-left p-1 md:p-2"
           />
@@ -187,7 +189,7 @@ export default function LandingPage() {
         <div className="flex gap-4">
           <button
             onClick={handlePlayClick}
-            className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-all shadow-[0_0_15px_rgba(220,38,38,0.5)] hover:shadow-[0_0_25px_rgba(220,38,38,0.8)]"
+            className="px-4 py-2 text-sm md:text-base md:px-6 md:py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-all shadow-[0_0_15px_rgba(220,38,38,0.5)] hover:shadow-[0_0_25px_rgba(220,38,38,0.8)]"
           >
             JOGAR AGORA
           </button>
@@ -358,7 +360,7 @@ export default function LandingPage() {
                 curtir com os amigos?"
               </p>
               <p className="text-red-500 font-bold tracking-widest text-xs uppercase">
-                — Lema dos Sobreviventes
+                — Lema dos Apocalípticos
               </p>
             </div>
             {/* Decorative background element */}

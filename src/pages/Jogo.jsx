@@ -180,6 +180,27 @@ export default function Jogo() {
     }
   };
 
+  // --- FIX: Handler para abrir modal com Role Customizada (Ditador) ---
+  const handleOpenAbilityModal = (roleData) => {
+    if (roleData) {
+      setCustomRole(roleData);
+    }
+    setShowAbilityModal(true);
+  };
+
+  // --- FIX: Listener para Mensagens Globais (Sistema) ---
+  useEffect(() => {
+    if (
+      sala?.systemMessage?.timestamp &&
+      sala.systemMessage.timestamp > Date.now() - 5000
+    ) {
+      const { text, icon = "🔔" } = sala.systemMessage;
+
+      // Pequena validação para evitar spam se o componente re-renderizar
+      toast(text, { icon, id: `sys-${sala.systemMessage.timestamp}` });
+    }
+  }, [sala?.systemMessage]);
+
   if (loading || !sala) {
     return <div className="text-white text-center p-8">Carregando jogo...</div>;
   }
@@ -502,8 +523,9 @@ export default function Jogo() {
         <DictatorControls
           activeEvents={sala?.activeEvents}
           meuUid={meuUid}
-          onOpenAbilityModal={setShowAbilityModal}
+          onOpenAbilityModal={handleOpenAbilityModal}
         />
+        {/* ... */}
 
         {/* BOTÃO DE MÚSICA (Floating) */}
         <button

@@ -3,7 +3,7 @@ export const ROLES = {
     id: "medico",
     name: "A Médica da Zona Morta",
     icon: "🩺",
-    image: "/assets/characters/medica_Itala.jpeg",
+    image: "/assets/characters/medica_Itala.webp",
     description: "Cura feridas, mas tudo tem um preço.",
     ability: {
       name: "Tratamento de Risco",
@@ -17,7 +17,7 @@ export const ROLES = {
     id: "assassino",
     name: "O Assassino das Ruínas",
     icon: "🔪",
-    image: "/assets/characters/assassina.png",
+    image: "/assets/characters/assassina.webp",
     description: "Especialista em causar dano massivo.",
     ability: {
       name: "Roubo de Sangue",
@@ -31,7 +31,7 @@ export const ROLES = {
     id: "estrategista",
     name: "O Estrategista Careca",
     icon: "🧠",
-    image: "/assets/characters/estrategista_Emanuel.jpeg",
+    image: "/assets/characters/estrategista_Emanuel.webp",
     description: "Controla o fluxo do jogo.",
     ability: {
       name: "Plano de Contingência",
@@ -45,7 +45,7 @@ export const ROLES = {
     id: "incendiaria",
     name: "A Incendiária",
     icon: "🔥",
-    image: "/assets/characters/incendiaria.png",
+    image: "/assets/characters/incendiaria.webp",
     description: "Gosta de ver o caos reinar.",
     ability: {
       name: "Caos Controlado",
@@ -59,7 +59,7 @@ export const ROLES = {
     id: "sobrevivente",
     name: "O Sobrevivente",
     icon: "☠️",
-    image: "/assets/characters/sobrevivente.png",
+    image: "/assets/characters/sobrevivente.webp",
     description: "Difícil de matar.",
     ability: {
       name: "Último Fôlego",
@@ -73,7 +73,7 @@ export const ROLES = {
     id: "barman",
     name: "O Barman",
     icon: "🍺",
-    image: "/assets/characters/barman_Mateus.jpeg",
+    image: "/assets/characters/barman_Mateus.webp",
     description: "O dono do bar.",
     ability: {
       name: "A Saideira",

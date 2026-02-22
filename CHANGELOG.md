@@ -2,6 +2,13 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [Não Lançado] - 2026-02-06
+
+### Corrigido (Bugs Críticos)
+
+- **Ditador (Orgulho)**: Corrigido bug onde a habilidade "Multar" consumia recursos da classe original do jogador. Agora abre corretamente o menu exclusivo do Ditador.
+- **Luxúria (Pacto)**: Implementado sistema de mensagens globais para garantir que o dano compartilhado seja visível para todos os jogadores na sala.
+
 ## [Não Lançado] - 2026-02-05
 
 ### Adicionado (SEO & Otimização)
