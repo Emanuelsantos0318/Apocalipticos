@@ -182,7 +182,7 @@ export default function LandingPage() {
           />
           <div className="ml-4 hidden md:block">
             <h1 className="text-2xl font-bold font-rubik text-orange-500 p-2 text-shadow-[0_0_15px_rgba(220,164,52,0.6)]">
-              APOCALIÍPTICOS
+              APOCALÍPTICOS
             </h1>
           </div>
         </div>

@@ -190,7 +190,7 @@ Novos efeitos sonoros
 
 🔹 Sistema de pagamento.
 
-## 🧪 Fase 13 – Testes, Ajustes e Polimento
+## 🧪 Fase 13 – Testes Unitários, Ajustes e Polimento
 
 ### 📍 Previsão: Janeiro 2026
 
