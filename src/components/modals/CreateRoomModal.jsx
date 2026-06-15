@@ -1,5 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import {
   ClipboardCopy,
@@ -50,6 +51,7 @@ export default function CreateRoomModal({ isOpen, onClose, onCreate }) {
   const [nome, setNome] = useState("");
   const [dataNascimento, setDataNascimento] = useState("");
   const [copied, setCopied] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const discordLink = "https://discord.gg/rQDJht6Hg4";
 
   // Avatar states
@@ -65,6 +67,7 @@ export default function CreateRoomModal({ isOpen, onClose, onCreate }) {
       setLimiteJogadores(6);
       setModo("normal");
       setErro("");
+      setTermsAccepted(false);
 
       // Lógica de Preenchimento Automático
       if (currentUser) {
@@ -319,6 +322,23 @@ export default function CreateRoomModal({ isOpen, onClose, onCreate }) {
           </select>
         </div>
 
+        <div className="flex items-start gap-2 mb-6">
+          <input
+            type="checkbox"
+            id="terms-create"
+            checked={termsAccepted}
+            onChange={(e) => setTermsAccepted(e.target.checked)}
+            className="mt-1 w-4 h-4 rounded border-gray-600 bg-gray-900 accent-orange-500 cursor-pointer"
+          />
+          <label htmlFor="terms-create" className="text-sm text-gray-400 cursor-pointer">
+            Li e concordo com os{" "}
+            <Link to="/termos-de-uso" target="_blank" className="text-orange-500 hover:text-orange-400 underline">
+              Termos de Uso
+            </Link>
+            .
+          </label>
+        </div>
+
         <div className="flex gap-3 pt-2">
           <button
             onClick={onClose}
@@ -328,7 +348,12 @@ export default function CreateRoomModal({ isOpen, onClose, onCreate }) {
           </button>
           <button
             onClick={handleSubmit}
-            className="flex-1 px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-500 font-medium shadow-lg shadow-green-900/20 transition-all hover:scale-[1.02]"
+            disabled={!termsAccepted}
+            className={`flex-1 px-4 py-2.5 rounded-lg font-medium shadow-lg transition-all ${
+              termsAccepted 
+                ? "bg-green-600 text-white hover:bg-green-500 shadow-green-900/20 hover:scale-[1.02]" 
+                : "bg-gray-700 text-gray-500 cursor-not-allowed"
+            }`}
           >
             Criar Sala
           </button>

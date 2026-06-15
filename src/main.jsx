@@ -15,6 +15,7 @@ const LandingPage = React.lazy(() => import("./pages/landing/LandingPage"));
 const Home = React.lazy(() => import("./pages/Home"));
 const Lobby = React.lazy(() => import("./pages/Lobby"));
 const Jogo = React.lazy(() => import("./pages/Jogo"));
+const TermsOfUse = React.lazy(() => import("./pages/TermsOfUse"));
 
 const router = createBrowserRouter([
   {
@@ -93,6 +94,14 @@ const router = createBrowserRouter([
         element: (
           <React.Suspense fallback={<LoadingScreen theme="apocalypse" />}>
             <Jogo />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: "termos-de-uso",
+        element: (
+          <React.Suspense fallback={<LoadingScreen theme="apocalypse" />}>
+            <TermsOfUse />
           </React.Suspense>
         ),
       },

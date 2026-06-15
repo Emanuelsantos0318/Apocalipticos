@@ -6,6 +6,11 @@ Apocalípticos é um jogo de desafios e interações em grupo, onde os jogadores
 
 ## 1. Estrutura e Navegação
 
+### 💡 Recomendações para aprimorar ainda mais
+
+- **Mantenha os componentes de UI como "Componentes Burros":** Garanta que componentes como CardDisplay ou PowerUpBar recebam apenas props simples. Toda e qualquer ação de ler ou gravar informações no banco deve passar por uma ViewModel (os Hooks).
+- **Extraia timers e efeitos colaterais locais:** Sempre que puder, remova os useEffect que lidam com timers e regras de transição de estado de dentro de "Jogo.jsx" e coloque-os dentro dos hooks específicos para manter a View 100% declarativa.
+
 ### Tela Incial que tem uma discrição do que é o jogo.
 
 - Landing Page com discrição do que é o jogo. (✅ Implementado)
@@ -23,6 +28,8 @@ Apocalípticos é um jogo de desafios e interações em grupo, onde os jogadores
 - Botão "Login" e "Cadastro".
 - Botão "Sobre nós" e "Redes sociais".
 - Footer com links para redes sociais e informações do jogo.
+
+- Refatorar LandinPage.jsx. Já tem mais de 400 linhas. Não sei se está certo, mas eu achei que tem muita informação, ai achei dificil encontra o que eu queria atualizar..
 
 ### 👨🏾‍🦳 Tela de Perfil
 

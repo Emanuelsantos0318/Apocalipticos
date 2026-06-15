@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import MainButton from "../buttons/MainButton";
 import { Mail, Lock, User, Calendar, LogIn, PlusCircle } from "lucide-react";
@@ -16,6 +17,7 @@ export default function AuthModal({ isOpen, onClose }) {
     dataNascimento: "",
   });
   const [loading, setLoading] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   if (!isOpen) return null;
 
@@ -210,9 +212,26 @@ export default function AuthModal({ isOpen, onClose }) {
               </div>
             </div>
 
+            <div className="flex items-start gap-2 mt-4 mb-2">
+              <input
+                type="checkbox"
+                id="terms-auth"
+                checked={termsAccepted}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+                className="mt-1 w-4 h-4 rounded border-gray-600 bg-gray-900 accent-orange-500 cursor-pointer"
+              />
+              <label htmlFor="terms-auth" className="text-sm text-gray-400 cursor-pointer">
+                Li e concordo com os{" "}
+                <Link to="/termos-de-uso" target="_blank" className="text-orange-500 hover:text-orange-400 underline">
+                  Termos de Uso
+                </Link>
+                .
+              </label>
+            </div>
+
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !termsAccepted}
               className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white font-bold py-4 rounded-xl shadow-lg transform transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-4 flex items-center justify-center gap-2"
             >
               {loading ? (

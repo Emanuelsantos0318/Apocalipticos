@@ -196,6 +196,7 @@ Novos efeitos sonoros
 
 Tratamento de erros e bugs. Implementação de feedback visual e sonoro.
 
+Testabilidade: Você pode criar testes unitários para testar se os turnos estão passando de forma correta, se a pontuação é calculada devidamente e se as punições do timer funcionam apenas testando a lógica dos Custom Hooks (useVoting, useGameActions).
 Melhorias na interface e experiência do usuário.
 
 Testes em dispositivos mobile e desktop.

@@ -1,5 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -17,6 +18,7 @@ export default function JoinRoomModal({ isOpen, onClose, onJoin }) {
   const [dataNascimento, setNascimento] = useState("");
   const [chave, setChave] = useState("");
   const [erro, setErro] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   // Avatar states
   const [avatarSeed, setAvatarSeed] = useState("");
@@ -28,6 +30,7 @@ export default function JoinRoomModal({ isOpen, onClose, onJoin }) {
     if (isOpen) {
       setChave("");
       setErro("");
+      setTermsAccepted(false);
 
       if (currentUser) {
         setNome(currentUser.nome || currentUser.displayName || "");
@@ -179,6 +182,23 @@ export default function JoinRoomModal({ isOpen, onClose, onJoin }) {
             />
           </div>
 
+          <div className="flex items-start gap-2 pt-2">
+            <input
+              type="checkbox"
+              id="terms-join"
+              checked={termsAccepted}
+              onChange={(e) => setTermsAccepted(e.target.checked)}
+              className="mt-1 w-4 h-4 rounded border-gray-600 bg-gray-900 accent-orange-500 cursor-pointer"
+            />
+            <label htmlFor="terms-join" className="text-sm text-gray-400 cursor-pointer">
+              Li e concordo com os{" "}
+              <Link to="/termos-de-uso" target="_blank" className="text-orange-500 hover:text-orange-400 underline">
+                Termos de Uso
+              </Link>
+              .
+            </label>
+          </div>
+
           <div className="flex gap-3 pt-4">
             <button
               onClick={onClose}
@@ -188,7 +208,12 @@ export default function JoinRoomModal({ isOpen, onClose, onJoin }) {
             </button>
             <button
               onClick={handleJoin}
-              className="flex-1 px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-500 font-medium shadow-lg shadow-green-900/20 transition-all hover:scale-[1.02]"
+              disabled={!termsAccepted}
+              className={`flex-1 px-4 py-2.5 rounded-lg font-medium shadow-lg transition-all ${
+                termsAccepted 
+                  ? "bg-green-600 text-white hover:bg-green-500 shadow-green-900/20 hover:scale-[1.02]" 
+                  : "bg-gray-700 text-gray-500 cursor-not-allowed"
+              }`}
             >
               Entrar
             </button>

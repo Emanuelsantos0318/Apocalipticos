@@ -6,9 +6,9 @@ import toast from "react-hot-toast";
 import { useSounds } from "../../hooks/useSounds";
 
 /**
- * Hook to manage Room and Players state
- * @param {string} codigo - Room code
- * @param {string} meuUid - Current user UID
+ * Hook para gerenciar o estado da sala e dos jogadores.
+ * @param {string} codigo - código da sala
+ * @param {string} meuUid - UID do usuário atual
  * @returns {Object} { sala, jogadores, timeLeft, loading }
  */
 export function useGameRoom(codigo, meuUid) {
