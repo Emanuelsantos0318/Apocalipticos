@@ -16,6 +16,7 @@ const Home = React.lazy(() => import("./pages/Home"));
 const Lobby = React.lazy(() => import("./pages/Lobby"));
 const Jogo = React.lazy(() => import("./pages/Jogo"));
 const TermsOfUse = React.lazy(() => import("./pages/TermsOfUse"));
+const AboutUs = React.lazy(() => import("./pages/AboutUs"));
 
 const router = createBrowserRouter([
   {
@@ -102,6 +103,14 @@ const router = createBrowserRouter([
         element: (
           <React.Suspense fallback={<LoadingScreen theme="apocalypse" />}>
             <TermsOfUse />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: "sobre",
+        element: (
+          <React.Suspense fallback={<LoadingScreen theme="apocalypse" />}>
+            <AboutUs />
           </React.Suspense>
         ),
       },

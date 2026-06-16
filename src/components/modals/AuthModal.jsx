@@ -64,6 +64,7 @@ export default function AuthModal({ isOpen, onClose }) {
       toast.success("Conectado com Google!");
       onClose();
     } catch (error) {
+      console.error(error);
       // Erro já tratado/logado no context
       toast.error("Erro no login com Google.");
     } finally {

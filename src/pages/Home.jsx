@@ -332,6 +332,20 @@ export default function Home() {
             </section>
           </div>
 
+          {/* FOOTER */}
+          <footer className="mt-16 mb-8 text-center text-xs text-gray-500 flex flex-col items-center gap-2">
+            <p>&copy; 2026 Apocalípticos. Todos os direitos reservados.</p>
+            <div className="flex gap-4">
+              <Link to="/sobre" className="hover:text-orange-400 transition-colors font-medium">
+                Sobre os Autores
+              </Link>
+              <span className="text-gray-800">|</span>
+              <Link to="/termos-de-uso" className="hover:text-orange-400 transition-colors font-medium">
+                Termos de Uso
+              </Link>
+            </div>
+          </footer>
+
           {/* MODAIS */}
           <CreateRoomModal
             isOpen={modals.create}

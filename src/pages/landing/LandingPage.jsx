@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
 
@@ -572,8 +572,17 @@ export default function LandingPage() {
       </section>
 
       {/* FOOTER */}
-      <footer className="py-12 border-t border-white/10 text-center text-gray-500 bg-black">
+      <footer className="py-12 border-t border-white/10 text-center text-gray-500 bg-black flex flex-col items-center gap-4">
         <p>&copy; 2026 Apocalípticos. Beba com moderação (ou não).</p>
+        <div className="flex gap-6 text-sm">
+          <Link to="/sobre" className="hover:text-orange-500 transition-colors font-medium">
+            Sobre os Autores
+          </Link>
+          <span className="text-gray-800">|</span>
+          <Link to="/termos-de-uso" className="hover:text-orange-500 transition-colors font-medium">
+            Termos de Uso
+          </Link>
+        </div>
       </footer>
     </div>
   );
