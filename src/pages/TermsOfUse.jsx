@@ -1,8 +1,19 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import PageLayout from "../components/PageLayout";
 
 export default function TermsOfUse() {
+  const navigate = useNavigate();
+
+  const handleBack = (e) => {
+    e.preventDefault();
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate("/");
+    }
+  };
+
   return (
     <PageLayout>
       <div
@@ -14,12 +25,12 @@ export default function TermsOfUse() {
         <div className="absolute inset-0 bg-black/80 backdrop-blur-sm -z-10" />
 
         <div className="max-w-4xl mx-auto bg-gray-900/80 border border-orange-500/30 rounded-2xl p-6 sm:p-10 shadow-2xl relative z-10">
-          <Link
-            to="/"
-            className="inline-block mb-6 text-orange-400 hover:text-orange-300 font-semibold transition-colors"
+          <button
+            onClick={handleBack}
+            className="inline-block mb-6 text-orange-400 hover:text-orange-300 font-semibold transition-colors cursor-pointer"
           >
-            ← Voltar para o início
-          </Link>
+            ← Voltar
+          </button>
 
           <h1 className="text-3xl sm:text-4xl font-bold text-orange-500 mb-2 font-rubik">
             Termos de Uso

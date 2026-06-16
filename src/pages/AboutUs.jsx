@@ -1,9 +1,20 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Github, MessageSquare, Flame, ShieldAlert } from "lucide-react";
 import PageLayout from "../components/PageLayout";
 
 export default function AboutUs() {
+  const navigate = useNavigate();
+
+  const handleBack = (e) => {
+    e.preventDefault();
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate("/");
+    }
+  };
+
   const authors = [
     {
       name: "Mateus Sanfer",
@@ -43,12 +54,12 @@ export default function AboutUs() {
         <div className="max-w-5xl mx-auto relative z-10">
           {/* Header */}
           <div className="mb-12">
-            <Link
-              to="/"
-              className="inline-flex items-center gap-2 text-orange-400 hover:text-orange-300 font-semibold transition-colors mb-6 group"
+            <button
+              onClick={handleBack}
+              className="inline-flex items-center gap-2 text-orange-400 hover:text-orange-300 font-semibold transition-colors mb-6 group cursor-pointer"
             >
-              <span className="transform group-hover:-translate-x-1 transition-transform">←</span> Voltar para o início
-            </Link>
+              <span className="transform group-hover:-translate-x-1 transition-transform">←</span> Voltar
+            </button>
 
             <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500 mb-4 font-rubik uppercase tracking-tight">
               Os Criadores do Caos
