@@ -28,3 +28,7 @@ SEO_REPORT.md
 *.njsproj
 *.sln
 *.sw?
+
+# Obsidian local vault
+obsidian/
+

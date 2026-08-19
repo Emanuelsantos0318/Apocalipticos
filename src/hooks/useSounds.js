@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 
 export function useSounds() {
   // Estado para rastrear QUAL música de fundo está tocando (null se nenhuma)
@@ -71,26 +71,24 @@ export function useSounds() {
   };
 
   // Togle genérico para músicas de fundo
-  const toggleMusic = (tipo) => {
-    const som = sons[tipo];
-    if (!som) return;
-
-    if (playingBgMusic === tipo) {
-      // Se já está tocando essa, para
-      som.pause();
-      setPlayingBgMusic(null);
-    } else {
-      // Se estava tocando OUTRA, para a outra antes?
-      // Por comportamento padrão, vamos parar qualquer outra música de fundo ativa
-      if (playingBgMusic && sons[playingBgMusic]) {
-        sons[playingBgMusic].pause();
+  const toggleMusic = useCallback((tipo) => {
+    setPlayingBgMusic((prev) => {
+      const som = sons[tipo];
+      if (!som) return prev;
+      
+      if (prev === tipo) {
+        som.pause();
+        return null;
       }
       
-      som.play()
-        .then(() => setPlayingBgMusic(tipo))
-        .catch(() => {});
-    }
-  };
+      if (prev && sons[prev]) {
+        sons[prev].pause();
+      }
+      
+      som.play().catch(() => {});
+      return tipo;
+    });
+  }, [sons]);
 
   // Parar qualquer música ao desmontar (opcional, ou manter cleanup do useEffect em pages)
   useEffect(() => {
@@ -124,7 +122,7 @@ export function useSounds() {
     stopJogo: () => stopBg("musicaJogo"),
     
     toggleMusic,
-  }), [sons, playingBgMusic]); 
+  }), [sons, toggleMusic]); 
 
   return {
     ...actions,

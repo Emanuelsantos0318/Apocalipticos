@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   doc,
   updateDoc,
@@ -27,6 +27,14 @@ import { useRPG } from "./useRPG";
 export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
   const { playFlip, playSuccess, playFail, playPodium } = useSounds();
   const { takeDamage, heal, useAbility } = useRPG(codigo, sala);
+
+  const timeoutRefs = useRef([]);
+
+  useEffect(() => {
+    return () => {
+      timeoutRefs.current.forEach(clearTimeout);
+    };
+  }, []);
 
   const [showChoiceModal, setShowChoiceModal] = useState(false);
   const [choiceTimeLeft, setChoiceTimeLeft] = useState(10);
@@ -159,7 +167,7 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
       if (sala.nextPlayerOverride) {
         proximoUid = sala.nextPlayerOverride;
       } else {
-        proximoUid = await proximoJogador(codigo, currentPlayer);
+        proximoUid = proximoJogador(currentPlayer, jogadores.map(j => j.uid));
       }
 
       const updates = {
@@ -514,7 +522,7 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
       playFail();
 
       // End Event after delay
-      setTimeout(async () => {
+      const timerId = setTimeout(async () => {
         await updatePlayerStats("completou");
         await updateDoc(doc(db, "salas", codigo), {
           activeEventState: deleteField(),
@@ -522,6 +530,7 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
         });
         await passarVez();
       }, 5000);
+      timeoutRefs.current.push(timerId);
     } else {
       // Risk Wins -> Proceed to Coin Flip Phase
       await updateDoc(doc(db, "salas", codigo), {
@@ -588,7 +597,7 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
 
       // Check if everyone has flipped
       if (Object.keys(newFlips).length === jogadores.length) {
-        setTimeout(async () => {
+        const timerId = setTimeout(async () => {
           await updatePlayerStats("completou");
           await updateDoc(doc(db, "salas", codigo), {
             activeEventState: deleteField(),
@@ -596,6 +605,7 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
           });
           await passarVez();
         }, 4000);
+        timeoutRefs.current.push(timerId);
       }
     } catch (error) {
       console.error("Coin flip error:", error);
@@ -702,7 +712,7 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
       playSuccess();
 
       // Finalizar Carta
-      setTimeout(async () => {
+      const timerId = setTimeout(async () => {
         await updatePlayerStats("completou");
         await updateDoc(doc(db, "salas", codigo), {
           activeEventState: deleteField(),
@@ -710,6 +720,7 @@ export function useGameActions(codigo, sala, jogadores, meuUid, setTimeLeft) {
         });
         await passarVez();
       }, 3000);
+      timeoutRefs.current.push(timerId);
     } catch (error) {
       console.error("Erro ao decidir Duelo:", error);
     }

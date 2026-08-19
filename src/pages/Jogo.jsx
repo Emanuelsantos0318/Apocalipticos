@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { AuthContext } from "../context/AuthContext";
@@ -32,7 +32,7 @@ import DictatorControls from "../components/game/DictatorControls";
 import ChaosEventOverlay from "../components/game/chaos/ChaosEventOverlay";
 
 import { CARD_TYPES } from "../constants/constants";
-import { Volume2, VolumeX, Zap } from "lucide-react"; // Skull removed (used in RevengeSelectorModal)
+import { Volume2, VolumeX, Zap, Trophy } from "lucide-react"; // Skull removed (used in RevengeSelectorModal)
 
 export default function Jogo() {
   const { codigo } = useParams();
@@ -64,7 +64,11 @@ export default function Jogo() {
   const voting = useVoting(codigo, sala, jogadores, meuUid);
 
   // 4. Power Ups
-  const meuJogador = jogadores.find((j) => j.uid === meuUid);
+  const meuJogador = useMemo(
+    () => jogadores.find((j) => j.uid === meuUid),
+    [jogadores, meuUid]
+  );
+  const isHost = meuJogador?.isHost ?? false;
   // Passando gameActions para o hook de powerups poder chamar passarVez e sortearCarta
   const powerUps = usePowerUpActions(
     codigo,
@@ -107,6 +111,8 @@ export default function Jogo() {
   }, [sala?.status]);
 
   // Timer da Rodada (Lógica Local com Fallback para Hooks)
+  const timerZeroHandled = useRef(false);
+
   useEffect(() => {
     if (
       timeLeft > 0 &&
@@ -114,13 +120,16 @@ export default function Jogo() {
       !voting.resultadoVotacao &&
       sala?.statusAcao !== "aguardando_confirmacao"
     ) {
+      timerZeroHandled.current = false;
       const timer = setTimeout(() => setTimeLeft((prev) => prev - 1), 1000);
       return () => clearTimeout(timer);
     } else if (
       timeLeft === 0 &&
+      !timerZeroHandled.current &&
       !voting.resultadoVotacao &&
       sala?.statusAcao !== "aguardando_confirmacao"
     ) {
+      timerZeroHandled.current = true;
       if (isVotingRound) {
         voting.calcularResultadoVotacao(voting.votos);
       } else if (isCurrentPlayer && sala?.cartaAtual?.tipo !== "CAOS") {
@@ -236,7 +245,7 @@ export default function Jogo() {
               isCurrentPlayer={isCurrentPlayer}
               jogadores={jogadores} // Updated
               onLeave={handleLeaveGame}
-              isHost={jogadores.find((j) => j.uid === meuUid)?.isHost}
+              isHost={isHost}
               onFinishGame={() => gameActions.setShowFinishConfirmModal(true)}
               sala={sala}
               // Removido props de musica redundantes
@@ -299,7 +308,7 @@ export default function Jogo() {
                             / {jogadores.length}
                           </p>
                         </div>
-                        {jogadores.find((j) => j.uid === meuUid)?.isHost &&
+                        {isHost &&
                           Object.keys(voting.votos).length > 0 && (
                             <button
                               onClick={() =>
@@ -333,7 +342,7 @@ export default function Jogo() {
                     gameActions={gameActions}
                     setCustomRole={setCustomRole}
                     setShowAbilityModal={setShowAbilityModal}
-                    isHost={jogadores.find((j) => j.uid === meuUid)?.isHost}
+                    isHost={isHost}
                   />
                 ) : (
                   // Ações Normais ou Chaos Actions
@@ -366,8 +375,7 @@ export default function Jogo() {
                       jogadores={jogadores} // Updated
                       acoes={gameActions.acoesRodada}
                     />
-                    {(isCurrentPlayer ||
-                      jogadores.find((j) => j.uid === meuUid)?.isHost) && (
+                    {(isCurrentPlayer || isHost) && (
                       <div className="text-center mt-6">
                         {Object.keys(gameActions.acoesRodada).length ===
                         jogadores.length ? (
@@ -382,8 +390,7 @@ export default function Jogo() {
                             <span className="font-medium text-sm animate-pulse">
                               Aguardando todos responderem...
                             </span>
-                            {jogadores.find((j) => j.uid === meuUid)
-                              ?.isHost && (
+                            {isHost && (
                               <button
                                 onClick={() =>
                                   setShowForceModal({ type: "NEVER" })
@@ -546,26 +553,3 @@ export default function Jogo() {
   );
 }
 
-// Pequeno helper para icone Trophy se nao importado
-function Trophy({ size }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-      <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-      <path d="M4 22h16" />
-      <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
-      <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
-      <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-    </svg>
-  );
-}

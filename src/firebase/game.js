@@ -7,6 +7,7 @@ import {
   doc,
   setDoc,
   serverTimestamp,
+  limit,
 } from "firebase/firestore";
 import { CARD_TYPES } from "../constants/constants";
 import { CHAOS_EVENTS } from "../constants/chaosEvents";
@@ -49,6 +50,8 @@ export async function sortearCarta(
   if (tipo) {
     constraints.push(where("tipo", "==", tipo));
   }
+
+  constraints.push(limit(60));
 
   const q = query(cartasRef, ...constraints);
 
@@ -106,19 +109,15 @@ export async function sortearCarta(
 /**
  * Determina o próximo jogador da rodada.
  * Evita repetir o mesmo jogador imediatamente, se possível.
- * @param {string} salaId - ID da sala.
  * @param {string} jogadorAtualUid - UID do jogador que acabou de jogar.
- * @returns {Promise<string>} UID do próximo jogador.
+ * @param {string[]} jogadoresUids - Array de UIDs dos jogadores na sala.
+ * @returns {string} UID do próximo jogador.
  */
-export async function proximoJogador(salaId, jogadorAtualUid) {
-  const jogadoresRef = collection(db, "salas", salaId, "jogadores");
-  const snapshot = await getDocs(jogadoresRef);
-  const jogadores = snapshot.docs.map((doc) => doc.id);
-
-  if (jogadores.length <= 1) return jogadorAtualUid;
+export function proximoJogador(jogadorAtualUid, jogadoresUids) {
+  if (jogadoresUids.length <= 1) return jogadorAtualUid;
 
   // Filtrar o jogador atual para não repetir imediatamente (opcional)
-  const outrosJogadores = jogadores.filter((uid) => uid !== jogadorAtualUid);
+  const outrosJogadores = jogadoresUids.filter((uid) => uid !== jogadorAtualUid);
 
   // Se só tinha 1 outro jogador, retorna ele. Se tinha mais, sorteia.
   // Se por acaso o filtro removeu todos (ex: só 1 jogador na sala), retorna o mesmo.

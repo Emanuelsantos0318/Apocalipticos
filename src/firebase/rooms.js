@@ -13,6 +13,7 @@ import {
   updateDoc,
   collection,
   getDocs,
+  getDoc,
   deleteDoc,
   orderBy,
   query,
@@ -161,40 +162,34 @@ export async function sairDaSala(roomCode, uid) {
 
   try {
     // 1. Verificar se o jogador é o Host antes de deletar
-    const playerSnap = await getDocs(query(collection(db, "salas", roomCode, "jogadores"), where("uid", "==", uid))); // Ineficiente, melhor ler o doc direto se possível, mas aqui usamos a coleção para garantir
-    // Melhor: ler o documento do jogador direto
-    // const pDoc = await getDoc(playerRef); // Precisaria importar getDoc. Vamos assumir que temos os dados ou ler a coleção.
+    const playerSnap = await getDoc(playerRef);
     
-    // Vamos ler a coleção de jogadores para ter todos e decidir o novo host
-    const jogadoresRef = collection(db, "salas", roomCode, "jogadores");
-    const q = query(jogadoresRef, orderBy("timestamp", "asc"));
-    const snapshot = await getDocs(q);
-    
-    const jogadores = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-    const saindo = jogadores.find(j => j.uid === uid);
-
-    if (!saindo) return; // Jogador já não existe
+    if (!playerSnap.exists()) return; // Jogador já não existe
+    const saindo = playerSnap.data();
 
     // 2. Deletar o jogador
     await deleteDoc(playerRef);
 
     // 3. Se era o Host, passar a coroa
     if (saindo.isHost) {
-      const novosJogadores = jogadores.filter(j => j.uid !== uid);
+      // Busca apenas o mais antigo (limit 1)
+      const jogadoresRef = collection(db, "salas", roomCode, "jogadores");
+      const q = query(jogadoresRef, orderBy("timestamp", "asc"), limit(1));
+      const snapshot = await getDocs(q);
       
-      if (novosJogadores.length > 0) {
-        const novoHost = novosJogadores[0]; // O mais antigo (timestamp menor)
+      if (!snapshot.empty) {
+        const novoHost = snapshot.docs[0]; // O mais antigo (timestamp menor)
         
         // Atualiza o novo host na subcoleção
-        await updateDoc(doc(db, "salas", roomCode, "jogadores", novoHost.uid), {
+        await updateDoc(doc(db, "salas", roomCode, "jogadores", novoHost.id), {
           isHost: true
         });
 
         // Atualiza o host no documento da sala
         await updateDoc(salaRef, {
-          "host.uid": novoHost.uid,
-          "host.nome": novoHost.nome,
-          "host.avatar": novoHost.avatar
+          "host.uid": novoHost.id,
+          "host.nome": novoHost.data().nome,
+          "host.avatar": novoHost.data().avatar
         });
       } else {
         // Se não sobrou ninguém, deleta a sala (ou marca como abandonada)
