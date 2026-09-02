@@ -214,3 +214,21 @@ Deploy (Vercel ou Firebase Hosting).
 Criação da página no seu portfólio.
 
 Publicação no LinkedIn e GitHub.
+
+## 🤖 Fase 15 (Expansão Futura) – Modo Solo & Bots com IA ("Boteco do Apocalipse")
+
+### 📍 Status: Ideia / Planejamento Futuro
+
+🔹 **Modo Solo:** Jogar sem depender de amigos conectados, enfrentando bots controlados por IA.
+
+🔹 **Bots com Personalidades & Prompts:**
+  - Tião (Tiozão das Piadas/Teorias do Zap)
+  - Jéssica (Fofoqueira e Debochada)
+  - Seu Osvaldo (Bêbado Filósofo)
+  - Opção de criação de bots customizados pelo usuário.
+
+🔹 **Ambientação Viva de Boteco:** NPCs de fundo (Seu Zé do Balcão, vizinhos), falas contextuais e efeitos sonoros imersivos.
+
+🔹 **Modo Híbrido:** Adicionar bots para completar vagas em salas multiplayer.
+
+🔹 **Integração Técnica com LLMs:** Conexão com modelos ultra-rápidos e de baixo custo (ex: Gemini Flash/Groq) com prompts otimizados e fallback para falas em cache.
